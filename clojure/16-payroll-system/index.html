@@ -1,0 +1,2143 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="関数型プログラミングにおける設計原則とデザインパターンを実践的に学ぶガイド">
+      
+      
+        <meta name="author" content="Project Team">
+      
+      
+      
+        <link rel="prev" href="../15-gossiping-bus-drivers/">
+      
+      
+        <link rel="next" href="../17-video-rental-system/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.0">
+    
+    
+      
+        <title>16. 給与計算システム - 関数型デザイン - 原則、パターン、実践</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.618322db.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../docs/mkdocs/assets/css/extra.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#16" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="関数型デザイン - 原則、パターン、実践" class="md-header__button md-logo" aria-label="関数型デザイン - 原則、パターン、実践" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            関数型デザイン - 原則、パターン、実践
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              16. 給与計算システム
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/k2works/grokkingfp-excersice" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    grokkingfp-excersice
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../" class="md-tabs__link">
+          
+  
+  
+  Clojure
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+  
+
+<nav class="md-nav md-nav--primary md-nav--lifted md-nav--integrated" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="関数型デザイン - 原則、パターン、実践" class="md-nav__button md-logo" aria-label="関数型デザイン - 原則、パターン、実践" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    関数型デザイン - 原則、パターン、実践
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/k2works/grokkingfp-excersice" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    grokkingfp-excersice
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Clojure
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Clojure
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    概要
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_2" id="__nav_2_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第1部 - 基礎原則
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    第1部 - 基礎原則
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../01-immutability-and-data-transformation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    1. 不変性とデータ変換
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02-function-composition/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2. 関数合成と高階関数
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03-polymorphism/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3. 多態性の実現方法
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_3" id="__nav_2_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第2部 - 仕様とテスト
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    第2部 - 仕様とテスト
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04-clojure-spec/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4. Clojure Spec
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05-property-based-testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    5. プロパティベーステスト
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../06-tdd-in-functional/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    6. TDD と関数型
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_4" id="__nav_2_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第3部 - 構造パターン
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    第3部 - 構造パターン
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../07-composite-pattern/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    7. Composite
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../08-decorator-pattern/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    8. Decorator
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../09-adapter-pattern/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    9. Adapter
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_5" id="__nav_2_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第4部 - 振る舞いパターン
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    第4部 - 振る舞いパターン
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../10-strategy-pattern/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    10. Strategy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../11-command-pattern/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    11. Command
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../12-visitor-pattern/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    12. Visitor
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_6" id="__nav_2_6_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第5部 - 生成パターン
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    第5部 - 生成パターン
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../13-abstract-factory-pattern/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    13. Abstract Factory
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../14-abstract-server-pattern/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    14. Abstract Server
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_7" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2_7" id="__nav_2_7_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第6部 - ケーススタディ
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_7_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    第6部 - ケーススタディ
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../15-gossiping-bus-drivers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    15. ゴシップバス運転手
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    16. 給与計算システム
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    16. 給与計算システム
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        はじめに
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. ドメインモデル
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. ドメインモデル">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        従業員の給与タイプ
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-clojure-spec" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Clojure Spec による仕様定義
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Clojure Spec による仕様定義">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        従業員の仕様
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        コンストラクタ
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. マルチメソッドによる給与計算
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. マルチメソッドによる給与計算">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        給与計算のディスパッチ
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        月給制
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        時給制
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        歩合制
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. 支払いスケジュール
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. 支払いスケジュール">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_9" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        スケジュール判定
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. 支払い処理
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. 支払い処理">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_10" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        支払い方法によるディスパッチ
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. 給与支払いの実行
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. 使用例
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. 関数型アプローチの利点
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8. 関数型アプローチの利点">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. テスト容易性
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. 拡張容易性
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. 関心の分離
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_11" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        まとめ
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_12" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        参考コード
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../17-video-rental-system/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    17. レンタルビデオ
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../18-concurrency-system/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    18. 並行処理
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../19-wator-simulation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    19. Wa-Tor シミュレーション
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_8" id="__nav_2_8_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第7部 - まとめと応用
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    第7部 - まとめと応用
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../20-pattern-interactions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    20. パターン間の相互作用
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../21-best-practices/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    21. ベストプラクティス
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../22-oo-to-fp-migration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    22. OO から FP への移行
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="16">第16章: 給与計算システム<a class="headerlink" href="#16" title="Permanent link">&para;</a></h1>
+<h2 id="_1">はじめに<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
+<p>本章では、給与計算システムを題材に、関数型プログラミングにおけるドメインモデリングとマルチメソッドによる多態性の実現を学びます。</p>
+<p>この問題を通じて以下の概念を学びます：</p>
+<ul>
+<li>Clojure Spec によるデータ仕様定義</li>
+<li>マルチメソッドによる給与タイプ別の計算</li>
+<li>支払いスケジュールのモデリング</li>
+</ul>
+<h2 id="1">1. ドメインモデル<a class="headerlink" href="#1" title="Permanent link">&para;</a></h2>
+<h3 id="_2">従業員の給与タイプ<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h3>
+<p>給与計算システムでは、以下の3種類の給与タイプをサポートします：</p>
+<ul>
+<li><strong>月給制（Salaried）</strong>: 固定月給</li>
+<li><strong>時給制（Hourly）</strong>: 労働時間に基づく給与</li>
+<li><strong>歩合制（Commissioned）</strong>: 基本給 + 売上に応じたコミッション</li>
+</ul>
+<p><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiBjb250ZW50U3R5bGVUeXBlPSJ0ZXh0L2NzcyIgZGF0YS1kaWFncmFtLXR5cGU9IkNMQVNTIiBoZWlnaHQ9IjMzN3B4IiBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJub25lIiBzdHlsZT0id2lkdGg6OTgwcHg7aGVpZ2h0OjMzN3B4O2JhY2tncm91bmQ6I0ZGRkZGRjsiIHZlcnNpb249IjEuMSIgdmlld0JveD0iMCAwIDk4MCAzMzciIHdpZHRoPSI5ODBweCIgem9vbUFuZFBhbj0ibWFnbmlmeSI+PHRpdGxlPiYjMzIxMDI7JiMxOTk4MjsmIzM1MzM2OyYjMzE2Mzk7JiMxMjQ3MTsmIzEyNDczOyYjMTI0ODY7JiMxMjUxMjsmIzEyMzk4OyYjMTI0ODk7JiMxMjUxMzsmIzEyNDUyOyYjMTI1MzE7JiMxMjUxNDsmIzEyNDg3OyYjMTI1MjM7PC90aXRsZT48ZGVmcy8+PGc+PGcgY2xhc3M9InRpdGxlIiBkYXRhLXNvdXJjZS1saW5lPSIxIj48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZm9udC13ZWlnaHQ9ImJvbGQiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iMjIzLjk5OSIgeD0iMzcxLjM5MzkiIHk9IjIyLjk5NTEiPiYjMzIxMDI7JiMxOTk4MjsmIzM1MzM2OyYjMzE2Mzk7JiMxMjQ3MTsmIzEyNDczOyYjMTI0ODY7JiMxMjUxMjsmIzEyMzk4OyYjMTI0ODk7JiMxMjUxMzsmIzEyNDUyOyYjMTI1MzE7JiMxMjUxNDsmIzEyNDg3OyYjMTI1MjM7PC90ZXh0PjwvZz48IS0tY2xhc3MgRW1wbG95ZWUtLT48ZyBjbGFzcz0iZW50aXR5IiBkYXRhLWVudGl0eT0iRW1wbG95ZWUiIGRhdGEtc291cmNlLWxpbmU9IjMiIGRhdGEtdWlkPSJlbnQwMDAyIiBpZD0iZW50aXR5X0VtcGxveWVlIj48cmVjdCBmaWxsPSIjRjFGMUYxIiBoZWlnaHQ9IjEyOS40ODQ0IiByeD0iMi41IiByeT0iMi41IiBzdHlsZT0ic3Ryb2tlOiMxODE4MTg7c3Ryb2tlLXdpZHRoOjAuNTsiIHdpZHRoPSIyNzEuMDc1MiIgeD0iNjg3LjAzIiB5PSI0NC4yOTY5Ii8+PGVsbGlwc2UgY3g9Ijc4My42NDkxIiBjeT0iNjAuMjk2OSIgZmlsbD0iI0FERDFCMiIgcng9IjExIiByeT0iMTEiIHN0eWxlPSJzdHJva2U6IzE4MTgxODtzdHJva2Utd2lkdGg6MTsiLz48cGF0aCBkPSJNNzg2LjYxNzksNjUuOTM3NSBRNzg2LjAzOTgsNjYuMjM0NCA3ODUuMzk5MSw2Ni4zNzUgUTc4NC43NTg1LDY2LjUzMTMgNzg0LjA1NTQsNjYuNTMxMyBRNzgxLjU1NTQsNjYuNTMxMyA3ODAuMjI3Myw2NC44OTA2IFE3NzguOTE0OCw2My4yMzQ0IDc3OC45MTQ4LDYwLjEwOTQgUTc3OC45MTQ4LDU2Ljk4NDQgNzgwLjIyNzMsNTUuMzI4MSBRNzgxLjU1NTQsNTMuNjcxOSA3ODQuMDU1NCw1My42NzE5IFE3ODQuNzU4NSw1My42NzE5IDc4NS4zOTkxLDUzLjgyODEgUTc4Ni4wNTU0LDUzLjk4NDQgNzg2LjYxNzksNTQuMjgxMyBMNzg2LjYxNzksNTcgUTc4NS45OTI5LDU2LjQyMTkgNzg1LjM5OTEsNTYuMTU2MyBRNzg0LjgwNTQsNTUuODc1IDc4NC4xODA0LDU1Ljg3NSBRNzgyLjgzNjYsNTUuODc1IDc4Mi4xNDkxLDU2Ljk1MzEgUTc4MS40NjE2LDU4LjAxNTYgNzgxLjQ2MTYsNjAuMTA5NCBRNzgxLjQ2MTYsNjIuMjAzMSA3ODIuMTQ5MSw2My4yODEzIFE3ODIuODM2Niw2NC4zNDM4IDc4NC4xODA0LDY0LjM0MzggUTc4NC44MDU0LDY0LjM0MzggNzg1LjM5OTEsNjQuMDc4MSBRNzg1Ljk5MjksNjMuNzk2OSA3ODYuNjE3OSw2My4yMTg4IEw3ODYuNjE3OSw2NS45Mzc1IFogIiBmaWxsPSIjMDAwMDAwIi8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTQiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iNjkuMzM2OSIgeD0iODA0LjE0OTEiIHk9IjY1LjE0MzYiPkVtcGxveWVlPC90ZXh0PjxsaW5lIHN0eWxlPSJzdHJva2U6IzE4MTgxODtzdHJva2Utd2lkdGg6MC41OyIgeDE9IjY4OC4wMyIgeDI9Ijk1Ny4xMDUyIiB5MT0iNzYuMjk2OSIgeTI9Ijc2LjI5NjkiLz48ZWxsaXBzZSBjeD0iNjk4LjAzIiBjeT0iODkuOTQ1MyIgZmlsbD0ibm9uZSIgcng9IjMiIHJ5PSIzIiBzdHlsZT0ic3Ryb2tlOiMwMzgwNDg7c3Ryb2tlLXdpZHRoOjE7Ii8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTQiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iNjIuMTMxOCIgeD0iNzA3LjAzIiB5PSI5My4yOTIiPmlkOiBzdHJpbmc8L3RleHQ+PGVsbGlwc2UgY3g9IjY5OC4wMyIgY3k9IjEwNi4yNDIyIiBmaWxsPSJub25lIiByeD0iMyIgcnk9IjMiIHN0eWxlPSJzdHJva2U6IzAzODA0ODtzdHJva2Utd2lkdGg6MTsiLz48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSI4OS4wNTg2IiB4PSI3MDcuMDMiIHk9IjEwOS41ODg5Ij5uYW1lOiBzdHJpbmc8L3RleHQ+PGVsbGlwc2UgY3g9IjY5OC4wMyIgY3k9IjEyMi41MzkxIiBmaWxsPSJub25lIiByeD0iMyIgcnk9IjMiIHN0eWxlPSJzdHJva2U6IzAzODA0ODtzdHJva2Utd2lkdGg6MTsiLz48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSIxMzYuODYyMyIgeD0iNzA3LjAzIiB5PSIxMjUuODg1NyI+cGF5LWNsYXNzOiBQYXlDbGFzczwvdGV4dD48ZWxsaXBzZSBjeD0iNjk4LjAzIiBjeT0iMTM4LjgzNTkiIGZpbGw9Im5vbmUiIHJ4PSIzIiByeT0iMyIgc3R5bGU9InN0cm9rZTojMDM4MDQ4O3N0cm9rZS13aWR0aDoxOyIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjEzNi4yNDAyIiB4PSI3MDcuMDMiIHk9IjE0Mi4xODI2Ij5zY2hlZHVsZTogU2NoZWR1bGU8L3RleHQ+PGVsbGlwc2UgY3g9IjY5OC4wMyIgY3k9IjE1NS4xMzI4IiBmaWxsPSJub25lIiByeD0iMyIgcnk9IjMiIHN0eWxlPSJzdHJva2U6IzAzODA0ODtzdHJva2Utd2lkdGg6MTsiLz48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSIyNDUuMDc1MiIgeD0iNzA3LjAzIiB5PSIxNTguNDc5NSI+cGF5bWVudC1tZXRob2Q6IFBheW1lbnRNZXRob2Q8L3RleHQ+PGxpbmUgc3R5bGU9InN0cm9rZTojMTgxODE4O3N0cm9rZS13aWR0aDowLjU7IiB4MT0iNjg4LjAzIiB4Mj0iOTU3LjEwNTIiIHkxPSIxNjUuNzgxMyIgeTI9IjE2NS43ODEzIi8+PC9nPjwhLS1jbGFzcyBQYXlDbGFzcy0tPjxnIGNsYXNzPSJlbnRpdHkiIGRhdGEtZW50aXR5PSJQYXlDbGFzcyIgZGF0YS1zb3VyY2UtbGluZT0iMTEiIGRhdGEtdWlkPSJlbnQwMDAzIiBpZD0iZW50aXR5X1BheUNsYXNzIj48cmVjdCBmaWxsPSIjRjFGMUYxIiBoZWlnaHQ9IjY0LjI5NjkiIHJ4PSIyLjUiIHJ5PSIyLjUiIHN0eWxlPSJzdHJva2U6IzE4MTgxODtzdHJva2Utd2lkdGg6MC41OyIgd2lkdGg9Ijk1LjU4OTgiIHg9IjM2MC43NyIgeT0iMjUwLjA3NjkiLz48ZWxsaXBzZSBjeD0iMzc2LjQyMyIgY3k9IjI2Ni4wNzY5IiBmaWxsPSIjQTlEQ0RGIiByeD0iMTEiIHJ5PSIxMSIgc3R5bGU9InN0cm9rZTojMTgxODE4O3N0cm9rZS13aWR0aDoxOyIvPjxwYXRoIGQ9Ik0zNzYuNTMyNCwyNjEuNDIwNiBMMzc1LjM3NjIsMjY2LjQ5ODggTDM3Ny43MDQzLDI2Ni40OTg4IEwzNzYuNTMyNCwyNjEuNDIwNiBaIE0zNzUuMDQ4LDI1OS4xODYzIEwzNzguMDMyNCwyNTkuMTg2MyBMMzgxLjM5MTgsMjcxLjU3NjkgTDM3OC45Mzg3LDI3MS41NzY5IEwzNzguMTczLDI2OC41MTQ0IEwzNzQuODkxOCwyNjguNTE0NCBMMzc0LjE0MTgsMjcxLjU3NjkgTDM3MS43MDQzLDI3MS41NzY5IEwzNzUuMDQ4LDI1OS4xODYzIFogIiBmaWxsPSIjMDAwMDAwIi8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTQiIGZvbnQtc3R5bGU9Iml0YWxpYyIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSI2Mi4xMzg3IiB4PSIzOTAuNTY4MSIgeT0iMjcwLjkyMzYiPlBheUNsYXNzPC90ZXh0PjxsaW5lIHN0eWxlPSJzdHJva2U6IzE4MTgxODtzdHJva2Utd2lkdGg6MC41OyIgeDE9IjM2MS43NyIgeDI9IjQ1NS4zNTk4IiB5MT0iMjgyLjA3NjkiIHkyPSIyODIuMDc2OSIvPjxsaW5lIHN0eWxlPSJzdHJva2U6IzE4MTgxODtzdHJva2Utd2lkdGg6MC41OyIgeDE9IjM2MS43NyIgeDI9IjQ1NS4zNTk4IiB5MT0iMjkwLjA3NjkiIHkyPSIyOTAuMDc2OSIvPjxlbGxpcHNlIGN4PSIzNzEuNzciIGN5PSIzMDMuNzI1MyIgZmlsbD0iIzg0QkU4NCIgcng9IjMiIHJ5PSIzIiBzdHlsZT0ic3Ryb2tlOiMwMzgwNDg7c3Ryb2tlLXdpZHRoOjE7Ii8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTQiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iNjkuNTg5OCIgeD0iMzgwLjc3IiB5PSIzMDcuMDcyIj5jYWxjLXBheSgpPC90ZXh0PjwvZz48IS0tY2xhc3MgU2FsYXJpZWQtLT48ZyBjbGFzcz0iZW50aXR5IiBkYXRhLWVudGl0eT0iU2FsYXJpZWQiIGRhdGEtc291cmNlLWxpbmU9IjE1IiBkYXRhLXVpZD0iZW50MDAwNCIgaWQ9ImVudGl0eV9TYWxhcmllZCI+PHJlY3QgZmlsbD0iI0YxRjFGMSIgaGVpZ2h0PSI4MC41OTM4IiByeD0iMi41IiByeT0iMi41IiBzdHlsZT0ic3Ryb2tlOiMxODE4MTg7c3Ryb2tlLXdpZHRoOjAuNTsiIHdpZHRoPSIxNDcuMTM5NiIgeD0iNyIgeT0iNjguNzM2OSIvPjxlbGxpcHNlIGN4PSI0OC4xMjY4IiBjeT0iODQuNzM2OSIgZmlsbD0iI0FERDFCMiIgcng9IjExIiByeT0iMTEiIHN0eWxlPSJzdHJva2U6IzE4MTgxODtzdHJva2Utd2lkdGg6MTsiLz48cGF0aCBkPSJNNTEuMDk1Niw5MC4zNzc1IFE1MC41MTc0LDkwLjY3NDQgNDkuODc2OCw5MC44MTUgUTQ5LjIzNjIsOTAuOTcxMyA0OC41MzMxLDkwLjk3MTMgUTQ2LjAzMzEsOTAuOTcxMyA0NC43MDQ5LDg5LjMzMDYgUTQzLjM5MjQsODcuNjc0NCA0My4zOTI0LDg0LjU0OTQgUTQzLjM5MjQsODEuNDI0NCA0NC43MDQ5LDc5Ljc2ODEgUTQ2LjAzMzEsNzguMTExOSA0OC41MzMxLDc4LjExMTkgUTQ5LjIzNjIsNzguMTExOSA0OS44NzY4LDc4LjI2ODEgUTUwLjUzMzEsNzguNDI0NCA1MS4wOTU2LDc4LjcyMTMgTDUxLjA5NTYsODEuNDQgUTUwLjQ3MDYsODAuODYxOSA0OS44NzY4LDgwLjU5NjMgUTQ5LjI4MzEsODAuMzE1IDQ4LjY1ODEsODAuMzE1IFE0Ny4zMTQzLDgwLjMxNSA0Ni42MjY4LDgxLjM5MzEgUTQ1LjkzOTMsODIuNDU1NiA0NS45MzkzLDg0LjU0OTQgUTQ1LjkzOTMsODYuNjQzMSA0Ni42MjY4LDg3LjcyMTMgUTQ3LjMxNDMsODguNzgzOCA0OC42NTgxLDg4Ljc4MzggUTQ5LjI4MzEsODguNzgzOCA0OS44NzY4LDg4LjUxODEgUTUwLjQ3MDYsODguMjM2OSA1MS4wOTU2LDg3LjY1ODggTDUxLjA5NTYsOTAuMzc3NSBaICIgZmlsbD0iIzAwMDAwMCIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjU3LjA4MDEiIHg9IjY3LjkzMjgiIHk9Ijg5LjU4MzYiPlNhbGFyaWVkPC90ZXh0PjxsaW5lIHN0eWxlPSJzdHJva2U6IzE4MTgxODtzdHJva2Utd2lkdGg6MC41OyIgeDE9IjgiIHgyPSIxNTMuMTM5NiIgeTE9IjEwMC43MzY5IiB5Mj0iMTAwLjczNjkiLz48ZWxsaXBzZSBjeD0iMTgiIGN5PSIxMTQuMzg1MyIgZmlsbD0ibm9uZSIgcng9IjMiIHJ5PSIzIiBzdHlsZT0ic3Ryb2tlOiMwMzgwNDg7c3Ryb2tlLXdpZHRoOjE7Ii8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTQiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iMTA2LjE4OTUiIHg9IjI3IiB5PSIxMTcuNzMyIj5zYWxhcnk6IG51bWJlcjwvdGV4dD48bGluZSBzdHlsZT0ic3Ryb2tlOiMxODE4MTg7c3Ryb2tlLXdpZHRoOjAuNTsiIHgxPSI4IiB4Mj0iMTUzLjEzOTYiIHkxPSIxMjUuMDMzOCIgeTI9IjEyNS4wMzM4Ii8+PGVsbGlwc2UgY3g9IjE4IiBjeT0iMTM4LjY4MjIiIGZpbGw9IiM4NEJFODQiIHJ4PSIzIiByeT0iMyIgc3R5bGU9InN0cm9rZTojMDM4MDQ4O3N0cm9rZS13aWR0aDoxOyIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjEyMS4xMzk2IiB4PSIyNyIgeT0iMTQyLjAyODkiPmNhbGMtcGF5KCk6IHNhbGFyeTwvdGV4dD48L2c+PCEtLWNsYXNzIEhvdXJseS0tPjxnIGNsYXNzPSJlbnRpdHkiIGRhdGEtZW50aXR5PSJIb3VybHkiIGRhdGEtc291cmNlLWxpbmU9IjIwIiBkYXRhLXVpZD0iZW50MDAwNSIgaWQ9ImVudGl0eV9Ib3VybHkiPjxyZWN0IGZpbGw9IiNGMUYxRjEiIGhlaWdodD0iODAuNTkzOCIgcng9IjIuNSIgcnk9IjIuNSIgc3R5bGU9InN0cm9rZTojMTgxODE4O3N0cm9rZS13aWR0aDowLjU7IiB3aWR0aD0iMTg4LjQ1NjEiIHg9IjE4OS4zNCIgeT0iNjguNzM2OSIvPjxlbGxpcHNlIGN4PSIyNTYuMzY5OCIgY3k9Ijg0LjczNjkiIGZpbGw9IiNBREQxQjIiIHJ4PSIxMSIgcnk9IjExIiBzdHlsZT0ic3Ryb2tlOiMxODE4MTg7c3Ryb2tlLXdpZHRoOjE7Ii8+PHBhdGggZD0iTTI1OS4zMzg1LDkwLjM3NzUgUTI1OC43NjA0LDkwLjY3NDQgMjU4LjExOTgsOTAuODE1IFEyNTcuNDc5Miw5MC45NzEzIDI1Ni43NzYsOTAuOTcxMyBRMjU0LjI3Niw5MC45NzEzIDI1Mi45NDc5LDg5LjMzMDYgUTI1MS42MzU0LDg3LjY3NDQgMjUxLjYzNTQsODQuNTQ5NCBRMjUxLjYzNTQsODEuNDI0NCAyNTIuOTQ3OSw3OS43NjgxIFEyNTQuMjc2LDc4LjExMTkgMjU2Ljc3Niw3OC4xMTE5IFEyNTcuNDc5Miw3OC4xMTE5IDI1OC4xMTk4LDc4LjI2ODEgUTI1OC43NzYsNzguNDI0NCAyNTkuMzM4NSw3OC43MjEzIEwyNTkuMzM4NSw4MS40NCBRMjU4LjcxMzUsODAuODYxOSAyNTguMTE5OCw4MC41OTYzIFEyNTcuNTI2LDgwLjMxNSAyNTYuOTAxLDgwLjMxNSBRMjU1LjU1NzMsODAuMzE1IDI1NC44Njk4LDgxLjM5MzEgUTI1NC4xODIzLDgyLjQ1NTYgMjU0LjE4MjMsODQuNTQ5NCBRMjU0LjE4MjMsODYuNjQzMSAyNTQuODY5OCw4Ny43MjEzIFEyNTUuNTU3Myw4OC43ODM4IDI1Ni45MDEsODguNzgzOCBRMjU3LjUyNiw4OC43ODM4IDI1OC4xMTk4LDg4LjUxODEgUTI1OC43MTM1LDg4LjIzNjkgMjU5LjMzODUsODcuNjU4OCBMMjU5LjMzODUsOTAuMzc3NSBaICIgZmlsbD0iIzAwMDAwMCIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjQ1Ljg5NjUiIHg9IjI3Ni44Njk4IiB5PSI4OS41ODM2Ij5Ib3VybHk8L3RleHQ+PGxpbmUgc3R5bGU9InN0cm9rZTojMTgxODE4O3N0cm9rZS13aWR0aDowLjU7IiB4MT0iMTkwLjM0IiB4Mj0iMzc2Ljc5NjEiIHkxPSIxMDAuNzM2OSIgeTI9IjEwMC43MzY5Ii8+PGVsbGlwc2UgY3g9IjIwMC4zNCIgY3k9IjExNC4zODUzIiBmaWxsPSJub25lIiByeD0iMyIgcnk9IjMiIHN0eWxlPSJzdHJva2U6IzAzODA0ODtzdHJva2Utd2lkdGg6MTsiLz48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSIxNDEuNTM4MSIgeD0iMjA5LjM0IiB5PSIxMTcuNzMyIj5ob3VybHktcmF0ZTogbnVtYmVyPC90ZXh0PjxsaW5lIHN0eWxlPSJzdHJva2U6IzE4MTgxODtzdHJva2Utd2lkdGg6MC41OyIgeDE9IjE5MC4zNCIgeDI9IjM3Ni43OTYxIiB5MT0iMTI1LjAzMzgiIHkyPSIxMjUuMDMzOCIvPjxlbGxpcHNlIGN4PSIyMDAuMzQiIGN5PSIxMzguNjgyMiIgZmlsbD0iIzg0QkU4NCIgcng9IjMiIHJ5PSIzIiBzdHlsZT0ic3Ryb2tlOiMwMzgwNDg7c3Ryb2tlLXdpZHRoOjE7Ii8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTQiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iMTYyLjQ1NjEiIHg9IjIwOS4zNCIgeT0iMTQyLjAyODkiPmNhbGMtcGF5KCk6IGhvdXJzICogcmF0ZTwvdGV4dD48L2c+PCEtLWNsYXNzIENvbW1pc3Npb25lZC0tPjxnIGNsYXNzPSJlbnRpdHkiIGRhdGEtZW50aXR5PSJDb21taXNzaW9uZWQiIGRhdGEtc291cmNlLWxpbmU9IjI1IiBkYXRhLXVpZD0iZW50MDAwNiIgaWQ9ImVudGl0eV9Db21taXNzaW9uZWQiPjxyZWN0IGZpbGw9IiNGMUYxRjEiIGhlaWdodD0iOTYuODkwNiIgcng9IjIuNSIgcnk9IjIuNSIgc3R5bGU9InN0cm9rZTojMTgxODE4O3N0cm9rZS13aWR0aDowLjU7IiB3aWR0aD0iMjM4Ljc2ODYiIHg9IjQxMy4xOSIgeT0iNjAuNTg2OSIvPjxlbGxpcHNlIGN4PSI0NzYuODYzMyIgY3k9Ijc2LjU4NjkiIGZpbGw9IiNBREQxQjIiIHJ4PSIxMSIgcnk9IjExIiBzdHlsZT0ic3Ryb2tlOiMxODE4MTg7c3Ryb2tlLXdpZHRoOjE7Ii8+PHBhdGggZD0iTTQ3OS44MzIxLDgyLjIyNzUgUTQ3OS4yNTQsODIuNTI0NCA0NzguNjEzMyw4Mi42NjUgUTQ3Ny45NzI3LDgyLjgyMTMgNDc3LjI2OTYsODIuODIxMyBRNDc0Ljc2OTYsODIuODIxMyA0NzMuNDQxNSw4MS4xODA2IFE0NzIuMTI5LDc5LjUyNDQgNDcyLjEyOSw3Ni4zOTk0IFE0NzIuMTI5LDczLjI3NDQgNDczLjQ0MTUsNzEuNjE4MSBRNDc0Ljc2OTYsNjkuOTYxOSA0NzcuMjY5Niw2OS45NjE5IFE0NzcuOTcyNyw2OS45NjE5IDQ3OC42MTMzLDcwLjExODEgUTQ3OS4yNjk2LDcwLjI3NDQgNDc5LjgzMjEsNzAuNTcxMyBMNDc5LjgzMjEsNzMuMjkgUTQ3OS4yMDcxLDcyLjcxMTkgNDc4LjYxMzMsNzIuNDQ2MyBRNDc4LjAxOTYsNzIuMTY1IDQ3Ny4zOTQ2LDcyLjE2NSBRNDc2LjA1MDgsNzIuMTY1IDQ3NS4zNjMzLDczLjI0MzEgUTQ3NC42NzU4LDc0LjMwNTYgNDc0LjY3NTgsNzYuMzk5NCBRNDc0LjY3NTgsNzguNDkzMSA0NzUuMzYzMyw3OS41NzEzIFE0NzYuMDUwOCw4MC42MzM4IDQ3Ny4zOTQ2LDgwLjYzMzggUTQ3OC4wMTk2LDgwLjYzMzggNDc4LjYxMzMsODAuMzY4MSBRNDc5LjIwNzEsODAuMDg2OSA0NzkuODMyMSw3OS41MDg4IEw0NzkuODMyMSw4Mi4yMjc1IFogIiBmaWxsPSIjMDAwMDAwIi8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTQiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iMTAyLjkyMTkiIHg9IjQ5Ny4zNjMzIiB5PSI4MS40MzM2Ij5Db21taXNzaW9uZWQ8L3RleHQ+PGxpbmUgc3R5bGU9InN0cm9rZTojMTgxODE4O3N0cm9rZS13aWR0aDowLjU7IiB4MT0iNDE0LjE5IiB4Mj0iNjUwLjk1ODYiIHkxPSI5Mi41ODY5IiB5Mj0iOTIuNTg2OSIvPjxlbGxpcHNlIGN4PSI0MjQuMTkiIGN5PSIxMDYuMjM1MyIgZmlsbD0ibm9uZSIgcng9IjMiIHJ5PSIzIiBzdHlsZT0ic3Ryb2tlOiMwMzgwNDg7c3Ryb2tlLXdpZHRoOjE7Ii8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTQiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iMTI3Ljk4MjQiIHg9IjQzMy4xOSIgeT0iMTA5LjU4MiI+YmFzZS1wYXk6IG51bWJlcjwvdGV4dD48ZWxsaXBzZSBjeD0iNDI0LjE5IiBjeT0iMTIyLjUzMjIiIGZpbGw9Im5vbmUiIHJ4PSIzIiByeT0iMyIgc3R5bGU9InN0cm9rZTojMDM4MDQ4O3N0cm9rZS13aWR0aDoxOyIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjE4MC42Mzk2IiB4PSI0MzMuMTkiIHk9IjEyNS44Nzg5Ij5jb21taXNzaW9uLXJhdGU6IG51bWJlcjwvdGV4dD48bGluZSBzdHlsZT0ic3Ryb2tlOiMxODE4MTg7c3Ryb2tlLXdpZHRoOjAuNTsiIHgxPSI0MTQuMTkiIHgyPSI2NTAuOTU4NiIgeTE9IjEzMy4xODA2IiB5Mj0iMTMzLjE4MDYiLz48ZWxsaXBzZSBjeD0iNDI0LjE5IiBjeT0iMTQ2LjgyOTEiIGZpbGw9IiM4NEJFODQiIHJ4PSIzIiByeT0iMyIgc3R5bGU9InN0cm9rZTojMDM4MDQ4O3N0cm9rZS13aWR0aDoxOyIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjIxMi43Njg2IiB4PSI0MzMuMTkiIHk9IjE1MC4xNzU3Ij5jYWxjLXBheSgpOiBiYXNlICsgc2FsZXMgKiByYXRlPC90ZXh0PjwvZz48IS0tY2xhc3MgU2NoZWR1bGUtLT48ZyBjbGFzcz0iZW50aXR5IiBkYXRhLWVudGl0eT0iU2NoZWR1bGUiIGRhdGEtc291cmNlLWxpbmU9IjMxIiBkYXRhLXVpZD0iZW50MDAwNyIgaWQ9ImVudGl0eV9TY2hlZHVsZSI+PHJlY3QgZmlsbD0iI0YxRjFGMSIgaGVpZ2h0PSI5Ni44OTA2IiByeD0iMi41IiByeT0iMi41IiBzdHlsZT0ic3Ryb2tlOiMxODE4MTg7c3Ryb2tlLXdpZHRoOjAuNTsiIHdpZHRoPSI5Ni4zMzMiIHg9IjY5Ni40IiB5PSIyMzMuNzc2OSIvPjxlbGxpcHNlIGN4PSI3MTEuNCIgY3k9IjI0OS43NzY5IiBmaWxsPSIjRUI5MzdGIiByeD0iMTEiIHJ5PSIxMSIgc3R5bGU9InN0cm9rZTojMTgxODE4O3N0cm9rZS13aWR0aDoxOyIvPjxwYXRoIGQ9Ik03MTUuNTA5NCwyNTUuNzc2OSBMNzA3Ljc5MDYsMjU1Ljc3NjkgTDcwNy43OTA2LDI0My4zODYzIEw3MTUuNTA5NCwyNDMuMzg2MyBMNzE1LjUwOTQsMjQ1LjU0MjUgTDcxMC4yNDM4LDI0NS41NDI1IEw3MTAuMjQzOCwyNDguMjE0NCBMNzE1LjAwOTQsMjQ4LjIxNDQgTDcxNS4wMDk0LDI1MC4zNzA2IEw3MTAuMjQzOCwyNTAuMzcwNiBMNzEwLjI0MzgsMjUzLjYyMDYgTDcxNS41MDk0LDI1My42MjA2IEw3MTUuNTA5NCwyNTUuNzc2OSBaICIgZmlsbD0iIzAwMDAwMCIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjY0LjMzMyIgeD0iNzI1LjQiIHk9IjI1NC42MjM2Ij5TY2hlZHVsZTwvdGV4dD48bGluZSBzdHlsZT0ic3Ryb2tlOiMxODE4MTg7c3Ryb2tlLXdpZHRoOjAuNTsiIHgxPSI2OTcuNCIgeDI9Ijc5MS43MzMiIHkxPSIyNjUuNzc2OSIgeTI9IjI2NS43NzY5Ii8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTQiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iNjkuMDAyIiB4PSI3MDIuNCIgeT0iMjgyLjc3MiI+TU9OVEhMWTwvdGV4dD48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSI1Ny4wNjY0IiB4PSI3MDIuNCIgeT0iMjk5LjA2ODkiPldFRUtMWTwvdGV4dD48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSI3MC43OTk4IiB4PSI3MDIuNCIgeT0iMzE1LjM2NTciPkJJV0VFS0xZPC90ZXh0PjxsaW5lIHN0eWxlPSJzdHJva2U6IzE4MTgxODtzdHJva2Utd2lkdGg6MC41OyIgeDE9IjY5Ny40IiB4Mj0iNzkxLjczMyIgeTE9IjMyMi42Njc1IiB5Mj0iMzIyLjY2NzUiLz48L2c+PCEtLWNsYXNzIFBheW1lbnRNZXRob2QtLT48ZyBjbGFzcz0iZW50aXR5IiBkYXRhLWVudGl0eT0iUGF5bWVudE1ldGhvZCIgZGF0YS1zb3VyY2UtbGluZT0iMzciIGRhdGEtdWlkPSJlbnQwMDA4IiBpZD0iZW50aXR5X1BheW1lbnRNZXRob2QiPjxyZWN0IGZpbGw9IiNGMUYxRjEiIGhlaWdodD0iOTYuODkwNiIgcng9IjIuNSIgcnk9IjIuNSIgc3R5bGU9InN0cm9rZTojMTgxODE4O3N0cm9rZS13aWR0aDowLjU7IiB3aWR0aD0iMTQ2LjQyNjgiIHg9IjgyNy4zNiIgeT0iMjMzLjc3NjkiLz48ZWxsaXBzZSBjeD0iODQyLjM2IiBjeT0iMjQ5Ljc3NjkiIGZpbGw9IiNFQjkzN0YiIHJ4PSIxMSIgcnk9IjExIiBzdHlsZT0ic3Ryb2tlOiMxODE4MTg7c3Ryb2tlLXdpZHRoOjE7Ii8+PHBhdGggZD0iTTg0Ni40Njk0LDI1NS43NzY5IEw4MzguNzUwNiwyNTUuNzc2OSBMODM4Ljc1MDYsMjQzLjM4NjMgTDg0Ni40Njk0LDI0My4zODYzIEw4NDYuNDY5NCwyNDUuNTQyNSBMODQxLjIwMzgsMjQ1LjU0MjUgTDg0MS4yMDM4LDI0OC4yMTQ0IEw4NDUuOTY5NCwyNDguMjE0NCBMODQ1Ljk2OTQsMjUwLjM3MDYgTDg0MS4yMDM4LDI1MC4zNzA2IEw4NDEuMjAzOCwyNTMuNjIwNiBMODQ2LjQ2OTQsMjUzLjYyMDYgTDg0Ni40Njk0LDI1NS43NzY5IFogIiBmaWxsPSIjMDAwMDAwIi8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTQiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iMTE0LjQyNjgiIHg9Ijg1Ni4zNiIgeT0iMjU0LjYyMzYiPlBheW1lbnRNZXRob2Q8L3RleHQ+PGxpbmUgc3R5bGU9InN0cm9rZTojMTgxODE4O3N0cm9rZS13aWR0aDowLjU7IiB4MT0iODI4LjM2IiB4Mj0iOTcyLjc4NjgiIHkxPSIyNjUuNzc2OSIgeTI9IjI2NS43NzY5Ii8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTQiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iNDAuMTI3IiB4PSI4MzMuMzYiIHk9IjI4Mi43NzIiPkhPTEQ8L3RleHQ+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTQiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iMTE5LjQ2NDgiIHg9IjgzMy4zNiIgeT0iMjk5LjA2ODkiPkRJUkVDVF9ERVBPU0lUPC90ZXh0Pjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjMzLjU4NSIgeD0iODMzLjM2IiB5PSIzMTUuMzY1NyI+TUFJTDwvdGV4dD48bGluZSBzdHlsZT0ic3Ryb2tlOiMxODE4MTg7c3Ryb2tlLXdpZHRoOjAuNTsiIHgxPSI4MjguMzYiIHgyPSI5NzIuNzg2OCIgeTE9IjMyMi42Njc1IiB5Mj0iMzIyLjY2NzUiLz48L2c+PCEtLWxpbmsgRW1wbG95ZWUgdG8gUGF5Q2xhc3MtLT48ZyBjbGFzcz0ibGluayIgZGF0YS1lbnRpdHktMT0iRW1wbG95ZWUiIGRhdGEtZW50aXR5LTI9IlBheUNsYXNzIiBkYXRhLXNvdXJjZS1saW5lPSI0MyIgZGF0YS11aWQ9ImxuazkiIGlkPSJsaW5rX0VtcGxveWVlX1BheUNsYXNzIj48cGF0aCBjb2RlTGluZT0iNDMiIGQ9Ik02ODYuNiwxNjYuNzE2OSBDNjgwLjg1LDE2OS4xMDY5IDY3NS4xNSwxNzEuNDY2OSA2NjkuNTcsMTczLjc3NjkgQzU5NS4zMiwyMDQuNTI2OSA1MTQuNjQwOCwyMzcuNjk4OSA0NjIuMjUwOCwyNTkuMTk4OSIgZmlsbD0ibm9uZSIgaWQ9IkVtcGxveWVlLXRvLVBheUNsYXNzIiBzdHlsZT0ic3Ryb2tlOiMxODE4MTg7c3Ryb2tlLXdpZHRoOjE7Ii8+PHBvbHlnb24gZmlsbD0iIzE4MTgxOCIgcG9pbnRzPSI0NTYuNywyNjEuNDc2OSw0NjYuNTQ0OCwyNjEuNzYwNSw0NjEuMzI1NiwyNTkuNTc4Niw0NjMuNTA3NSwyNTQuMzU5NSw0NTYuNywyNjEuNDc2OSIgc3R5bGU9InN0cm9rZTojMTgxODE4O3N0cm9rZS13aWR0aDoxOyIvPjwvZz48IS0tbGluayBFbXBsb3llZSB0byBTY2hlZHVsZS0tPjxnIGNsYXNzPSJsaW5rIiBkYXRhLWVudGl0eS0xPSJFbXBsb3llZSIgZGF0YS1lbnRpdHktMj0iU2NoZWR1bGUiIGRhdGEtc291cmNlLWxpbmU9IjQ0IiBkYXRhLXVpZD0ibG5rMTAiIGlkPSJsaW5rX0VtcGxveWVlX1NjaGVkdWxlIj48cGF0aCBjb2RlTGluZT0iNDQiIGQ9Ik03OTMuMywxNzQuMjY2OSBDNzg0LjM2LDE5My45MDY5IDc3Ny4xNjg2LDIwOS42ODczIDc2OC44MDg2LDIyOC4wMjczIiBmaWxsPSJub25lIiBpZD0iRW1wbG95ZWUtdG8tU2NoZWR1bGUiIHN0eWxlPSJzdHJva2U6IzE4MTgxODtzdHJva2Utd2lkdGg6MTsiLz48cG9seWdvbiBmaWxsPSIjMTgxODE4IiBwb2ludHM9Ijc2Ni4zMiwyMzMuNDg2OSw3NzMuNjkyNywyMjYuOTU2Nyw3NjguMzkzOSwyMjguOTM3Myw3NjYuNDEzMywyMjMuNjM4NSw3NjYuMzIsMjMzLjQ4NjkiIHN0eWxlPSJzdHJva2U6IzE4MTgxODtzdHJva2Utd2lkdGg6MTsiLz48L2c+PCEtLWxpbmsgRW1wbG95ZWUgdG8gUGF5bWVudE1ldGhvZC0tPjxnIGNsYXNzPSJsaW5rIiBkYXRhLWVudGl0eS0xPSJFbXBsb3llZSIgZGF0YS1lbnRpdHktMj0iUGF5bWVudE1ldGhvZCIgZGF0YS1zb3VyY2UtbGluZT0iNDUiIGRhdGEtdWlkPSJsbmsxMSIgaWQ9ImxpbmtfRW1wbG95ZWVfUGF5bWVudE1ldGhvZCI+PHBhdGggY29kZUxpbmU9IjQ1IiBkPSJNODUxLjg0LDE3NC4yNjY5IEM4NjAuNzgsMTkzLjkwNjkgODY3Ljk3MTQsMjA5LjY4NzMgODc2LjMzMTQsMjI4LjAyNzMiIGZpbGw9Im5vbmUiIGlkPSJFbXBsb3llZS10by1QYXltZW50TWV0aG9kIiBzdHlsZT0ic3Ryb2tlOiMxODE4MTg7c3Ryb2tlLXdpZHRoOjE7Ii8+PHBvbHlnb24gZmlsbD0iIzE4MTgxOCIgcG9pbnRzPSI4NzguODIsMjMzLjQ4NjksODc4LjcyNjcsMjIzLjYzODUsODc2Ljc0NjEsMjI4LjkzNzMsODcxLjQ0NzMsMjI2Ljk1NjcsODc4LjgyLDIzMy40ODY5IiBzdHlsZT0ic3Ryb2tlOiMxODE4MTg7c3Ryb2tlLXdpZHRoOjE7Ii8+PC9nPjwhLS1saW5rIFNhbGFyaWVkIHRvIFBheUNsYXNzLS0+PGcgY2xhc3M9ImxpbmsiIGRhdGEtZW50aXR5LTE9IlNhbGFyaWVkIiBkYXRhLWVudGl0eS0yPSJQYXlDbGFzcyIgZGF0YS1zb3VyY2UtbGluZT0iNDYiIGRhdGEtdWlkPSJsbmsxMiIgaWQ9ImxpbmtfU2FsYXJpZWRfUGF5Q2xhc3MiPjxwYXRoIGNvZGVMaW5lPSI0NiIgZD0iTTEzMy44NywxNDkuODE2OSBDMTQ1Ljk5LDE1OC4xNjY5IDE1OSwxNjYuNjA2OSAxNzEuNTcsMTczLjc3NjkgQzIzNC41NSwyMDkuNjk2OSAyOTUuMDI4MywyMzYuMDggMzQzLjgzODMsMjU1Ljc4IiBmaWxsPSJub25lIiBpZD0iU2FsYXJpZWQtdG8tUGF5Q2xhc3MiIHN0eWxlPSJzdHJva2U6IzE4MTgxODtzdHJva2Utd2lkdGg6MTsiLz48cG9seWdvbiBmaWxsPSJub25lIiBwb2ludHM9IjM2MC41MywyNjIuNTE2OSwzNDYuMDgzOSwyNTAuMjE2MSwzNDEuNTkyNiwyNjEuMzQzOSwzNjAuNTMsMjYyLjUxNjkiIHN0eWxlPSJzdHJva2U6IzE4MTgxODtzdHJva2Utd2lkdGg6MTsiLz48L2c+PCEtLWxpbmsgSG91cmx5IHRvIFBheUNsYXNzLS0+PGcgY2xhc3M9ImxpbmsiIGRhdGEtZW50aXR5LTE9IkhvdXJseSIgZGF0YS1lbnRpdHktMj0iUGF5Q2xhc3MiIGRhdGEtc291cmNlLWxpbmU9IjQ3IiBkYXRhLXVpZD0ibG5rMTMiIGlkPSJsaW5rX0hvdXJseV9QYXlDbGFzcyI+PHBhdGggY29kZUxpbmU9IjQ3IiBkPSJNMzEyLjU2LDE0OS43MzY5IEMzMzQuNzcsMTgwLjE1NjkgMzU0LjM5ODQsMjA3LjAxNzUgMzc0Ljk1ODQsMjM1LjE4NzUiIGZpbGw9Im5vbmUiIGlkPSJIb3VybHktdG8tUGF5Q2xhc3MiIHN0eWxlPSJzdHJva2U6IzE4MTgxODtzdHJva2Utd2lkdGg6MTsiLz48cG9seWdvbiBmaWxsPSJub25lIiBwb2ludHM9IjM4NS41NywyNDkuNzI2OSwzNzkuODA0OCwyMzEuNjUwMywzNzAuMTExOSwyMzguNzI0NywzODUuNTcsMjQ5LjcyNjkiIHN0eWxlPSJzdHJva2U6IzE4MTgxODtzdHJva2Utd2lkdGg6MTsiLz48L2c+PCEtLWxpbmsgQ29tbWlzc2lvbmVkIHRvIFBheUNsYXNzLS0+PGcgY2xhc3M9ImxpbmsiIGRhdGEtZW50aXR5LTE9IkNvbW1pc3Npb25lZCIgZGF0YS1lbnRpdHktMj0iUGF5Q2xhc3MiIGRhdGEtc291cmNlLWxpbmU9IjQ4IiBkYXRhLXVpZD0ibG5rMTQiIGlkPSJsaW5rX0NvbW1pc3Npb25lZF9QYXlDbGFzcyI+PHBhdGggY29kZUxpbmU9IjQ4IiBkPSJNNDk4LjAzLDE1Ny43MTY5IEM0NzYuNzUsMTg3LjEwNjkgNDYwLjYwNjgsMjA5LjM3NzYgNDQxLjk0NjgsMjM1LjE0NzYiIGZpbGw9Im5vbmUiIGlkPSJDb21taXNzaW9uZWQtdG8tUGF5Q2xhc3MiIHN0eWxlPSJzdHJva2U6IzE4MTgxODtzdHJva2Utd2lkdGg6MTsiLz48cG9seWdvbiBmaWxsPSJub25lIiBwb2ludHM9IjQzMS4zOSwyNDkuNzI2OSw0NDYuODA2NSwyMzguNjY2Niw0MzcuMDg3LDIzMS42Mjg3LDQzMS4zOSwyNDkuNzI2OSIgc3R5bGU9InN0cm9rZTojMTgxODE4O3N0cm9rZS13aWR0aDoxOyIvPjwvZz48IS0tU1JDPVtWUDdCSVdDbjU4UnRVT2Vpckk0bHE4TVd4SzA3TXJqaUdMbjlFZERtMWZBUENhYU5XeGdtMEl5UmpzdkxIMGYyRG9CZ3lxSWVaczRvUlVTWXVZaGR5bHRfMlVWOEkzQjBZeFZkaHVfUnh6ZHJPZHdkZi16dy1nZExmTFJ0LWNBa3JPck0zdGh3ZkRNaExlelFOTWRyV2YzRmcxM092TUVNUDAzdTUzYkhxQzEyZmI1eVdmb09TWVlwQ1NyOHBaVG1kc1BENm81Ny0yNDQ0c1FtbUloQUdHd245MW5hYzBHdlJWRGtkZzlwWEVaOFU1OVZ1a051alBpVHhyRmM0c0VtaU1kMVBOejA2S3FaMjZuVnMzWGh1N1oySHYxTVVWRkhsNVZnc2lhYVBQYkxYTmI0S1loWFJ3YTUxRHgyYllXRGNXZGRhSDFINFktN1p3VzBnd1h1NUNHX3ZiUTY3Vml6Z0N1MG1uUFJDX1JUdGx3bXRKYjJYd3d4UHZ2VFJuTWlxVGVRM1Rfa1RMZ2V2SHN1cFU1bm8tdHQxanVHVE5VeVpYS0s1b0xha3huTWhMaFN3cFRSa0xNblVLQkVBWndoblRRQmpNTkxNWnkwXS0tPjwvZz48L3N2Zz4=" class="uml" alt="uml diagram" title="" /></p>
+<h2 id="2-clojure-spec">2. Clojure Spec による仕様定義<a class="headerlink" href="#2-clojure-spec" title="Permanent link">&para;</a></h2>
+<h3 id="_3">従業員の仕様<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="p">(</span><span class="kd">ns </span><span class="nv">payroll.employee</span>
+<span class="w">  </span><span class="p">(</span><span class="ss">:require</span><span class="w"> </span><span class="p">[</span><span class="nv">clojure.spec.alpha</span><span class="w"> </span><span class="ss">:as</span><span class="w"> </span><span class="nv">s</span><span class="p">]))</span>
+
+<span class="c1">;; 基本属性</span>
+<span class="p">(</span><span class="nf">s/def</span><span class="w"> </span><span class="ss">::id</span><span class="w"> </span><span class="nv">string?</span><span class="p">)</span>
+<span class="p">(</span><span class="nf">s/def</span><span class="w"> </span><span class="ss">::name</span><span class="w"> </span><span class="nv">string?</span><span class="p">)</span>
+<span class="p">(</span><span class="nf">s/def</span><span class="w"> </span><span class="ss">::address</span><span class="w"> </span><span class="nv">string?</span><span class="p">)</span>
+
+<span class="c1">;; 給与分類</span>
+<span class="p">(</span><span class="nf">s/def</span><span class="w"> </span><span class="ss">::salary</span><span class="w"> </span><span class="nv">number?</span><span class="p">)</span>
+<span class="p">(</span><span class="nf">s/def</span><span class="w"> </span><span class="ss">::hourly-rate</span><span class="w"> </span><span class="nv">number?</span><span class="p">)</span>
+<span class="p">(</span><span class="nf">s/def</span><span class="w"> </span><span class="ss">::base-pay</span><span class="w"> </span><span class="nv">number?</span><span class="p">)</span>
+<span class="p">(</span><span class="nf">s/def</span><span class="w"> </span><span class="ss">::commission-rate</span><span class="w"> </span><span class="nv">number?</span><span class="p">)</span>
+
+<span class="p">(</span><span class="nf">s/def</span><span class="w"> </span><span class="ss">::pay-class</span>
+<span class="w">  </span><span class="p">(</span><span class="nf">s/or</span><span class="w"> </span><span class="ss">:salaried</span><span class="w"> </span><span class="p">(</span><span class="nf">s/tuple</span><span class="w"> </span><span class="o">#</span><span class="p">{</span><span class="ss">:salaried</span><span class="p">}</span><span class="w"> </span><span class="ss">::salary</span><span class="p">)</span>
+<span class="w">        </span><span class="ss">:hourly</span><span class="w"> </span><span class="p">(</span><span class="nf">s/tuple</span><span class="w"> </span><span class="o">#</span><span class="p">{</span><span class="ss">:hourly</span><span class="p">}</span><span class="w"> </span><span class="ss">::hourly-rate</span><span class="p">)</span>
+<span class="w">        </span><span class="ss">:commissioned</span><span class="w"> </span><span class="p">(</span><span class="nf">s/tuple</span><span class="w"> </span><span class="o">#</span><span class="p">{</span><span class="ss">:commissioned</span><span class="p">}</span><span class="w"> </span><span class="ss">::base-pay</span><span class="w"> </span><span class="ss">::commission-rate</span><span class="p">)))</span>
+
+<span class="c1">;; 支払いスケジュール</span>
+<span class="p">(</span><span class="nf">s/def</span><span class="w"> </span><span class="ss">::schedule</span><span class="w"> </span><span class="o">#</span><span class="p">{</span><span class="ss">:monthly</span><span class="w"> </span><span class="ss">:weekly</span><span class="w"> </span><span class="ss">:biweekly</span><span class="p">})</span>
+
+<span class="c1">;; 支払い方法</span>
+<span class="p">(</span><span class="nf">s/def</span><span class="w"> </span><span class="ss">::payment-method</span><span class="w"> </span><span class="o">#</span><span class="p">{</span><span class="ss">:hold</span><span class="w"> </span><span class="ss">:direct-deposit</span><span class="w"> </span><span class="ss">:mail</span><span class="p">})</span>
+
+<span class="c1">;; 従業員</span>
+<span class="p">(</span><span class="nf">s/def</span><span class="w"> </span><span class="ss">::employee</span>
+<span class="w">  </span><span class="p">(</span><span class="nf">s/keys</span><span class="w"> </span><span class="ss">:req</span><span class="w"> </span><span class="p">[</span><span class="ss">::id</span><span class="w"> </span><span class="ss">::name</span><span class="w"> </span><span class="ss">::pay-class</span><span class="w"> </span><span class="ss">::schedule</span><span class="w"> </span><span class="ss">::payment-method</span><span class="p">]</span>
+<span class="w">          </span><span class="ss">:opt</span><span class="w"> </span><span class="p">[</span><span class="ss">::address</span><span class="p">]))</span>
+</code></pre></div>
+<h3 id="_4">コンストラクタ<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="p">(</span><span class="kd">defn </span><span class="nv">make-salaried-employee</span>
+<span class="w">  </span><span class="s">&quot;月給制従業員を作成&quot;</span>
+<span class="w">  </span><span class="p">[</span><span class="nv">id</span><span class="w"> </span><span class="nb">name </span><span class="nv">salary</span><span class="p">]</span>
+<span class="w">  </span><span class="p">{</span><span class="ss">::id</span><span class="w"> </span><span class="nv">id</span>
+<span class="w">   </span><span class="ss">::name</span><span class="w"> </span><span class="nv">name</span>
+<span class="w">   </span><span class="ss">::pay-class</span><span class="w"> </span><span class="p">[</span><span class="ss">:salaried</span><span class="w"> </span><span class="nv">salary</span><span class="p">]</span>
+<span class="w">   </span><span class="ss">::schedule</span><span class="w"> </span><span class="ss">:monthly</span>
+<span class="w">   </span><span class="ss">::payment-method</span><span class="w"> </span><span class="ss">:hold</span><span class="p">})</span>
+
+<span class="p">(</span><span class="kd">defn </span><span class="nv">make-hourly-employee</span>
+<span class="w">  </span><span class="s">&quot;時給制従業員を作成&quot;</span>
+<span class="w">  </span><span class="p">[</span><span class="nv">id</span><span class="w"> </span><span class="nb">name </span><span class="nv">hourly-rate</span><span class="p">]</span>
+<span class="w">  </span><span class="p">{</span><span class="ss">::id</span><span class="w"> </span><span class="nv">id</span>
+<span class="w">   </span><span class="ss">::name</span><span class="w"> </span><span class="nv">name</span>
+<span class="w">   </span><span class="ss">::pay-class</span><span class="w"> </span><span class="p">[</span><span class="ss">:hourly</span><span class="w"> </span><span class="nv">hourly-rate</span><span class="p">]</span>
+<span class="w">   </span><span class="ss">::schedule</span><span class="w"> </span><span class="ss">:weekly</span>
+<span class="w">   </span><span class="ss">::payment-method</span><span class="w"> </span><span class="ss">:hold</span><span class="p">})</span>
+
+<span class="p">(</span><span class="kd">defn </span><span class="nv">make-commissioned-employee</span>
+<span class="w">  </span><span class="s">&quot;歩合制従業員を作成&quot;</span>
+<span class="w">  </span><span class="p">[</span><span class="nv">id</span><span class="w"> </span><span class="nb">name </span><span class="nv">base-pay</span><span class="w"> </span><span class="nv">commission-rate</span><span class="p">]</span>
+<span class="w">  </span><span class="p">{</span><span class="ss">::id</span><span class="w"> </span><span class="nv">id</span>
+<span class="w">   </span><span class="ss">::name</span><span class="w"> </span><span class="nv">name</span>
+<span class="w">   </span><span class="ss">::pay-class</span><span class="w"> </span><span class="p">[</span><span class="ss">:commissioned</span><span class="w"> </span><span class="nv">base-pay</span><span class="w"> </span><span class="nv">commission-rate</span><span class="p">]</span>
+<span class="w">   </span><span class="ss">::schedule</span><span class="w"> </span><span class="ss">:biweekly</span>
+<span class="w">   </span><span class="ss">::payment-method</span><span class="w"> </span><span class="ss">:hold</span><span class="p">})</span>
+</code></pre></div>
+<h2 id="3">3. マルチメソッドによる給与計算<a class="headerlink" href="#3" title="Permanent link">&para;</a></h2>
+<h3 id="_5">給与計算のディスパッチ<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="p">(</span><span class="kd">ns </span><span class="nv">payroll.classification</span>
+<span class="w">  </span><span class="p">(</span><span class="ss">:require</span><span class="w"> </span><span class="p">[</span><span class="nv">payroll.employee</span><span class="w"> </span><span class="ss">:as</span><span class="w"> </span><span class="nv">emp</span><span class="p">]))</span>
+
+<span class="p">(</span><span class="kd">defmulti </span><span class="nv">calc-pay</span>
+<span class="w">  </span><span class="s">&quot;給与を計算する</span>
+<span class="s">   給与タイプに応じて異なる計算ロジックを適用&quot;</span>
+<span class="w">  </span><span class="p">(</span><span class="k">fn </span><span class="p">[</span><span class="nv">employee</span><span class="w"> </span><span class="nv">_context</span><span class="p">]</span><span class="w"> </span><span class="p">(</span><span class="nf">emp/get-pay-type</span><span class="w"> </span><span class="nv">employee</span><span class="p">)))</span>
+</code></pre></div>
+<h3 id="_6">月給制<a class="headerlink" href="#_6" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="p">(</span><span class="kd">defmethod </span><span class="nv">calc-pay</span><span class="w"> </span><span class="ss">:salaried</span>
+<span class="w">  </span><span class="p">[</span><span class="nv">employee</span><span class="w"> </span><span class="nv">_context</span><span class="p">]</span>
+<span class="w">  </span><span class="p">(</span><span class="k">let </span><span class="p">[[</span><span class="nv">_</span><span class="w"> </span><span class="nv">salary</span><span class="p">]</span><span class="w"> </span><span class="p">(</span><span class="nf">emp/get-pay-class</span><span class="w"> </span><span class="nv">employee</span><span class="p">)]</span>
+<span class="w">    </span><span class="nv">salary</span><span class="p">))</span>
+</code></pre></div>
+<h3 id="_7">時給制<a class="headerlink" href="#_7" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="p">(</span><span class="kd">defmethod </span><span class="nv">calc-pay</span><span class="w"> </span><span class="ss">:hourly</span>
+<span class="w">  </span><span class="p">[</span><span class="nv">employee</span><span class="w"> </span><span class="nv">context</span><span class="p">]</span>
+<span class="w">  </span><span class="p">(</span><span class="k">let </span><span class="p">[[</span><span class="nv">_</span><span class="w"> </span><span class="nv">hourly-rate</span><span class="p">]</span><span class="w"> </span><span class="p">(</span><span class="nf">emp/get-pay-class</span><span class="w"> </span><span class="nv">employee</span><span class="p">)</span>
+<span class="w">        </span><span class="nv">time-cards</span><span class="w"> </span><span class="p">(</span><span class="nf">get-in</span><span class="w"> </span><span class="nv">context</span><span class="w"> </span><span class="p">[</span><span class="ss">:time-cards</span><span class="w"> </span><span class="p">(</span><span class="nf">emp/get-id</span><span class="w"> </span><span class="nv">employee</span><span class="p">)]</span><span class="w"> </span><span class="p">[])</span>
+<span class="w">        </span><span class="nv">hours</span><span class="w"> </span><span class="p">(</span><span class="nb">map second </span><span class="nv">time-cards</span><span class="p">)</span>
+<span class="w">        </span><span class="nv">total-hours</span><span class="w"> </span><span class="p">(</span><span class="nb">reduce + </span><span class="mi">0</span><span class="w"> </span><span class="nv">hours</span><span class="p">)</span>
+<span class="w">        </span><span class="c1">;; 週40時間を超える分は1.5倍</span>
+<span class="w">        </span><span class="nv">regular-hours</span><span class="w"> </span><span class="p">(</span><span class="nb">min </span><span class="nv">total-hours</span><span class="w"> </span><span class="mi">40</span><span class="p">)</span>
+<span class="w">        </span><span class="nv">overtime-hours</span><span class="w"> </span><span class="p">(</span><span class="nb">max </span><span class="mi">0</span><span class="w"> </span><span class="p">(</span><span class="nb">- </span><span class="nv">total-hours</span><span class="w"> </span><span class="mi">40</span><span class="p">))]</span>
+<span class="w">    </span><span class="p">(</span><span class="nb">+ </span><span class="p">(</span><span class="nb">* </span><span class="nv">regular-hours</span><span class="w"> </span><span class="nv">hourly-rate</span><span class="p">)</span>
+<span class="w">       </span><span class="p">(</span><span class="nb">* </span><span class="nv">overtime-hours</span><span class="w"> </span><span class="nv">hourly-rate</span><span class="w"> </span><span class="mf">1.5</span><span class="p">))))</span>
+</code></pre></div>
+<h3 id="_8">歩合制<a class="headerlink" href="#_8" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="p">(</span><span class="kd">defmethod </span><span class="nv">calc-pay</span><span class="w"> </span><span class="ss">:commissioned</span>
+<span class="w">  </span><span class="p">[</span><span class="nv">employee</span><span class="w"> </span><span class="nv">context</span><span class="p">]</span>
+<span class="w">  </span><span class="p">(</span><span class="k">let </span><span class="p">[[</span><span class="nv">_</span><span class="w"> </span><span class="nv">base-pay</span><span class="w"> </span><span class="nv">commission-rate</span><span class="p">]</span><span class="w"> </span><span class="p">(</span><span class="nf">emp/get-pay-class</span><span class="w"> </span><span class="nv">employee</span><span class="p">)</span>
+<span class="w">        </span><span class="nv">sales-receipts</span><span class="w"> </span><span class="p">(</span><span class="nf">get-in</span><span class="w"> </span><span class="nv">context</span><span class="w"> </span><span class="p">[</span><span class="ss">:sales-receipts</span><span class="w"> </span><span class="p">(</span><span class="nf">emp/get-id</span><span class="w"> </span><span class="nv">employee</span><span class="p">)]</span><span class="w"> </span><span class="p">[])</span>
+<span class="w">        </span><span class="nv">total-sales</span><span class="w"> </span><span class="p">(</span><span class="nb">reduce + </span><span class="mi">0</span><span class="w"> </span><span class="p">(</span><span class="nb">map second </span><span class="nv">sales-receipts</span><span class="p">))]</span>
+<span class="w">    </span><span class="p">(</span><span class="nb">+ </span><span class="nv">base-pay</span><span class="w"> </span><span class="p">(</span><span class="nb">* </span><span class="nv">total-sales</span><span class="w"> </span><span class="nv">commission-rate</span><span class="p">))))</span>
+</code></pre></div>
+<p><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiBjb250ZW50U3R5bGVUeXBlPSJ0ZXh0L2NzcyIgZGF0YS1kaWFncmFtLXR5cGU9IlNFUVVFTkNFIiBoZWlnaHQ9IjM5M3B4IiBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJub25lIiBzdHlsZT0id2lkdGg6NTc4cHg7aGVpZ2h0OjM5M3B4O2JhY2tncm91bmQ6I0ZGRkZGRjsiIHZlcnNpb249IjEuMSIgdmlld0JveD0iMCAwIDU3OCAzOTMiIHdpZHRoPSI1NzhweCIgem9vbUFuZFBhbj0ibWFnbmlmeSI+PHRpdGxlPiYjMTI1MTA7JiMxMjUyMzsmIzEyNDgxOyYjMTI1MTM7JiMxMjQ3NzsmIzEyNDgzOyYjMTI0ODk7JiMxMjM5NTsmIzEyNDI0OyYjMTI0Mjc7JiMzMjEwMjsmIzE5OTgyOyYjMzUzMzY7JiMzMTYzOTs8L3RpdGxlPjxkZWZzLz48Zz48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZm9udC13ZWlnaHQ9ImJvbGQiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iMTk1Ljk5OTEiIHg9IjE5Mi40MjQzIiB5PSIyNy45OTUxIj4mIzEyNTEwOyYjMTI1MjM7JiMxMjQ4MTsmIzEyNTEzOyYjMTI0Nzc7JiMxMjQ4MzsmIzEyNDg5OyYjMTIzOTU7JiMxMjQyNDsmIzEyNDI3OyYjMzIxMDI7JiMxOTk4MjsmIzM1MzM2OyYjMzE2Mzk7PC90ZXh0PjxyZWN0IGZpbGw9Im5vbmUiIGhlaWdodD0iMjIxLjUzOTEiIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MS41OyIgd2lkdGg9IjU2MS44NDc3IiB4PSIxMCIgeT0iMTE5LjcyNjYiLz48Zz48dGl0bGU+Y2FsYy1wYXk8L3RpdGxlPjxyZWN0IGZpbGw9IiMwMDAwMDAiIGZpbGwtb3BhY2l0eT0iMC4wMDAwMCIgaGVpZ2h0PSIyODQuNjcxOSIgd2lkdGg9IjgiIHg9IjUyLjMzMyIgeT0iNzMuNTkzOCIvPjxsaW5lIHN0eWxlPSJzdHJva2U6IzE4MTgxODtzdHJva2Utd2lkdGg6MC41O3N0cm9rZS1kYXNoYXJyYXk6NSw1OyIgeDE9IjU2IiB4Mj0iNTYiIHkxPSI3My41OTM4IiB5Mj0iMzU4LjI2NTYiLz48L2c+PGc+PHRpdGxlPmRpc3BhdGNoPC90aXRsZT48cmVjdCBmaWxsPSIjMDAwMDAwIiBmaWxsLW9wYWNpdHk9IjAuMDAwMDAiIGhlaWdodD0iMjg0LjY3MTkiIHdpZHRoPSI4IiB4PSIyMzQuMzI2MiIgeT0iNzMuNTkzOCIvPjxsaW5lIHN0eWxlPSJzdHJva2U6IzE4MTgxODtzdHJva2Utd2lkdGg6MC41O3N0cm9rZS1kYXNoYXJyYXk6NSw1OyIgeDE9IjIzNy41MjgzIiB4Mj0iMjM3LjUyODMiIHkxPSI3My41OTM4IiB5Mj0iMzU4LjI2NTYiLz48L2c+PGc+PHRpdGxlPi5zYWxhcmllZDwvdGl0bGU+PHJlY3QgZmlsbD0iIzAwMDAwMCIgZmlsbC1vcGFjaXR5PSIwLjAwMDAwIiBoZWlnaHQ9IjI4NC42NzE5IiB3aWR0aD0iOCIgeD0iMzE4LjIyNjEiIHk9IjczLjU5MzgiLz48bGluZSBzdHlsZT0ic3Ryb2tlOiMxODE4MTg7c3Ryb2tlLXdpZHRoOjAuNTtzdHJva2UtZGFzaGFycmF5OjUsNTsiIHgxPSIzMjIuMTI0IiB4Mj0iMzIyLjEyNCIgeTE9IjczLjU5MzgiIHkyPSIzNTguMjY1NiIvPjwvZz48Zz48dGl0bGU+LmhvdXJseTwvdGl0bGU+PHJlY3QgZmlsbD0iIzAwMDAwMCIgZmlsbC1vcGFjaXR5PSIwLjAwMDAwIiBoZWlnaHQ9IjI4NC42NzE5IiB3aWR0aD0iOCIgeD0iMzk2LjgwNzYiIHk9IjczLjU5MzgiLz48bGluZSBzdHlsZT0ic3Ryb2tlOiMxODE4MTg7c3Ryb2tlLXdpZHRoOjAuNTtzdHJva2UtZGFzaGFycmF5OjUsNTsiIHgxPSI0MDAuMzI4MSIgeDI9IjQwMC4zMjgxIiB5MT0iNzMuNTkzOCIgeTI9IjM1OC4yNjU2Ii8+PC9nPjxnPjx0aXRsZT4uY29tbWlzc2lvbmVkPC90aXRsZT48cmVjdCBmaWxsPSIjMDAwMDAwIiBmaWxsLW9wYWNpdHk9IjAuMDAwMDAiIGhlaWdodD0iMjg0LjY3MTkiIHdpZHRoPSI4IiB4PSI0OTguMDY3NCIgeT0iNzMuNTkzOCIvPjxsaW5lIHN0eWxlPSJzdHJva2U6IzE4MTgxODtzdHJva2Utd2lkdGg6MC41O3N0cm9rZS1kYXNoYXJyYXk6NSw1OyIgeDE9IjUwMS4yODcxIiB4Mj0iNTAxLjI4NzEiIHkxPSI3My41OTM4IiB5Mj0iMzU4LjI2NTYiLz48L2c+PGcgY2xhc3M9InBhcnRpY2lwYW50IHBhcnRpY2lwYW50LWhlYWQiIGRhdGEtcGFydGljaXBhbnQ9ImNhbGMiPjxyZWN0IGZpbGw9IiNFMkUyRjAiIGhlaWdodD0iMzAuMjk2OSIgcng9IjIuNSIgcnk9IjIuNSIgc3R5bGU9InN0cm9rZTojMTgxODE4O3N0cm9rZS13aWR0aDowLjU7IiB3aWR0aD0iNzIuNjY2IiB4PSIyMCIgeT0iNDIuMjk2OSIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjU4LjY2NiIgeD0iMjciIHk9IjYyLjI5MiI+Y2FsYy1wYXk8L3RleHQ+PC9nPjxnIGNsYXNzPSJwYXJ0aWNpcGFudCBwYXJ0aWNpcGFudC10YWlsIiBkYXRhLXBhcnRpY2lwYW50PSJjYWxjIj48cmVjdCBmaWxsPSIjRTJFMkYwIiBoZWlnaHQ9IjMwLjI5NjkiIHJ4PSIyLjUiIHJ5PSIyLjUiIHN0eWxlPSJzdHJva2U6IzE4MTgxODtzdHJva2Utd2lkdGg6MC41OyIgd2lkdGg9IjcyLjY2NiIgeD0iMjAiIHk9IjM1Ny4yNjU2Ii8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTQiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iNTguNjY2IiB4PSIyNyIgeT0iMzc3LjI2MDciPmNhbGMtcGF5PC90ZXh0PjwvZz48ZyBjbGFzcz0icGFydGljaXBhbnQgcGFydGljaXBhbnQtaGVhZCIgZGF0YS1wYXJ0aWNpcGFudD0iZGlzcCI+PHJlY3QgZmlsbD0iI0UyRTJGMCIgaGVpZ2h0PSIzMC4yOTY5IiByeD0iMi41IiByeT0iMi41IiBzdHlsZT0ic3Ryb2tlOiMxODE4MTg7c3Ryb2tlLXdpZHRoOjAuNTsiIHdpZHRoPSI3My41OTU3IiB4PSIyMDEuNTI4MyIgeT0iNDIuMjk2OSIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjU5LjU5NTciIHg9IjIwOC41MjgzIiB5PSI2Mi4yOTIiPmRpc3BhdGNoPC90ZXh0PjwvZz48ZyBjbGFzcz0icGFydGljaXBhbnQgcGFydGljaXBhbnQtdGFpbCIgZGF0YS1wYXJ0aWNpcGFudD0iZGlzcCI+PHJlY3QgZmlsbD0iI0UyRTJGMCIgaGVpZ2h0PSIzMC4yOTY5IiByeD0iMi41IiByeT0iMi41IiBzdHlsZT0ic3Ryb2tlOiMxODE4MTg7c3Ryb2tlLXdpZHRoOjAuNTsiIHdpZHRoPSI3My41OTU3IiB4PSIyMDEuNTI4MyIgeT0iMzU3LjI2NTYiLz48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSI1OS41OTU3IiB4PSIyMDguNTI4MyIgeT0iMzc3LjI2MDciPmRpc3BhdGNoPC90ZXh0PjwvZz48ZyBjbGFzcz0icGFydGljaXBhbnQgcGFydGljaXBhbnQtaGVhZCIgZGF0YS1wYXJ0aWNpcGFudD0ic2FsIj48cmVjdCBmaWxsPSIjRTJFMkYwIiBoZWlnaHQ9IjMwLjI5NjkiIHJ4PSIyLjUiIHJ5PSIyLjUiIHN0eWxlPSJzdHJva2U6IzE4MTgxODtzdHJva2Utd2lkdGg6MC41OyIgd2lkdGg9Ijc0LjIwNDEiIHg9IjI4NS4xMjQiIHk9IjQyLjI5NjkiLz48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSI2MC4yMDQxIiB4PSIyOTIuMTI0IiB5PSI2Mi4yOTIiPjpzYWxhcmllZDwvdGV4dD48L2c+PGcgY2xhc3M9InBhcnRpY2lwYW50IHBhcnRpY2lwYW50LXRhaWwiIGRhdGEtcGFydGljaXBhbnQ9InNhbCI+PHJlY3QgZmlsbD0iI0UyRTJGMCIgaGVpZ2h0PSIzMC4yOTY5IiByeD0iMi41IiByeT0iMi41IiBzdHlsZT0ic3Ryb2tlOiMxODE4MTg7c3Ryb2tlLXdpZHRoOjAuNTsiIHdpZHRoPSI3NC4yMDQxIiB4PSIyODUuMTI0IiB5PSIzNTcuMjY1NiIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjYwLjIwNDEiIHg9IjI5Mi4xMjQiIHk9IjM3Ny4yNjA3Ij46c2FsYXJpZWQ8L3RleHQ+PC9nPjxnIGNsYXNzPSJwYXJ0aWNpcGFudCBwYXJ0aWNpcGFudC1oZWFkIiBkYXRhLXBhcnRpY2lwYW50PSJob3VyIj48cmVjdCBmaWxsPSIjRTJFMkYwIiBoZWlnaHQ9IjMwLjI5NjkiIHJ4PSIyLjUiIHJ5PSIyLjUiIHN0eWxlPSJzdHJva2U6IzE4MTgxODtzdHJva2Utd2lkdGg6MC41OyIgd2lkdGg9IjYyLjk1OSIgeD0iMzY5LjMyODEiIHk9IjQyLjI5NjkiLz48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSI0OC45NTkiIHg9IjM3Ni4zMjgxIiB5PSI2Mi4yOTIiPjpob3VybHk8L3RleHQ+PC9nPjxnIGNsYXNzPSJwYXJ0aWNpcGFudCBwYXJ0aWNpcGFudC10YWlsIiBkYXRhLXBhcnRpY2lwYW50PSJob3VyIj48cmVjdCBmaWxsPSIjRTJFMkYwIiBoZWlnaHQ9IjMwLjI5NjkiIHJ4PSIyLjUiIHJ5PSIyLjUiIHN0eWxlPSJzdHJva2U6IzE4MTgxODtzdHJva2Utd2lkdGg6MC41OyIgd2lkdGg9IjYyLjk1OSIgeD0iMzY5LjMyODEiIHk9IjM1Ny4yNjU2Ii8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTQiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iNDguOTU5IiB4PSIzNzYuMzI4MSIgeT0iMzc3LjI2MDciPjpob3VybHk8L3RleHQ+PC9nPjxnIGNsYXNzPSJwYXJ0aWNpcGFudCBwYXJ0aWNpcGFudC1oZWFkIiBkYXRhLXBhcnRpY2lwYW50PSJjb21tIj48cmVjdCBmaWxsPSIjRTJFMkYwIiBoZWlnaHQ9IjMwLjI5NjkiIHJ4PSIyLjUiIHJ5PSIyLjUiIHN0eWxlPSJzdHJva2U6IzE4MTgxODtzdHJva2Utd2lkdGg6MC41OyIgd2lkdGg9IjExOS41NjA1IiB4PSI0NDIuMjg3MSIgeT0iNDIuMjk2OSIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjEwNS41NjA1IiB4PSI0NDkuMjg3MSIgeT0iNjIuMjkyIj46Y29tbWlzc2lvbmVkPC90ZXh0PjwvZz48ZyBjbGFzcz0icGFydGljaXBhbnQgcGFydGljaXBhbnQtdGFpbCIgZGF0YS1wYXJ0aWNpcGFudD0iY29tbSI+PHJlY3QgZmlsbD0iI0UyRTJGMCIgaGVpZ2h0PSIzMC4yOTY5IiByeD0iMi41IiByeT0iMi41IiBzdHlsZT0ic3Ryb2tlOiMxODE4MTg7c3Ryb2tlLXdpZHRoOjAuNTsiIHdpZHRoPSIxMTkuNTYwNSIgeD0iNDQyLjI4NzEiIHk9IjM1Ny4yNjU2Ii8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTQiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iMTA1LjU2MDUiIHg9IjQ0OS4yODcxIiB5PSIzNzcuMjYwNyI+OmNvbW1pc3Npb25lZDwvdGV4dD48L2c+PGcgY2xhc3M9Im1lc3NhZ2UiIGRhdGEtcGFydGljaXBhbnQtMT0iY2FsYyIgZGF0YS1wYXJ0aWNpcGFudC0yPSJkaXNwIj48cG9seWdvbiBmaWxsPSIjMTgxODE4IiBwb2ludHM9IjIyNi4zMjYyLDEwMC43MjY2LDIzNi4zMjYyLDEwNC43MjY2LDIyNi4zMjYyLDEwOC43MjY2LDIzMC4zMjYyLDEwNC43MjY2IiBzdHlsZT0ic3Ryb2tlOiMxODE4MTg7c3Ryb2tlLXdpZHRoOjE7Ii8+PGxpbmUgc3R5bGU9InN0cm9rZTojMTgxODE4O3N0cm9rZS13aWR0aDoxOyIgeDE9IjU2LjMzMyIgeDI9IjIzMi4zMjYyIiB5MT0iMTA0LjcyNjYiIHkyPSIxMDQuNzI2NiIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXNpemU9IjEzIiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjE1Ny45OTMyIiB4PSI2My4zMzMiIHk9Ijk5LjY2MDYiPmdldC1wYXktdHlwZShlbXBsb3llZSk8L3RleHQ+PC9nPjxwYXRoIGQ9Ik0xMCwxMTkuNzI2NiBMNzQuNDQyOSwxMTkuNzI2NiBMNzQuNDQyOSwxMjYuODU5NCBMNjQuNDQyOSwxMzYuODU5NCBMMTAsMTM2Ljg1OTQgTDEwLDExOS43MjY2IiBmaWxsPSIjRUVFRUVFIiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjEuNTsiLz48cmVjdCBmaWxsPSJub25lIiBoZWlnaHQ9IjIyMS41MzkxIiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjEuNTsiIHdpZHRoPSI1NjEuODQ3NyIgeD0iMTAiIHk9IjExOS43MjY2Ii8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTMiIGZvbnQtd2VpZ2h0PSJib2xkIiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjE5LjQ0MjkiIHg9IjI1IiB5PSIxMzIuNzkzNSI+YWx0PC90ZXh0Pjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXNpemU9IjExIiBmb250LXdlaWdodD0iYm9sZCIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSI0My4wNTQ1IiB4PSI4OS40NDI5IiB5PSIxMzEuOTM3Ij5bJiMyNjM3NjsmIzMyMTAyOyYjMjEwNDY7XTwvdGV4dD48ZyBjbGFzcz0ibWVzc2FnZSIgZGF0YS1wYXJ0aWNpcGFudC0xPSJkaXNwIiBkYXRhLXBhcnRpY2lwYW50LTI9InNhbCI+PHBvbHlnb24gZmlsbD0iIzE4MTgxOCIgcG9pbnRzPSIzMTAuMjI2MSwxNTMuOTkyMiwzMjAuMjI2MSwxNTcuOTkyMiwzMTAuMjI2MSwxNjEuOTkyMiwzMTQuMjI2MSwxNTcuOTkyMiIgc3R5bGU9InN0cm9rZTojMTgxODE4O3N0cm9rZS13aWR0aDoxOyIvPjxsaW5lIHN0eWxlPSJzdHJva2U6IzE4MTgxODtzdHJva2Utd2lkdGg6MTsiIHgxPSIyMzguMzI2MiIgeDI9IjMxNi4yMjYxIiB5MT0iMTU3Ljk5MjIiIHkyPSIxNTcuOTkyMiIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXNpemU9IjEzIiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjU0LjQ3NTYiIHg9IjI0NS4zMjYyIiB5PSIxNTIuOTI2MyI+Y2FsYy1wYXk8L3RleHQ+PC9nPjxnIGNsYXNzPSJtZXNzYWdlIiBkYXRhLXBhcnRpY2lwYW50LTE9InNhbCIgZGF0YS1wYXJ0aWNpcGFudC0yPSJjYWxjIj48cG9seWdvbiBmaWxsPSIjMTgxODE4IiBwb2ludHM9IjY3LjMzMywxODMuMTI1LDU3LjMzMywxODcuMTI1LDY3LjMzMywxOTEuMTI1LDYzLjMzMywxODcuMTI1IiBzdHlsZT0ic3Ryb2tlOiMxODE4MTg7c3Ryb2tlLXdpZHRoOjE7Ii8+PGxpbmUgc3R5bGU9InN0cm9rZTojMTgxODE4O3N0cm9rZS13aWR0aDoxO3N0cm9rZS1kYXNoYXJyYXk6MiwyOyIgeDE9IjYxLjMzMyIgeDI9IjMyMS4yMjYxIiB5MT0iMTg3LjEyNSIgeTI9IjE4Ny4xMjUiLz48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIxMyIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSIzOS4zNTU1IiB4PSI3My4zMzMiIHk9IjE4Mi4wNTkxIj5zYWxhcnk8L3RleHQ+PC9nPjxsaW5lIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTtzdHJva2UtZGFzaGFycmF5OjIsMjsiIHgxPSIxMCIgeDI9IjU3MS44NDc3IiB5MT0iMTk2LjEyNSIgeTI9IjE5Ni4xMjUiLz48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIxMSIgZm9udC13ZWlnaHQ9ImJvbGQiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iNDMuMDU0NSIgeD0iMTUiIHk9IjIwNi4zMzU0Ij5bJiMyNjE3ODsmIzMyMTAyOyYjMjEwNDY7XTwvdGV4dD48ZyBjbGFzcz0ibWVzc2FnZSIgZGF0YS1wYXJ0aWNpcGFudC0xPSJkaXNwIiBkYXRhLXBhcnRpY2lwYW50LTI9ImhvdXIiPjxwb2x5Z29uIGZpbGw9IiMxODE4MTgiIHBvaW50cz0iMzg4LjgwNzYsMjI3LjA2MjUsMzk4LjgwNzYsMjMxLjA2MjUsMzg4LjgwNzYsMjM1LjA2MjUsMzkyLjgwNzYsMjMxLjA2MjUiIHN0eWxlPSJzdHJva2U6IzE4MTgxODtzdHJva2Utd2lkdGg6MTsiLz48bGluZSBzdHlsZT0ic3Ryb2tlOiMxODE4MTg7c3Ryb2tlLXdpZHRoOjE7IiB4MT0iMjM4LjMyNjIiIHgyPSIzOTQuODA3NiIgeTE9IjIzMS4wNjI1IiB5Mj0iMjMxLjA2MjUiLz48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIxMyIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSI1NC40NzU2IiB4PSIyNDUuMzI2MiIgeT0iMjI1Ljk5NjYiPmNhbGMtcGF5PC90ZXh0PjwvZz48ZyBjbGFzcz0ibWVzc2FnZSIgZGF0YS1wYXJ0aWNpcGFudC0xPSJob3VyIiBkYXRhLXBhcnRpY2lwYW50LTI9ImNhbGMiPjxwb2x5Z29uIGZpbGw9IiMxODE4MTgiIHBvaW50cz0iNjcuMzMzLDI1Ni4xOTUzLDU3LjMzMywyNjAuMTk1Myw2Ny4zMzMsMjY0LjE5NTMsNjMuMzMzLDI2MC4xOTUzIiBzdHlsZT0ic3Ryb2tlOiMxODE4MTg7c3Ryb2tlLXdpZHRoOjE7Ii8+PGxpbmUgc3R5bGU9InN0cm9rZTojMTgxODE4O3N0cm9rZS13aWR0aDoxO3N0cm9rZS1kYXNoYXJyYXk6MiwyOyIgeDE9IjYxLjMzMyIgeDI9IjM5OS44MDc2IiB5MT0iMjYwLjE5NTMiIHkyPSIyNjAuMTk1MyIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXNpemU9IjEzIiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjE5MC42NzcyIiB4PSI3My4zMzMiIHk9IjI1NS4xMjk0Ij5ob3VycyAqIHJhdGUgKyBvdmVydGltZSAqIDEuNTwvdGV4dD48L2c+PGxpbmUgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxO3N0cm9rZS1kYXNoYXJyYXk6MiwyOyIgeDE9IjEwIiB4Mj0iNTcxLjg0NzciIHkxPSIyNjkuMTk1MyIgeTI9IjI2OS4xOTUzIi8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTEiIGZvbnQtd2VpZ2h0PSJib2xkIiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjQzLjA1NDUiIHg9IjE1IiB5PSIyNzkuNDA1OCI+WyYjMjc0OTc7JiMyMTUxMjsmIzIxMDQ2O108L3RleHQ+PGcgY2xhc3M9Im1lc3NhZ2UiIGRhdGEtcGFydGljaXBhbnQtMT0iZGlzcCIgZGF0YS1wYXJ0aWNpcGFudC0yPSJjb21tIj48cG9seWdvbiBmaWxsPSIjMTgxODE4IiBwb2ludHM9IjQ5MC4wNjc0LDMwMC4xMzI4LDUwMC4wNjc0LDMwNC4xMzI4LDQ5MC4wNjc0LDMwOC4xMzI4LDQ5NC4wNjc0LDMwNC4xMzI4IiBzdHlsZT0ic3Ryb2tlOiMxODE4MTg7c3Ryb2tlLXdpZHRoOjE7Ii8+PGxpbmUgc3R5bGU9InN0cm9rZTojMTgxODE4O3N0cm9rZS13aWR0aDoxOyIgeDE9IjIzOC4zMjYyIiB4Mj0iNDk2LjA2NzQiIHkxPSIzMDQuMTMyOCIgeTI9IjMwNC4xMzI4Ii8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTMiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iNTQuNDc1NiIgeD0iMjQ1LjMyNjIiIHk9IjI5OS4wNjY5Ij5jYWxjLXBheTwvdGV4dD48L2c+PGcgY2xhc3M9Im1lc3NhZ2UiIGRhdGEtcGFydGljaXBhbnQtMT0iY29tbSIgZGF0YS1wYXJ0aWNpcGFudC0yPSJjYWxjIj48cG9seWdvbiBmaWxsPSIjMTgxODE4IiBwb2ludHM9IjY3LjMzMywzMjkuMjY1Niw1Ny4zMzMsMzMzLjI2NTYsNjcuMzMzLDMzNy4yNjU2LDYzLjMzMywzMzMuMjY1NiIgc3R5bGU9InN0cm9rZTojMTgxODE4O3N0cm9rZS13aWR0aDoxOyIvPjxsaW5lIHN0eWxlPSJzdHJva2U6IzE4MTgxODtzdHJva2Utd2lkdGg6MTtzdHJva2UtZGFzaGFycmF5OjIsMjsiIHgxPSI2MS4zMzMiIHgyPSI1MDEuMDY3NCIgeTE9IjMzMy4yNjU2IiB5Mj0iMzMzLjI2NTYiLz48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIxMyIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSIxMjQuNDM5NSIgeD0iNzMuMzMzIiB5PSIzMjguMTk5NyI+YmFzZSArIHNhbGVzICogcmF0ZTwvdGV4dD48L2c+PCEtLVNSQz1bTk8teklpSDA1OE54VU9oQkxsdUdtUzhjWFV6b0pJeGttMkdwUDRPWHZNUVFvQzlZOXU4OERnOGlzWWFzRmlzdWtwdzZTeVRUb0FSQmtJVmRjdEVTVDhlVy1DVldieTdGV2R5QXROVm1GbFlSQzVrNmhXX1RWRkZuX0ZFci03dGZELXp0R1hYaWQyb2FtVGgxZjQxTFAwUlIyUTA1NWxqc0FRcjFMcW9KcE1CVnBZcWdSMklMb096WVA0X3JMUUYtc1ZtdlNXalRMVDlRZ1VpalcwejJTMGw4cGpEcGFDQ2JFSXdPa1RSRzBMTDZ3UFJlSzBYSzNqT0ZWVG9zd1p6NS1aYzZPZVVPc1FxSUJCRHVKaW1TS2pyTWFCODR3X2prYkVNQW10M0lXcEhoMnFWR2UyQ3UxZHJEU0tyNXlOOXdTaFE1bGhza1JsaVhiM1NEZUthRmUxVGU2SFFScU91amcyeF8wMDAwXS0tPjwvZz48L3N2Zz4=" class="uml" alt="uml diagram" title="" /></p>
+<h2 id="4">4. 支払いスケジュール<a class="headerlink" href="#4" title="Permanent link">&para;</a></h2>
+<h3 id="_9">スケジュール判定<a class="headerlink" href="#_9" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="p">(</span><span class="kd">ns </span><span class="nv">payroll.schedule</span>
+<span class="w">  </span><span class="p">(</span><span class="ss">:require</span><span class="w"> </span><span class="p">[</span><span class="nv">payroll.employee</span><span class="w"> </span><span class="ss">:as</span><span class="w"> </span><span class="nv">emp</span><span class="p">]))</span>
+
+<span class="p">(</span><span class="kd">defmulti </span><span class="nv">is-pay-day?</span>
+<span class="w">  </span><span class="s">&quot;指定日が支払日かどうかを判定&quot;</span>
+<span class="w">  </span><span class="p">(</span><span class="k">fn </span><span class="p">[</span><span class="nv">employee</span><span class="w"> </span><span class="nv">_date</span><span class="p">]</span><span class="w"> </span><span class="p">(</span><span class="nf">emp/get-schedule</span><span class="w"> </span><span class="nv">employee</span><span class="p">)))</span>
+
+<span class="c1">;; 月次（月末）</span>
+<span class="p">(</span><span class="kd">defmethod </span><span class="nv">is-pay-day?</span><span class="w"> </span><span class="ss">:monthly</span>
+<span class="w">  </span><span class="p">[</span><span class="nv">_employee</span><span class="w"> </span><span class="nv">date</span><span class="p">]</span>
+<span class="w">  </span><span class="p">(</span><span class="nb">= </span><span class="p">(</span><span class="ss">:day</span><span class="w"> </span><span class="nv">date</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="nf">last-day-of-month</span><span class="w"> </span><span class="nv">date</span><span class="p">)))</span>
+
+<span class="c1">;; 週次（金曜日）</span>
+<span class="p">(</span><span class="kd">defmethod </span><span class="nv">is-pay-day?</span><span class="w"> </span><span class="ss">:weekly</span>
+<span class="w">  </span><span class="p">[</span><span class="nv">_employee</span><span class="w"> </span><span class="nv">date</span><span class="p">]</span>
+<span class="w">  </span><span class="p">(</span><span class="nb">= </span><span class="p">(</span><span class="ss">:day-of-week</span><span class="w"> </span><span class="nv">date</span><span class="p">)</span><span class="w"> </span><span class="ss">:friday</span><span class="p">))</span>
+
+<span class="c1">;; 隔週（隔週の金曜日）</span>
+<span class="p">(</span><span class="kd">defmethod </span><span class="nv">is-pay-day?</span><span class="w"> </span><span class="ss">:biweekly</span>
+<span class="w">  </span><span class="p">[</span><span class="nv">_employee</span><span class="w"> </span><span class="nv">date</span><span class="p">]</span>
+<span class="w">  </span><span class="p">(</span><span class="nb">and </span><span class="p">(</span><span class="nb">= </span><span class="p">(</span><span class="ss">:day-of-week</span><span class="w"> </span><span class="nv">date</span><span class="p">)</span><span class="w"> </span><span class="ss">:friday</span><span class="p">)</span>
+<span class="w">       </span><span class="p">(</span><span class="ss">:is-pay-week</span><span class="w"> </span><span class="nv">date</span><span class="p">)))</span>
+</code></pre></div>
+<h2 id="5">5. 支払い処理<a class="headerlink" href="#5" title="Permanent link">&para;</a></h2>
+<h3 id="_10">支払い方法によるディスパッチ<a class="headerlink" href="#_10" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="p">(</span><span class="kd">ns </span><span class="nv">payroll.payroll</span>
+<span class="w">  </span><span class="p">(</span><span class="ss">:require</span><span class="w"> </span><span class="p">[</span><span class="nv">payroll.employee</span><span class="w"> </span><span class="ss">:as</span><span class="w"> </span><span class="nv">emp</span><span class="p">]</span>
+<span class="w">            </span><span class="p">[</span><span class="nv">payroll.classification</span><span class="w"> </span><span class="ss">:as</span><span class="w"> </span><span class="nv">class</span><span class="p">]</span>
+<span class="w">            </span><span class="p">[</span><span class="nv">payroll.schedule</span><span class="w"> </span><span class="ss">:as</span><span class="w"> </span><span class="nv">sched</span><span class="p">]))</span>
+
+<span class="p">(</span><span class="kd">defmulti </span><span class="nv">process-payment</span>
+<span class="w">  </span><span class="s">&quot;支払いを処理&quot;</span>
+<span class="w">  </span><span class="p">(</span><span class="k">fn </span><span class="p">[</span><span class="nv">employee</span><span class="w"> </span><span class="nv">_amount</span><span class="p">]</span><span class="w"> </span><span class="p">(</span><span class="nf">emp/get-payment-method</span><span class="w"> </span><span class="nv">employee</span><span class="p">)))</span>
+
+<span class="p">(</span><span class="kd">defmethod </span><span class="nv">process-payment</span><span class="w"> </span><span class="ss">:hold</span>
+<span class="w">  </span><span class="p">[</span><span class="nv">employee</span><span class="w"> </span><span class="nv">amount</span><span class="p">]</span>
+<span class="w">  </span><span class="p">{</span><span class="ss">:type</span><span class="w"> </span><span class="ss">:hold</span>
+<span class="w">   </span><span class="ss">:employee-id</span><span class="w"> </span><span class="p">(</span><span class="nf">emp/get-id</span><span class="w"> </span><span class="nv">employee</span><span class="p">)</span>
+<span class="w">   </span><span class="ss">:amount</span><span class="w"> </span><span class="nv">amount</span>
+<span class="w">   </span><span class="ss">:message</span><span class="w"> </span><span class="s">&quot;支払いを保留&quot;</span><span class="p">})</span>
+
+<span class="p">(</span><span class="kd">defmethod </span><span class="nv">process-payment</span><span class="w"> </span><span class="ss">:direct-deposit</span>
+<span class="w">  </span><span class="p">[</span><span class="nv">employee</span><span class="w"> </span><span class="nv">amount</span><span class="p">]</span>
+<span class="w">  </span><span class="p">{</span><span class="ss">:type</span><span class="w"> </span><span class="ss">:direct-deposit</span>
+<span class="w">   </span><span class="ss">:employee-id</span><span class="w"> </span><span class="p">(</span><span class="nf">emp/get-id</span><span class="w"> </span><span class="nv">employee</span><span class="p">)</span>
+<span class="w">   </span><span class="ss">:amount</span><span class="w"> </span><span class="nv">amount</span>
+<span class="w">   </span><span class="ss">:message</span><span class="w"> </span><span class="s">&quot;口座に振り込み&quot;</span><span class="p">})</span>
+
+<span class="p">(</span><span class="kd">defmethod </span><span class="nv">process-payment</span><span class="w"> </span><span class="ss">:mail</span>
+<span class="w">  </span><span class="p">[</span><span class="nv">employee</span><span class="w"> </span><span class="nv">amount</span><span class="p">]</span>
+<span class="w">  </span><span class="p">{</span><span class="ss">:type</span><span class="w"> </span><span class="ss">:mail</span>
+<span class="w">   </span><span class="ss">:employee-id</span><span class="w"> </span><span class="p">(</span><span class="nf">emp/get-id</span><span class="w"> </span><span class="nv">employee</span><span class="p">)</span>
+<span class="w">   </span><span class="ss">:amount</span><span class="w"> </span><span class="nv">amount</span>
+<span class="w">   </span><span class="ss">:message</span><span class="w"> </span><span class="s">&quot;小切手を郵送&quot;</span><span class="p">})</span>
+</code></pre></div>
+<h2 id="6">6. 給与支払いの実行<a class="headerlink" href="#6" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><span class="p">(</span><span class="kd">defn </span><span class="nv">run-payroll</span>
+<span class="w">  </span><span class="s">&quot;給与支払いを実行</span>
+<span class="s">   支払日に該当する従業員にのみ支払いを行う&quot;</span>
+<span class="w">  </span><span class="p">[</span><span class="nv">employees</span><span class="w"> </span><span class="nv">context</span><span class="w"> </span><span class="nv">date</span><span class="p">]</span>
+<span class="w">  </span><span class="p">(</span><span class="k">let </span><span class="p">[</span><span class="nv">payable-employees</span><span class="w"> </span><span class="p">(</span><span class="nb">filter </span><span class="o">#</span><span class="p">(</span><span class="nf">sched/is-pay-day?</span><span class="w"> </span><span class="nv">%</span><span class="w"> </span><span class="nv">date</span><span class="p">)</span><span class="w"> </span><span class="nv">employees</span><span class="p">)]</span>
+<span class="w">    </span><span class="p">(</span><span class="nb">for </span><span class="p">[</span><span class="nv">emp</span><span class="w"> </span><span class="nv">payable-employees</span>
+<span class="w">          </span><span class="ss">:let</span><span class="w"> </span><span class="p">[</span><span class="nv">pay</span><span class="w"> </span><span class="p">(</span><span class="nf">class/calc-pay</span><span class="w"> </span><span class="nv">emp</span><span class="w"> </span><span class="nv">context</span><span class="p">)]]</span>
+<span class="w">      </span><span class="p">(</span><span class="nf">process-payment</span><span class="w"> </span><span class="nv">emp</span><span class="w"> </span><span class="nv">pay</span><span class="p">))))</span>
+</code></pre></div>
+<p><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiBjb250ZW50U3R5bGVUeXBlPSJ0ZXh0L2NzcyIgaGVpZ2h0PSIzNDhweCIgcHJlc2VydmVBc3BlY3RSYXRpbz0ibm9uZSIgc3R5bGU9IndpZHRoOjM5M3B4O2hlaWdodDozNDhweDtiYWNrZ3JvdW5kOiMwMDAwMDA7IiB2ZXJzaW9uPSIxLjEiIHZpZXdCb3g9IjAgMCAzOTMgMzQ4IiB3aWR0aD0iMzkzcHgiIHpvb21BbmRQYW49Im1hZ25pZnkiPjxkZWZzLz48Zz48cmVjdCBmaWxsPSIjMDcxNjIxIiBoZWlnaHQ9IjEiIHN0eWxlPSJzdHJva2U6IzA3MTYyMTtzdHJva2Utd2lkdGg6MTsiIHdpZHRoPSIxIiB4PSIwIiB5PSIwIi8+PHRleHQgZmlsbD0iIzMzRkYwMiIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTIiIGZvbnQtc3R5bGU9Iml0YWxpYyIgZm9udC13ZWlnaHQ9ImJvbGQiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iMTM2LjM1OTQiIHg9IjUiIHk9IjE3Ij5QbGFudFVNTCAxLjIwMjUuMTA8L3RleHQ+PHJlY3QgZmlsbD0iIzMzRkYwMiIgaGVpZ2h0PSIyMS4yOTY5IiBzdHlsZT0ic3Ryb2tlOiMzM0ZGMDI7c3Ryb2tlLXdpZHRoOjE7IiB3aWR0aD0iMjg0LjQxNTMiIHg9IjUiIHk9IjI2Ljk2ODgiLz48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZm9udC13ZWlnaHQ9ImJvbGQiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iMTgxLjAyMjUiIHg9IjYiIHk9IjQxLjk2ODgiPltGcm9tIHN0cmluZyAobGluZSAxNikgXTwvdGV4dD48dGV4dCBmaWxsPSIjMzNGRjAyIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZm9udC13ZWlnaHQ9ImJvbGQiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iNC44NzQiIHg9IjUiIHk9IjYyLjI2NTYiPiYjMTYwOzwvdGV4dD48dGV4dCBmaWxsPSIjMzNGRjAyIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZm9udC13ZWlnaHQ9ImJvbGQiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iODEuNDIyOSIgeD0iNSIgeT0iNzguNTYyNSI+QHN0YXJ0dW1sPC90ZXh0Pjx0ZXh0IGZpbGw9IiMzM0ZGMDIiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmb250LXdlaWdodD0iYm9sZCIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSIxNDkuMzUxMSIgeD0iNSIgeT0iOTQuODU5NCI+dGl0bGUgJiMzMjEwMjsmIzE5OTgyOyYjMjU5MDM7JiMyNTE3MzsmIzEyMzU2OyYjMTI1MDE7JiMxMjUyNTsmIzEyNTQwOzwvdGV4dD48dGV4dCBmaWxsPSIjMzNGRjAyIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZm9udC13ZWlnaHQ9ImJvbGQiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iNC44NzQiIHg9IjUiIHk9IjExMS4xNTYzIj4mIzE2MDs8L3RleHQ+PHRleHQgZmlsbD0iIzMzRkYwMiIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTQiIGZvbnQtd2VpZ2h0PSJib2xkIiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjM4LjA2OTMiIHg9IjUiIHk9IjEyNy40NTMxIj5zdGFydDwvdGV4dD48dGV4dCBmaWxsPSIjMzNGRjAyIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZm9udC13ZWlnaHQ9ImJvbGQiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iMTM3LjE5NjciIHg9IjUiIHk9IjE0My43NSI+OiYjMjQ0Njc7JiMyNjk4OTsmIzIxNzI5OyYjMTI1MjI7JiMxMjQ3MzsmIzEyNDg4OyYjMTI0MzQ7JiMyMTQ2MjsmIzI0NDcxOzs8L3RleHQ+PHRleHQgZmlsbD0iIzMzRkYwMiIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTQiIGZvbnQtd2VpZ2h0PSJib2xkIiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjQuODc0IiB4PSI1IiB5PSIxNjAuMDQ2OSI+JiMxNjA7PC90ZXh0Pjx0ZXh0IGZpbGw9IiMzM0ZGMDIiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmb250LXdlaWdodD0iYm9sZCIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSIxNzkuMTk2NSIgeD0iNSIgeT0iMTc2LjM0MzgiPjomIzI1OTAzOyYjMjUxNzM7JiMyNjA4NTsmIzEyMzk4OyYjMjQ0Njc7JiMyNjk4OTsmIzIxNzI5OyYjMTI0MzQ7JiMxMjUwMTsmIzEyNDUxOyYjMTI1MjM7JiMxMjQ3OTs7PC90ZXh0Pjx0ZXh0IGZpbGw9IiMzM0ZGMDIiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmb250LXdlaWdodD0iYm9sZCIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSIyNTQuNDQwMSIgeD0iNSIgeT0iMTkyLjY0MDYiPm5vdGUgcmlnaHQ6IGlzLXBheS1kYXk/ICYjMTIzOTE7JiMxMjQ4MTsmIzEyNDU1OyYjMTI0ODM7JiMxMjQ2Mzs8L3RleHQ+PHRleHQgZmlsbD0iIzMzRkYwMiIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTQiIGZvbnQtd2VpZ2h0PSJib2xkIiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjQuODc0IiB4PSI1IiB5PSIyMDguOTM3NSI+JiMxNjA7PC90ZXh0Pjx0ZXh0IGZpbGw9IiMzM0ZGMDIiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmb250LXdlaWdodD0iYm9sZCIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSIyODQuNDE1MyIgeD0iNSIgeT0iMjI1LjIzNDQiPndoaWxlICgmIzI1OTAzOyYjMjUxNzM7JiMyMzU1MDsmIzM1OTM3OyYjMTIzOTg7JiMyNDQ2NzsmIzI2OTg5OyYjMjE3Mjk7JiMxMjM2NDsmIzEyMzU0OyYjMTI0Mjc7PykgaXMgKHllcyk8L3RleHQ+PHRleHQgZmlsbD0iIzMzRkYwMiIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTQiIGZvbnQtd2VpZ2h0PSJib2xkIiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjgxLjE5NyIgeD0iNSIgeT0iMjQxLjUzMTMiPjomIzMyMTAyOyYjMTk5ODI7JiMxMjQzNDsmIzM1MzM2OyYjMzE2Mzk7OzwvdGV4dD48dGV4dCBmaWxsPSIjMzNGRjAyIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZm9udC13ZWlnaHQ9ImJvbGQiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iMjAxLjYyNTgiIHg9IjUiIHk9IjI1Ny44MjgxIj5ub3RlIHJpZ2h0OiBjYWxjLXBheSAmIzEyMzkxOyYjMzUzMzY7JiMzMTYzOTs8L3RleHQ+PHRleHQgZmlsbD0iIzMzRkYwMiIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTQiIGZvbnQtd2VpZ2h0PSJib2xkIiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjQuODc0IiB4PSI1IiB5PSIyNzQuMTI1Ij4mIzE2MDs8L3RleHQ+PHRleHQgZmlsbD0iIzMzRkYwMiIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTQiIGZvbnQtd2VpZ2h0PSJib2xkIiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9Ijk1LjE5NjkiIHg9IjUiIHk9IjI5MC40MjE5Ij46JiMyNTkwMzsmIzI1MTczOyYjMTIzNTY7JiMxMjQzNDsmIzIwOTY2OyYjMjk3MDI7OzwvdGV4dD48dGV4dCBmaWxsPSIjMzNGRjAyIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZm9udC13ZWlnaHQ9ImJvbGQiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iMjQ0LjUyODMiIHg9IjUiIHk9IjMwNi43MTg4Ij5ub3RlIHJpZ2h0OiBwcm9jZXNzLXBheW1lbnQgJiMxMjM5MTs8L3RleHQ+PHRleHQgZmlsbD0iIzMzRkYwMiIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTQiIGZvbnQtd2VpZ2h0PSJib2xkIiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHQtZGVjb3JhdGlvbj0id2F2eSB1bmRlcmxpbmUiIHRleHRMZW5ndGg9IjE1My45OTkzIiB4PSI1IiB5PSIzMjMuMDE1NiI+JiMyNTkwMzsmIzI1MTczOyYjMTIzNTY7JiMyNjA0MTsmIzI3ODYxOyYjMTIzOTU7JiMyNDU0MDsmIzEyMzc2OyYjMTIzODM7JiMyMDk2NjsmIzI5NzAyOzwvdGV4dD48dGV4dCBmaWxsPSIjRkYwMDAwIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZm9udC13ZWlnaHQ9ImJvbGQiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iMzc2LjI0MzIiIHg9IjkuODc0IiB5PSIzMzkuMzEyNSI+U3ludGF4IEVycm9yPyAoQXNzdW1lZCBkaWFncmFtIHR5cGU6IGFjdGl2aXR5KTwvdGV4dD48IS0tU1JDPVtMUDNESWlEMDU4TnR6b2NvUjFQeldNSkhQbWJmaTg2UVg2SDBpZm1QcU9nWWZOekhBNGdITGg2cUdRSkdXWUdGU3ZyOTd5Q1A4ekxrQldGdGRsRVRDeUdkTlMtZURla2x4UXFTdlY5Z1pGR1MtSFp2MmxhZEc0QVNjODBiWWc2U2h5SG1YbG1Ec0d2djN6YjB0NHI0YVRhMExnc0tzSHBmLWstSzNSR0hVcVEtSDVSUTQ4SjRDc0JfZjRDaW1xLVFhUENzc3F4UUNmMi04QVY4ckVKOFNlMnBaZ3oyRE1mTmFIVnh6emNIQ1JyMW9mMVRqcXBiT3BISUJwNzFnWmlld0Z3ckx3c3BPdnBoVDVxRHJBbndWcVlqLXdla2J1a2dWdDRpWWtCR3pQQVZlQVRVR0JHTTNYZXZzU2FGekxZQVNlaHE3a2JKUkc3VzFVdFYwYTVlX2lUS2N4dnlkRWc0dkdaZld3cS1EdW8tMEcwMF0tLT48L2c+PC9zdmc+" class="uml" alt="uml diagram" title="" /></p>
+<h2 id="7">7. 使用例<a class="headerlink" href="#7" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><span class="p">(</span><span class="nf">require</span><span class="w"> </span><span class="o">&#39;</span><span class="p">[</span><span class="nv">payroll.employee</span><span class="w"> </span><span class="ss">:as</span><span class="w"> </span><span class="nv">emp</span><span class="p">])</span>
+<span class="p">(</span><span class="nf">require</span><span class="w"> </span><span class="o">&#39;</span><span class="p">[</span><span class="nv">payroll.classification</span><span class="w"> </span><span class="ss">:as</span><span class="w"> </span><span class="nv">class</span><span class="p">])</span>
+<span class="p">(</span><span class="nf">require</span><span class="w"> </span><span class="o">&#39;</span><span class="p">[</span><span class="nv">payroll.schedule</span><span class="w"> </span><span class="ss">:as</span><span class="w"> </span><span class="nv">sched</span><span class="p">])</span>
+<span class="p">(</span><span class="nf">require</span><span class="w"> </span><span class="o">&#39;</span><span class="p">[</span><span class="nv">payroll.payroll</span><span class="w"> </span><span class="ss">:as</span><span class="w"> </span><span class="nv">payroll</span><span class="p">])</span>
+
+<span class="c1">;; 従業員の作成</span>
+<span class="p">(</span><span class="k">def </span><span class="nv">salaried-emp</span>
+<span class="w">  </span><span class="p">(</span><span class="nf">emp/make-salaried-employee</span><span class="w"> </span><span class="s">&quot;E001&quot;</span><span class="w"> </span><span class="s">&quot;田中太郎&quot;</span><span class="w"> </span><span class="mi">500000</span><span class="p">))</span>
+
+<span class="p">(</span><span class="k">def </span><span class="nv">hourly-emp</span>
+<span class="w">  </span><span class="p">(</span><span class="nf">emp/make-hourly-employee</span><span class="w"> </span><span class="s">&quot;E002&quot;</span><span class="w"> </span><span class="s">&quot;佐藤花子&quot;</span><span class="w"> </span><span class="mi">1500</span><span class="p">))</span>
+
+<span class="p">(</span><span class="k">def </span><span class="nv">commissioned-emp</span>
+<span class="w">  </span><span class="p">(</span><span class="nf">emp/make-commissioned-employee</span><span class="w"> </span><span class="s">&quot;E003&quot;</span><span class="w"> </span><span class="s">&quot;鈴木一郎&quot;</span><span class="w"> </span><span class="mi">200000</span><span class="w"> </span><span class="mf">0.1</span><span class="p">))</span>
+
+<span class="c1">;; コンテキストの作成（タイムカード、売上データ）</span>
+<span class="p">(</span><span class="k">def </span><span class="nv">ctx</span>
+<span class="w">  </span><span class="p">(</span><span class="nb">-&gt; </span><span class="p">(</span><span class="nf">class/make-context</span><span class="p">)</span>
+<span class="w">      </span><span class="p">(</span><span class="nf">class/add-time-card</span><span class="w"> </span><span class="s">&quot;E002&quot;</span><span class="w"> </span><span class="s">&quot;2024-01-15&quot;</span><span class="w"> </span><span class="mi">8</span><span class="p">)</span>
+<span class="w">      </span><span class="p">(</span><span class="nf">class/add-time-card</span><span class="w"> </span><span class="s">&quot;E002&quot;</span><span class="w"> </span><span class="s">&quot;2024-01-16&quot;</span><span class="w"> </span><span class="mi">10</span><span class="p">)</span>
+<span class="w">      </span><span class="p">(</span><span class="nf">class/add-sales-receipt</span><span class="w"> </span><span class="s">&quot;E003&quot;</span><span class="w"> </span><span class="s">&quot;2024-01-15&quot;</span><span class="w"> </span><span class="mi">100000</span><span class="p">)</span>
+<span class="w">      </span><span class="p">(</span><span class="nf">class/add-sales-receipt</span><span class="w"> </span><span class="s">&quot;E003&quot;</span><span class="w"> </span><span class="s">&quot;2024-01-16&quot;</span><span class="w"> </span><span class="mi">50000</span><span class="p">)))</span>
+
+<span class="c1">;; 給与計算</span>
+<span class="p">(</span><span class="nf">class/calc-pay</span><span class="w"> </span><span class="nv">salaried-emp</span><span class="w"> </span><span class="nv">ctx</span><span class="p">)</span><span class="w">     </span><span class="c1">;; =&gt; 500000</span>
+<span class="p">(</span><span class="nf">class/calc-pay</span><span class="w"> </span><span class="nv">hourly-emp</span><span class="w"> </span><span class="nv">ctx</span><span class="p">)</span><span class="w">       </span><span class="c1">;; =&gt; 27000.0 (18時間 * 1500)</span>
+<span class="p">(</span><span class="nf">class/calc-pay</span><span class="w"> </span><span class="nv">commissioned-emp</span><span class="w"> </span><span class="nv">ctx</span><span class="p">)</span><span class="w"> </span><span class="c1">;; =&gt; 215000.0 (200000 + 15000)</span>
+</code></pre></div>
+<h2 id="8">8. 関数型アプローチの利点<a class="headerlink" href="#8" title="Permanent link">&para;</a></h2>
+<h3 id="1_1">1. テスト容易性<a class="headerlink" href="#1_1" title="Permanent link">&para;</a></h3>
+<p>純粋関数であるため、テストが簡単です。</p>
+<div class="highlight"><pre><span></span><code><span class="p">(</span><span class="nf">describe</span><span class="w"> </span><span class="s">&quot;給与計算 - 時給制&quot;</span>
+<span class="w">  </span><span class="p">(</span><span class="nf">it</span><span class="w"> </span><span class="s">&quot;残業時間は1.5倍で計算&quot;</span>
+<span class="w">    </span><span class="p">(</span><span class="k">let </span><span class="p">[</span><span class="nv">e</span><span class="w"> </span><span class="p">(</span><span class="nf">emp/make-hourly-employee</span><span class="w"> </span><span class="s">&quot;E002&quot;</span><span class="w"> </span><span class="s">&quot;佐藤&quot;</span><span class="w"> </span><span class="mi">1000</span><span class="p">)</span>
+<span class="w">          </span><span class="nv">ctx</span><span class="w"> </span><span class="p">(</span><span class="nf">class/add-time-card</span><span class="w"> </span><span class="p">{}</span><span class="w"> </span><span class="s">&quot;E002&quot;</span><span class="w"> </span><span class="s">&quot;2024-01-15&quot;</span><span class="w"> </span><span class="mi">45</span><span class="p">)]</span>
+<span class="w">      </span><span class="c1">;; 40 * 1000 + 5 * 1000 * 1.5 = 47500</span>
+<span class="w">      </span><span class="p">(</span><span class="nf">should=</span><span class="w"> </span><span class="mf">47500.0</span><span class="w"> </span><span class="p">(</span><span class="nf">class/calc-pay</span><span class="w"> </span><span class="nv">e</span><span class="w"> </span><span class="nv">ctx</span><span class="p">)))))</span>
+</code></pre></div>
+<h3 id="2">2. 拡張容易性<a class="headerlink" href="#2" title="Permanent link">&para;</a></h3>
+<p>新しい給与タイプの追加は、新しいメソッドを定義するだけです。</p>
+<div class="highlight"><pre><span></span><code><span class="c1">;; 新しい給与タイプ: 契約制</span>
+<span class="p">(</span><span class="kd">defmethod </span><span class="nv">calc-pay</span><span class="w"> </span><span class="ss">:contract</span>
+<span class="w">  </span><span class="p">[</span><span class="nv">employee</span><span class="w"> </span><span class="nv">context</span><span class="p">]</span>
+<span class="w">  </span><span class="p">(</span><span class="k">let </span><span class="p">[[</span><span class="nv">_</span><span class="w"> </span><span class="nv">contract-amount</span><span class="p">]</span><span class="w"> </span><span class="p">(</span><span class="nf">emp/get-pay-class</span><span class="w"> </span><span class="nv">employee</span><span class="p">)]</span>
+<span class="w">    </span><span class="nv">contract-amount</span><span class="p">))</span>
+</code></pre></div>
+<h3 id="3_1">3. 関心の分離<a class="headerlink" href="#3_1" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>employee</strong>: データ構造とアクセサ</li>
+<li><strong>classification</strong>: 給与計算ロジック</li>
+<li><strong>schedule</strong>: 支払日判定</li>
+<li><strong>payroll</strong>: 統合処理</li>
+</ul>
+<h2 id="_11">まとめ<a class="headerlink" href="#_11" title="Permanent link">&para;</a></h2>
+<p>本章では、給与計算システムを通じて以下を学びました：</p>
+<ol>
+<li><strong>Clojure Spec</strong>: データ仕様の定義</li>
+<li><strong>マルチメソッド</strong>: 給与タイプによるディスパッチ</li>
+<li><strong>関心の分離</strong>: モジュール化された設計</li>
+<li><strong>純粋関数</strong>: テスト容易な実装</li>
+</ol>
+<h2 id="_12">参考コード<a class="headerlink" href="#_12" title="Permanent link">&para;</a></h2>
+<p>本章のコード例は以下のファイルで確認できます：</p>
+<ul>
+<li>ソースコード: <code>app/clojure/part6/src/payroll/</code></li>
+<li>テストコード: <code>app/clojure/part6/spec/payroll/</code></li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+    <a href="https://github.com/k2works" target="_blank" rel="noopener" title="GitHub Repository/claude-code-booster" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "toc.integrate", "search.suggest", "search.highlight"], "search": "../../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.e71a0d61.min.js"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+      
+        <script src="../../docs/assets/js/extra.js"></script>
+      
+    
+  </body>
+</html>

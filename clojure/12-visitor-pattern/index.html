@@ -1,0 +1,2236 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="関数型プログラミングにおける設計原則とデザインパターンを実践的に学ぶガイド">
+      
+      
+        <meta name="author" content="Project Team">
+      
+      
+      
+        <link rel="prev" href="../11-command-pattern/">
+      
+      
+        <link rel="next" href="../13-abstract-factory-pattern/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.0">
+    
+    
+      
+        <title>12. Visitor - 関数型デザイン - 原則、パターン、実践</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.618322db.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../docs/mkdocs/assets/css/extra.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#12-visitor" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="関数型デザイン - 原則、パターン、実践" class="md-header__button md-logo" aria-label="関数型デザイン - 原則、パターン、実践" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            関数型デザイン - 原則、パターン、実践
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              12. Visitor
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/k2works/grokkingfp-excersice" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    grokkingfp-excersice
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../" class="md-tabs__link">
+          
+  
+  
+  Clojure
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+  
+
+<nav class="md-nav md-nav--primary md-nav--lifted md-nav--integrated" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="関数型デザイン - 原則、パターン、実践" class="md-nav__button md-logo" aria-label="関数型デザイン - 原則、パターン、実践" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    関数型デザイン - 原則、パターン、実践
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/k2works/grokkingfp-excersice" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    grokkingfp-excersice
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Clojure
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Clojure
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    概要
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_2" id="__nav_2_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第1部 - 基礎原則
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    第1部 - 基礎原則
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../01-immutability-and-data-transformation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    1. 不変性とデータ変換
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02-function-composition/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2. 関数合成と高階関数
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03-polymorphism/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3. 多態性の実現方法
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_3" id="__nav_2_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第2部 - 仕様とテスト
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    第2部 - 仕様とテスト
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04-clojure-spec/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4. Clojure Spec
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05-property-based-testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    5. プロパティベーステスト
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../06-tdd-in-functional/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    6. TDD と関数型
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_4" id="__nav_2_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第3部 - 構造パターン
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    第3部 - 構造パターン
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../07-composite-pattern/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    7. Composite
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../08-decorator-pattern/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    8. Decorator
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../09-adapter-pattern/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    9. Adapter
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_5" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2_5" id="__nav_2_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第4部 - 振る舞いパターン
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    第4部 - 振る舞いパターン
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../10-strategy-pattern/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    10. Strategy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../11-command-pattern/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    11. Command
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    12. Visitor
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    12. Visitor
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        はじめに
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. パターンの構造
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-element" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Element: 図形の定義
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Element: 図形の定義">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#shape" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Shape インターフェース
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#circle" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Circle
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#square" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Square
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rectangle" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rectangle
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        クラス図
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-visitor-json" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Visitor: JSON 変換
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Visitor: JSON 変換">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#json-visitor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        JSON Visitor の実装
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        使用例
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-visitor-xml" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Visitor: XML 変換
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Visitor: XML 変換">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#xml-visitor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        XML Visitor の実装
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-visitor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Visitor: 面積計算
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. Visitor: 面積計算">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#area-visitor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Area Visitor の実装
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-visitor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Visitor: 周囲長計算
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. Visitor: 周囲長計算">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#perimeter-visitor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Perimeter Visitor の実装
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-visitor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Visitor パターンの構造
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. シーケンス図
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-visitor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. 新しい Visitor の追加
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="9. 新しい Visitor の追加">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#visitor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        例: 描画 Visitor
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. パターンの利点と欠点
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="10. パターンの利点と欠点">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        利点
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        欠点
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#11" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11. 関数型プログラミングでの特徴
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        まとめ
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        参考コード
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第4部のまとめ
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_6" id="__nav_2_6_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第5部 - 生成パターン
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    第5部 - 生成パターン
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../13-abstract-factory-pattern/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    13. Abstract Factory
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../14-abstract-server-pattern/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    14. Abstract Server
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_7" id="__nav_2_7_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第6部 - ケーススタディ
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    第6部 - ケーススタディ
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../15-gossiping-bus-drivers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    15. ゴシップバス運転手
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../16-payroll-system/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    16. 給与計算システム
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../17-video-rental-system/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    17. レンタルビデオ
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../18-concurrency-system/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    18. 並行処理
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../19-wator-simulation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    19. Wa-Tor シミュレーション
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_8" id="__nav_2_8_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第7部 - まとめと応用
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    第7部 - まとめと応用
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../20-pattern-interactions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    20. パターン間の相互作用
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../21-best-practices/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    21. ベストプラクティス
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../22-oo-to-fp-migration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    22. OO から FP への移行
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="12-visitor">第12章: Visitor パターン<a class="headerlink" href="#12-visitor" title="Permanent link">&para;</a></h1>
+<h2 id="_1">はじめに<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
+<p>Visitor パターンは、データ構造と操作を分離し、既存のデータ構造を変更することなく新しい操作を追加できるようにするパターンです。</p>
+<p>本章では、図形（Shape）に対する様々な操作（JSON 変換、XML 変換、面積計算、周囲長計算）を通じて、マルチメソッドによる Visitor パターンの実装を学びます。</p>
+<h2 id="1">1. パターンの構造<a class="headerlink" href="#1" title="Permanent link">&para;</a></h2>
+<p>Visitor パターンは以下の要素で構成されます：</p>
+<ul>
+<li><strong>Visitor</strong>: 操作のインターフェース</li>
+<li><strong>ConcreteVisitor</strong>: 具体的な操作の実装</li>
+<li><strong>Element</strong>: 訪問される要素のインターフェース</li>
+<li><strong>ConcreteElement</strong>: 具体的な要素</li>
+</ul>
+<p><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiBjb250ZW50U3R5bGVUeXBlPSJ0ZXh0L2NzcyIgZGF0YS1kaWFncmFtLXR5cGU9IkNMQVNTIiBoZWlnaHQ9IjQxMHB4IiBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJub25lIiBzdHlsZT0id2lkdGg6NzgxcHg7aGVpZ2h0OjQxMHB4O2JhY2tncm91bmQ6I0ZGRkZGRjsiIHZlcnNpb249IjEuMSIgdmlld0JveD0iMCAwIDc4MSA0MTAiIHdpZHRoPSI3ODFweCIgem9vbUFuZFBhbj0ibWFnbmlmeSI+PGRlZnMvPjxnPjwhLS1jbGFzcyB2aXNpdG9yLS0+PGcgY2xhc3M9ImVudGl0eSIgZGF0YS1lbnRpdHk9InZpc2l0b3IiIGRhdGEtc291cmNlLWxpbmU9IjMiIGRhdGEtdWlkPSJlbnQwMDAyIiBpZD0iZW50aXR5X3Zpc2l0b3IiPjxyZWN0IGZpbGw9IiNGMUYxRjEiIGhlaWdodD0iOTYuODkwNiIgcng9IjIuNSIgcnk9IjIuNSIgc3R5bGU9InN0cm9rZTojMTgxODE4O3N0cm9rZS13aWR0aDowLjU7IiB3aWR0aD0iMjAwLjI2ODYiIHg9IjMzMy4yNyIgeT0iMTY0Ljg5Ii8+PGVsbGlwc2UgY3g9IjQwNi45MjM4IiBjeT0iMTgwLjg5IiBmaWxsPSIjQjRBN0U1IiByeD0iMTEiIHJ5PSIxMSIgc3R5bGU9InN0cm9rZTojMTgxODE4O3N0cm9rZS13aWR0aDoxOyIvPjxwYXRoIGQ9Ik00MDIuODQ1NywxNzYuNjU1NiBMNDAyLjg0NTcsMTc0LjQ5OTQgTDQxMC4yMzYzLDE3NC40OTk0IEw0MTAuMjM2MywxNzYuNjU1NiBMNDA3Ljc2NzYsMTc2LjY1NTYgTDQwNy43Njc2LDE4NC43MzM4IEw0MTAuMjM2MywxODQuNzMzOCBMNDEwLjIzNjMsMTg2Ljg5IEw0MDIuODQ1NywxODYuODkgTDQwMi44NDU3LDE4NC43MzM4IEw0MDUuMzE0NCwxODQuNzMzOCBMNDA1LjMxNDQsMTc2LjY1NTYgTDQwMi44NDU3LDE3Ni42NTU2IFogIiBmaWxsPSIjMDAwMDAwIi8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTQiIGZvbnQtc3R5bGU9Iml0YWxpYyIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSI0NC40NjA5IiB4PSI0MjcuNDIzOCIgeT0iMTg1LjczNjciPlZpc2l0b3I8L3RleHQ+PGxpbmUgc3R5bGU9InN0cm9rZTojMTgxODE4O3N0cm9rZS13aWR0aDowLjU7IiB4MT0iMzM0LjI3IiB4Mj0iNTMyLjUzODYiIHkxPSIxOTYuODkiIHkyPSIxOTYuODkiLz48bGluZSBzdHlsZT0ic3Ryb2tlOiMxODE4MTg7c3Ryb2tlLXdpZHRoOjAuNTsiIHgxPSIzMzQuMjciIHgyPSI1MzIuNTM4NiIgeTE9IjIwNC44OSIgeTI9IjIwNC44OSIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjEyOC42NjYiIHg9IjMzOS4yNyIgeT0iMjIxLjg4NTEiPit2aXNpdENpcmNsZShjaXJjbGUpPC90ZXh0Pjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjE0OS4wOTg2IiB4PSIzMzkuMjciIHk9IjIzOC4xODIiPit2aXNpdFNxdWFyZShzcXVhcmUpPC90ZXh0Pjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjE4OC4yNjg2IiB4PSIzMzkuMjciIHk9IjI1NC40Nzg5Ij4rdmlzaXRSZWN0YW5nbGUocmVjdGFuZ2xlKTwvdGV4dD48L2c+PCEtLWNsYXNzIGpzb25WaXNpdG9yLS0+PGcgY2xhc3M9ImVudGl0eSIgZGF0YS1lbnRpdHk9Impzb25WaXNpdG9yIiBkYXRhLXNvdXJjZS1saW5lPSI5IiBkYXRhLXVpZD0iZW50MDAwMyIgaWQ9ImVudGl0eV9qc29uVmlzaXRvciI+PHJlY3QgZmlsbD0iI0YxRjFGMSIgaGVpZ2h0PSI5Ni44OTA2IiByeD0iMi41IiByeT0iMi41IiBzdHlsZT0ic3Ryb2tlOiMxODE4MTg7c3Ryb2tlLXdpZHRoOjAuNTsiIHdpZHRoPSIyMDAuMjY4NiIgeD0iMjE1LjI3IiB5PSI3Ii8+PGVsbGlwc2UgY3g9IjI3NC40OTMxIiBjeT0iMjMiIGZpbGw9IiNBREQxQjIiIHJ4PSIxMSIgcnk9IjExIiBzdHlsZT0ic3Ryb2tlOiMxODE4MTg7c3Ryb2tlLXdpZHRoOjE7Ii8+PHBhdGggZD0iTTI3Ny40NjE5LDI4LjY0MDYgUTI3Ni44ODM4LDI4LjkzNzUgMjc2LjI0MzEsMjkuMDc4MSBRMjc1LjYwMjUsMjkuMjM0NCAyNzQuODk5NCwyOS4yMzQ0IFEyNzIuMzk5NCwyOS4yMzQ0IDI3MS4wNzEzLDI3LjU5MzggUTI2OS43NTg4LDI1LjkzNzUgMjY5Ljc1ODgsMjIuODEyNSBRMjY5Ljc1ODgsMTkuNjg3NSAyNzEuMDcxMywxOC4wMzEzIFEyNzIuMzk5NCwxNi4zNzUgMjc0Ljg5OTQsMTYuMzc1IFEyNzUuNjAyNSwxNi4zNzUgMjc2LjI0MzEsMTYuNTMxMyBRMjc2Ljg5OTQsMTYuNjg3NSAyNzcuNDYxOSwxNi45ODQ0IEwyNzcuNDYxOSwxOS43MDMxIFEyNzYuODM2OSwxOS4xMjUgMjc2LjI0MzEsMTguODU5NCBRMjc1LjY0OTQsMTguNTc4MSAyNzUuMDI0NCwxOC41NzgxIFEyNzMuNjgwNiwxOC41NzgxIDI3Mi45OTMxLDE5LjY1NjMgUTI3Mi4zMDU2LDIwLjcxODggMjcyLjMwNTYsMjIuODEyNSBRMjcyLjMwNTYsMjQuOTA2MyAyNzIuOTkzMSwyNS45ODQ0IFEyNzMuNjgwNiwyNy4wNDY5IDI3NS4wMjQ0LDI3LjA0NjkgUTI3NS42NDk0LDI3LjA0NjkgMjc2LjI0MzEsMjYuNzgxMyBRMjc2LjgzNjksMjYuNSAyNzcuNDYxOSwyNS45MjE5IEwyNzcuNDYxOSwyOC42NDA2IFogIiBmaWxsPSIjMDAwMDAwIi8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTQiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iNzMuMzIyMyIgeD0iMjk0Ljk5MzEiIHk9IjI3Ljg0NjciPkpzb25WaXNpdG9yPC90ZXh0PjxsaW5lIHN0eWxlPSJzdHJva2U6IzE4MTgxODtzdHJva2Utd2lkdGg6MC41OyIgeDE9IjIxNi4yNyIgeDI9IjQxNC41Mzg2IiB5MT0iMzkiIHkyPSIzOSIvPjxsaW5lIHN0eWxlPSJzdHJva2U6IzE4MTgxODtzdHJva2Utd2lkdGg6MC41OyIgeDE9IjIxNi4yNyIgeDI9IjQxNC41Mzg2IiB5MT0iNDciIHkyPSI0NyIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjEyOC42NjYiIHg9IjIyMS4yNyIgeT0iNjMuOTk1MSI+K3Zpc2l0Q2lyY2xlKGNpcmNsZSk8L3RleHQ+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTQiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iMTQ5LjA5ODYiIHg9IjIyMS4yNyIgeT0iODAuMjkyIj4rdmlzaXRTcXVhcmUoc3F1YXJlKTwvdGV4dD48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSIxODguMjY4NiIgeD0iMjIxLjI3IiB5PSI5Ni41ODg5Ij4rdmlzaXRSZWN0YW5nbGUocmVjdGFuZ2xlKTwvdGV4dD48L2c+PCEtLWNsYXNzIGFyZWFWaXNpdG9yLS0+PGcgY2xhc3M9ImVudGl0eSIgZGF0YS1lbnRpdHk9ImFyZWFWaXNpdG9yIiBkYXRhLXNvdXJjZS1saW5lPSIxNSIgZGF0YS11aWQ9ImVudDAwMDQiIGlkPSJlbnRpdHlfYXJlYVZpc2l0b3IiPjxyZWN0IGZpbGw9IiNGMUYxRjEiIGhlaWdodD0iOTYuODkwNiIgcng9IjIuNSIgcnk9IjIuNSIgc3R5bGU9InN0cm9rZTojMTgxODE4O3N0cm9rZS13aWR0aDowLjU7IiB3aWR0aD0iMjAwLjI2ODYiIHg9IjQ1MC4yNyIgeT0iNyIvPjxlbGxpcHNlIGN4PSI1MDcuNjYxMSIgY3k9IjIzIiBmaWxsPSIjQUREMUIyIiByeD0iMTEiIHJ5PSIxMSIgc3R5bGU9InN0cm9rZTojMTgxODE4O3N0cm9rZS13aWR0aDoxOyIvPjxwYXRoIGQ9Ik01MTAuNjI5OSwyOC42NDA2IFE1MTAuMDUxNywyOC45Mzc1IDUwOS40MTExLDI5LjA3ODEgUTUwOC43NzA1LDI5LjIzNDQgNTA4LjA2NzQsMjkuMjM0NCBRNTA1LjU2NzQsMjkuMjM0NCA1MDQuMjM5MiwyNy41OTM4IFE1MDIuOTI2NywyNS45Mzc1IDUwMi45MjY3LDIyLjgxMjUgUTUwMi45MjY3LDE5LjY4NzUgNTA0LjIzOTIsMTguMDMxMyBRNTA1LjU2NzQsMTYuMzc1IDUwOC4wNjc0LDE2LjM3NSBRNTA4Ljc3MDUsMTYuMzc1IDUwOS40MTExLDE2LjUzMTMgUTUxMC4wNjc0LDE2LjY4NzUgNTEwLjYyOTksMTYuOTg0NCBMNTEwLjYyOTksMTkuNzAzMSBRNTEwLjAwNDksMTkuMTI1IDUwOS40MTExLDE4Ljg1OTQgUTUwOC44MTc0LDE4LjU3ODEgNTA4LjE5MjQsMTguNTc4MSBRNTA2Ljg0ODYsMTguNTc4MSA1MDYuMTYxMSwxOS42NTYzIFE1MDUuNDczNiwyMC43MTg4IDUwNS40NzM2LDIyLjgxMjUgUTUwNS40NzM2LDI0LjkwNjMgNTA2LjE2MTEsMjUuOTg0NCBRNTA2Ljg0ODYsMjcuMDQ2OSA1MDguMTkyNCwyNy4wNDY5IFE1MDguODE3NCwyNy4wNDY5IDUwOS40MTExLDI2Ljc4MTMgUTUxMC4wMDQ5LDI2LjUgNTEwLjYyOTksMjUuOTIxOSBMNTEwLjYyOTksMjguNjQwNiBaICIgZmlsbD0iIzAwMDAwMCIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9Ijc2Ljk4NjMiIHg9IjUyOC4xNjExIiB5PSIyNy44NDY3Ij5BcmVhVmlzaXRvcjwvdGV4dD48bGluZSBzdHlsZT0ic3Ryb2tlOiMxODE4MTg7c3Ryb2tlLXdpZHRoOjAuNTsiIHgxPSI0NTEuMjciIHgyPSI2NDkuNTM4NiIgeTE9IjM5IiB5Mj0iMzkiLz48bGluZSBzdHlsZT0ic3Ryb2tlOiMxODE4MTg7c3Ryb2tlLXdpZHRoOjAuNTsiIHgxPSI0NTEuMjciIHgyPSI2NDkuNTM4NiIgeTE9IjQ3IiB5Mj0iNDciLz48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSIxMjguNjY2IiB4PSI0NTYuMjciIHk9IjYzLjk5NTEiPit2aXNpdENpcmNsZShjaXJjbGUpPC90ZXh0Pjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjE0OS4wOTg2IiB4PSI0NTYuMjciIHk9IjgwLjI5MiI+K3Zpc2l0U3F1YXJlKHNxdWFyZSk8L3RleHQ+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTQiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iMTg4LjI2ODYiIHg9IjQ1Ni4yNyIgeT0iOTYuNTg4OSI+K3Zpc2l0UmVjdGFuZ2xlKHJlY3RhbmdsZSk8L3RleHQ+PC9nPjwhLS1jbGFzcyBlbGVtZW50LS0+PGcgY2xhc3M9ImVudGl0eSIgZGF0YS1lbnRpdHk9ImVsZW1lbnQiIGRhdGEtc291cmNlLWxpbmU9IjIxIiBkYXRhLXVpZD0iZW50MDAwNSIgaWQ9ImVudGl0eV9lbGVtZW50Ij48cmVjdCBmaWxsPSIjRjFGMUYxIiBoZWlnaHQ9IjY0LjI5NjkiIHJ4PSIyLjUiIHJ5PSIyLjUiIHN0eWxlPSJzdHJva2U6IzE4MTgxODtzdHJva2Utd2lkdGg6MC41OyIgd2lkdGg9IjEyNC43ODYxIiB4PSIxNzMuMDEiIHk9IjMzOC43OCIvPjxlbGxpcHNlIGN4PSIyMDMuNjgwOSIgY3k9IjM1NC43OCIgZmlsbD0iI0I0QTdFNSIgcng9IjExIiByeT0iMTEiIHN0eWxlPSJzdHJva2U6IzE4MTgxODtzdHJva2Utd2lkdGg6MTsiLz48cGF0aCBkPSJNMTk5LjYwMjgsMzUwLjU0NTYgTDE5OS42MDI4LDM0OC4zODk0IEwyMDYuOTkzNCwzNDguMzg5NCBMMjA2Ljk5MzQsMzUwLjU0NTYgTDIwNC41MjQ2LDM1MC41NDU2IEwyMDQuNTI0NiwzNTguNjIzOCBMMjA2Ljk5MzQsMzU4LjYyMzggTDIwNi45OTM0LDM2MC43OCBMMTk5LjYwMjgsMzYwLjc4IEwxOTkuNjAyOCwzNTguNjIzOCBMMjAyLjA3MTUsMzU4LjYyMzggTDIwMi4wNzE1LDM1MC41NDU2IEwxOTkuNjAyOCwzNTAuNTQ1NiBaICIgZmlsbD0iIzAwMDAwMCIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmb250LXN0eWxlPSJpdGFsaWMiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iNTcuOTYxOSIgeD0iMjIxLjE2MzMiIHk9IjM1OS42MjY3Ij5FbGVtZW50PC90ZXh0PjxsaW5lIHN0eWxlPSJzdHJva2U6IzE4MTgxODtzdHJva2Utd2lkdGg6MC41OyIgeDE9IjE3NC4wMSIgeDI9IjI5Ni43OTYxIiB5MT0iMzcwLjc4IiB5Mj0iMzcwLjc4Ii8+PGxpbmUgc3R5bGU9InN0cm9rZTojMTgxODE4O3N0cm9rZS13aWR0aDowLjU7IiB4MT0iMTc0LjAxIiB4Mj0iMjk2Ljc5NjEiIHkxPSIzNzguNzgiIHkyPSIzNzguNzgiLz48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSIxMTIuNzg2MSIgeD0iMTc5LjAxIiB5PSIzOTUuNzc1MSI+K2FjY2VwdCh2aXNpdG9yKTwvdGV4dD48L2c+PCEtLWNsYXNzIGNpcmNsZS0tPjxnIGNsYXNzPSJlbnRpdHkiIGRhdGEtZW50aXR5PSJjaXJjbGUiIGRhdGEtc291cmNlLWxpbmU9IjI1IiBkYXRhLXVpZD0iZW50MDAwNiIgaWQ9ImVudGl0eV9jaXJjbGUiPjxyZWN0IGZpbGw9IiNGMUYxRjEiIGhlaWdodD0iOTYuODkwNiIgcng9IjIuNSIgcnk9IjIuNSIgc3R5bGU9InN0cm9rZTojMTgxODE4O3N0cm9rZS13aWR0aDowLjU7IiB3aWR0aD0iMTMwLjgxNTQiIHg9IjciIHk9IjE2NC44OSIvPjxlbGxpcHNlIGN4PSI0OC42Mzc1IiBjeT0iMTgwLjg5IiBmaWxsPSIjQUREMUIyIiByeD0iMTEiIHJ5PSIxMSIgc3R5bGU9InN0cm9rZTojMTgxODE4O3N0cm9rZS13aWR0aDoxOyIvPjxwYXRoIGQ9Ik01MS42MDYyLDE4Ni41MzA2IFE1MS4wMjgxLDE4Ni44Mjc1IDUwLjM4NzUsMTg2Ljk2ODEgUTQ5Ljc0NjgsMTg3LjEyNDQgNDkuMDQzNywxODcuMTI0NCBRNDYuNTQzNywxODcuMTI0NCA0NS4yMTU2LDE4NS40ODM4IFE0My45MDMxLDE4My44Mjc1IDQzLjkwMzEsMTgwLjcwMjUgUTQzLjkwMzEsMTc3LjU3NzUgNDUuMjE1NiwxNzUuOTIxMyBRNDYuNTQzNywxNzQuMjY1IDQ5LjA0MzcsMTc0LjI2NSBRNDkuNzQ2OCwxNzQuMjY1IDUwLjM4NzUsMTc0LjQyMTMgUTUxLjA0MzcsMTc0LjU3NzUgNTEuNjA2MiwxNzQuODc0NCBMNTEuNjA2MiwxNzcuNTkzMSBRNTAuOTgxMiwxNzcuMDE1IDUwLjM4NzUsMTc2Ljc0OTQgUTQ5Ljc5MzcsMTc2LjQ2ODEgNDkuMTY4NywxNzYuNDY4MSBRNDcuODI1LDE3Ni40NjgxIDQ3LjEzNzUsMTc3LjU0NjMgUTQ2LjQ1LDE3OC42MDg4IDQ2LjQ1LDE4MC43MDI1IFE0Ni40NSwxODIuNzk2MyA0Ny4xMzc1LDE4My44NzQ0IFE0Ny44MjUsMTg0LjkzNjkgNDkuMTY4NywxODQuOTM2OSBRNDkuNzkzNywxODQuOTM2OSA1MC4zODc1LDE4NC42NzEzIFE1MC45ODEyLDE4NC4zOSA1MS42MDYyLDE4My44MTE5IEw1MS42MDYyLDE4Ni41MzA2IFogIiBmaWxsPSIjMDAwMDAwIi8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTQiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iMzkuNjIxMSIgeD0iNjguNTU2OSIgeT0iMTg1LjczNjciPkNpcmNsZTwvdGV4dD48bGluZSBzdHlsZT0ic3Ryb2tlOiMxODE4MTg7c3Ryb2tlLXdpZHRoOjAuNTsiIHgxPSI4IiB4Mj0iMTM2LjgxNTQiIHkxPSIxOTYuODkiIHkyPSIxOTYuODkiLz48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSIxMDIuMzM0IiB4PSIxMyIgeT0iMjEzLjg4NTEiPitjZW50ZXI6IFt4LCB5XTwvdGV4dD48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSIxMTguODE1NCIgeD0iMTMiIHk9IjIzMC4xODIiPityYWRpdXM6IG51bWJlcjwvdGV4dD48bGluZSBzdHlsZT0ic3Ryb2tlOiMxODE4MTg7c3Ryb2tlLXdpZHRoOjAuNTsiIHgxPSI4IiB4Mj0iMTM2LjgxNTQiIHkxPSIyMzcuNDgzOCIgeTI9IjIzNy40ODM4Ii8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTQiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iMTEyLjc4NjEiIHg9IjEzIiB5PSIyNTQuNDc4OSI+K2FjY2VwdCh2aXNpdG9yKTwvdGV4dD48L2c+PCEtLWNsYXNzIHNxdWFyZS0tPjxnIGNsYXNzPSJlbnRpdHkiIGRhdGEtZW50aXR5PSJzcXVhcmUiIGRhdGEtc291cmNlLWxpbmU9IjMxIiBkYXRhLXVpZD0iZW50MDAwNyIgaWQ9ImVudGl0eV9zcXVhcmUiPjxyZWN0IGZpbGw9IiNGMUYxRjEiIGhlaWdodD0iOTYuODkwNiIgcng9IjIuNSIgcnk9IjIuNSIgc3R5bGU9InN0cm9rZTojMTgxODE4O3N0cm9rZS13aWR0aDowLjU7IiB3aWR0aD0iMTI0Ljc4NjEiIHg9IjE3My4wMSIgeT0iMTY0Ljg5Ii8+PGVsbGlwc2UgY3g9IjIwNy40NDYxIiBjeT0iMTgwLjg5IiBmaWxsPSIjQUREMUIyIiByeD0iMTEiIHJ5PSIxMSIgc3R5bGU9InN0cm9rZTojMTgxODE4O3N0cm9rZS13aWR0aDoxOyIvPjxwYXRoIGQ9Ik0yMTAuNDE0OSwxODYuNTMwNiBRMjA5LjgzNjgsMTg2LjgyNzUgMjA5LjE5NjEsMTg2Ljk2ODEgUTIwOC41NTU1LDE4Ny4xMjQ0IDIwNy44NTI0LDE4Ny4xMjQ0IFEyMDUuMzUyNCwxODcuMTI0NCAyMDQuMDI0MywxODUuNDgzOCBRMjAyLjcxMTgsMTgzLjgyNzUgMjAyLjcxMTgsMTgwLjcwMjUgUTIwMi43MTE4LDE3Ny41Nzc1IDIwNC4wMjQzLDE3NS45MjEzIFEyMDUuMzUyNCwxNzQuMjY1IDIwNy44NTI0LDE3NC4yNjUgUTIwOC41NTU1LDE3NC4yNjUgMjA5LjE5NjEsMTc0LjQyMTMgUTIwOS44NTI0LDE3NC41Nzc1IDIxMC40MTQ5LDE3NC44NzQ0IEwyMTAuNDE0OSwxNzcuNTkzMSBRMjA5Ljc4OTksMTc3LjAxNSAyMDkuMTk2MSwxNzYuNzQ5NCBRMjA4LjYwMjQsMTc2LjQ2ODEgMjA3Ljk3NzQsMTc2LjQ2ODEgUTIwNi42MzM2LDE3Ni40NjgxIDIwNS45NDYxLDE3Ny41NDYzIFEyMDUuMjU4NiwxNzguNjA4OCAyMDUuMjU4NiwxODAuNzAyNSBRMjA1LjI1ODYsMTgyLjc5NjMgMjA1Ljk0NjEsMTgzLjg3NDQgUTIwNi42MzM2LDE4NC45MzY5IDIwNy45Nzc0LDE4NC45MzY5IFEyMDguNjAyNCwxODQuOTM2OSAyMDkuMTk2MSwxODQuNjcxMyBRMjA5Ljc4OTksMTg0LjM5IDIxMC40MTQ5LDE4My44MTE5IEwyMTAuNDE0OSwxODYuNTMwNiBaICIgZmlsbD0iIzAwMDAwMCIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjQ5LjU5NDciIHg9IjIyNS43NjUzIiB5PSIxODUuNzM2NyI+U3F1YXJlPC90ZXh0PjxsaW5lIHN0eWxlPSJzdHJva2U6IzE4MTgxODtzdHJva2Utd2lkdGg6MC41OyIgeDE9IjE3NC4wMSIgeDI9IjI5Ni43OTYxIiB5MT0iMTk2Ljg5IiB5Mj0iMTk2Ljg5Ii8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTQiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iMTA4LjIwNjEiIHg9IjE3OS4wMSIgeT0iMjEzLjg4NTEiPit0b3AtbGVmdDogW3gsIHldPC90ZXh0Pjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjEwNC4yMjA3IiB4PSIxNzkuMDEiIHk9IjIzMC4xODIiPitzaWRlOiBudW1iZXI8L3RleHQ+PGxpbmUgc3R5bGU9InN0cm9rZTojMTgxODE4O3N0cm9rZS13aWR0aDowLjU7IiB4MT0iMTc0LjAxIiB4Mj0iMjk2Ljc5NjEiIHkxPSIyMzcuNDgzOCIgeTI9IjIzNy40ODM4Ii8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTQiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iMTEyLjc4NjEiIHg9IjE3OS4wMSIgeT0iMjU0LjQ3ODkiPithY2NlcHQodmlzaXRvcik8L3RleHQ+PC9nPjxnIGNsYXNzPSJlbnRpdHkiIGRhdGEtZW50aXR5PSJHTU4xMyIgZGF0YS1zb3VyY2UtbGluZT0iNDUiIGRhdGEtdWlkPSJlbnQwMDE0IiBpZD0iZW50aXR5X0dNTjEzIj48cGF0aCBkPSJNNTY4Ljc3LDE4NS42NCBMNTY4Ljc3LDIwOS4zNCBMNTMzLjgxLDIxMy4zNCBMNTY4Ljc3LDIxNy4zNCBMNTY4Ljc3LDI0MS4wMzg0IEEwLDAgMCAwIDAgNTY4Ljc3LDI0MS4wMzg0IEw3NzQuMDU1MywyNDEuMDM4NCBBMCwwIDAgMCAwIDc3NC4wNTUzLDI0MS4wMzg0IEw3NzQuMDU1MywxOTUuNjQgTDc2NC4wNTUzLDE4NS42NCBMNTY4Ljc3LDE4NS42NCBBMCwwIDAgMCAwIDU2OC43NywxODUuNjQiIGZpbGw9IiNGRUZGREQiIHN0eWxlPSJzdHJva2U6IzE4MTgxODtzdHJva2Utd2lkdGg6MC41OyIvPjxwYXRoIGQ9Ik03NjQuMDU1MywxODUuNjQgTDc2NC4wNTUzLDE5NS42NCBMNzc0LjA1NTMsMTk1LjY0IEw3NjQuMDU1MywxODUuNjQiIGZpbGw9IiNGRUZGREQiIHN0eWxlPSJzdHJva2U6IzE4MTgxODtzdHJva2Utd2lkdGg6MC41OyIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXNpemU9IjEzIiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjE4NC4yODUzIiB4PSI1NzQuNzciIHk9IjIwMi43MDY5Ij5WaXNpdG9yJiMxMjM5OTsmIzIxNTA4OyYjMzUyMDE7JiMzMjAzMjsmIzEyNDc5OyYjMTI0NTI7JiMxMjUwMzsmIzEyMzk1OyYjMjM1NTA7JiMxMjM3NzsmIzEyNDI3OzwvdGV4dD48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIxMyIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSIxMTcuMDAwMSIgeD0iNTc0Ljc3IiB5PSIyMTcuODM5NyI+JiMyNTgwNTsmIzIwMzE2OyYjMTI0MzQ7JiMyMzQ1MDsmIzMyNjgxOyYjMTIzNzU7JiMxMjQxNDsmIzEyMzc3OyYjMTIyOTA7PC90ZXh0Pjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXNpemU9IjEzIiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjE4Mi4wMDAyIiB4PSI1NzQuNzciIHk9IjIzMi45NzI1Ij4mIzI2MDMyOyYjMTIzNzU7JiMxMjM1NjsmIzI1ODA1OyYjMjAzMTY7JiMxMjM5ODsmIzM2ODYxOyYjMjExNTI7JiMxMjM2NDsmIzIzNDgxOyYjMjYxMzE7JiMxMjM5MTsmIzEyMzc3OyYjMTIyOTA7PC90ZXh0PjwvZz48ZyBjbGFzcz0iZW50aXR5IiBkYXRhLWVudGl0eT0iR01OMTYiIGRhdGEtc291cmNlLWxpbmU9IjUxIiBkYXRhLXVpZD0iZW50MDAxNyIgaWQ9ImVudGl0eV9HTU4xNiI+PHBhdGggZD0iTTMzMi40NSwzNTAuOCBMMzMyLjQ1LDM2Ni45MyBMMjk4LjMsMzcwLjkzIEwzMzIuNDUsMzc0LjkzIEwzMzIuNDUsMzkxLjA2NTYgQTAsMCAwIDAgMCAzMzIuNDUsMzkxLjA2NTYgTDUzOC4zNTczLDM5MS4wNjU2IEEwLDAgMCAwIDAgNTM4LjM1NzMsMzkxLjA2NTYgTDUzOC4zNTczLDM2MC44IEw1MjguMzU3MywzNTAuOCBMMzMyLjQ1LDM1MC44IEEwLDAgMCAwIDAgMzMyLjQ1LDM1MC44IiBmaWxsPSIjRkVGRkREIiBzdHlsZT0ic3Ryb2tlOiMxODE4MTg7c3Ryb2tlLXdpZHRoOjAuNTsiLz48cGF0aCBkPSJNNTI4LjM1NzMsMzUwLjggTDUyOC4zNTczLDM2MC44IEw1MzguMzU3MywzNjAuOCBMNTI4LjM1NzMsMzUwLjgiIGZpbGw9IiNGRUZGREQiIHN0eWxlPSJzdHJva2U6IzE4MTgxODtzdHJva2Utd2lkdGg6MC41OyIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXNpemU9IjEzIiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjE4NC45MDczIiB4PSIzMzguNDUiIHk9IjM2Ny44NjY5Ij5FbGVtZW50JiMxMjM5OTt2aXNpdG9yJiMxMjQzNDsmIzIxNDYzOyYjMTIzNjk7JiMyMDgzNzsmIzEyNDI4OyYjMTI0Mjc7PC90ZXh0Pjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXNpemU9IjEzIiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjE4Mi4wMDAyIiB4PSIzMzguNDUiIHk9IjM4Mi45OTk3Ij4mIzEyNDUyOyYjMTI1MzE7JiMxMjQ3OTsmIzEyNTQwOyYjMTI1MDE7JiMxMjQ1NTsmIzEyNTQwOyYjMTI0NzM7JiMxMjQzNDsmIzI1MzQ1OyYjMTIzODU7JiMxMjQxNDsmIzEyMzc3OyYjMTIyOTA7PC90ZXh0PjwvZz48IS0tbGluayBqc29uVmlzaXRvciB0byB2aXNpdG9yLS0+PGcgY2xhc3M9ImxpbmsiIGRhdGEtZW50aXR5LTE9Impzb25WaXNpdG9yIiBkYXRhLWVudGl0eS0yPSJ2aXNpdG9yIiBkYXRhLXNvdXJjZS1saW5lPSIzNyIgZGF0YS11aWQ9ImxuazgiIGlkPSJsaW5rX2pzb25WaXNpdG9yX3Zpc2l0b3IiPjxwYXRoIGNvZGVMaW5lPSIzNyIgZD0iTTM1MS40NSwxMDQuMDcgQzM2NS45NiwxMjMuMjMgMzcxLjc4MDcsMTMwLjk0MjIgMzg2LjMxMDcsMTUwLjEyMjIiIGZpbGw9Im5vbmUiIGlkPSJqc29uVmlzaXRvci10by12aXNpdG9yIiBzdHlsZT0ic3Ryb2tlOiMxODE4MTg7c3Ryb2tlLXdpZHRoOjE7c3Ryb2tlLWRhc2hhcnJheTo3LDc7Ii8+PHBvbHlnb24gZmlsbD0ibm9uZSIgcG9pbnRzPSIzOTcuMTgsMTY0LjQ3LDM5MS4wOTMzLDE0Ni40OTkxLDM4MS41MjgxLDE1My43NDUzLDM5Ny4xOCwxNjQuNDciIHN0eWxlPSJzdHJva2U6IzE4MTgxODtzdHJva2Utd2lkdGg6MTsiLz48L2c+PCEtLWxpbmsgYXJlYVZpc2l0b3IgdG8gdmlzaXRvci0tPjxnIGNsYXNzPSJsaW5rIiBkYXRhLWVudGl0eS0xPSJhcmVhVmlzaXRvciIgZGF0YS1lbnRpdHktMj0idmlzaXRvciIgZGF0YS1zb3VyY2UtbGluZT0iMzgiIGRhdGEtdWlkPSJsbms5IiBpZD0ibGlua19hcmVhVmlzaXRvcl92aXNpdG9yIj48cGF0aCBjb2RlTGluZT0iMzgiIGQ9Ik01MTQuNjcsMTA0LjA3IEM1MDAuMjksMTIzLjIzIDQ5NC41MzcyLDEzMC44OTU0IDQ4MC4xMzcyLDE1MC4wNzU0IiBmaWxsPSJub25lIiBpZD0iYXJlYVZpc2l0b3ItdG8tdmlzaXRvciIgc3R5bGU9InN0cm9rZTojMTgxODE4O3N0cm9rZS13aWR0aDoxO3N0cm9rZS1kYXNoYXJyYXk6Nyw3OyIvPjxwb2x5Z29uIGZpbGw9Im5vbmUiIHBvaW50cz0iNDY5LjMzLDE2NC40Nyw0ODQuOTM1NCwxNTMuNjc3OCw0NzUuMzM5LDE0Ni40NzMsNDY5LjMzLDE2NC40NyIgc3R5bGU9InN0cm9rZTojMTgxODE4O3N0cm9rZS13aWR0aDoxOyIvPjwvZz48IS0tbGluayBjaXJjbGUgdG8gZWxlbWVudC0tPjxnIGNsYXNzPSJsaW5rIiBkYXRhLWVudGl0eS0xPSJjaXJjbGUiIGRhdGEtZW50aXR5LTI9ImVsZW1lbnQiIGRhdGEtc291cmNlLWxpbmU9IjM5IiBkYXRhLXVpZD0ibG5rMTAiIGlkPSJsaW5rX2NpcmNsZV9lbGVtZW50Ij48cGF0aCBjb2RlTGluZT0iMzkiIGQ9Ik0xMjIuMiwyNjEuODcgQzE0OC4yMywyODYuNzEgMTY2LjM1MTQsMzA0LjAwOTYgMTg5LjM3MTQsMzI1Ljk4OTYiIGZpbGw9Im5vbmUiIGlkPSJjaXJjbGUtdG8tZWxlbWVudCIgc3R5bGU9InN0cm9rZTojMTgxODE4O3N0cm9rZS13aWR0aDoxO3N0cm9rZS1kYXNoYXJyYXk6Nyw3OyIvPjxwb2x5Z29uIGZpbGw9Im5vbmUiIHBvaW50cz0iMjAyLjM5LDMzOC40MiwxOTMuNTE0OSwzMjEuNjUsMTg1LjIyNzksMzMwLjMyOTEsMjAyLjM5LDMzOC40MiIgc3R5bGU9InN0cm9rZTojMTgxODE4O3N0cm9rZS13aWR0aDoxOyIvPjwvZz48IS0tbGluayBzcXVhcmUgdG8gZWxlbWVudC0tPjxnIGNsYXNzPSJsaW5rIiBkYXRhLWVudGl0eS0xPSJzcXVhcmUiIGRhdGEtZW50aXR5LTI9ImVsZW1lbnQiIGRhdGEtc291cmNlLWxpbmU9IjQwIiBkYXRhLXVpZD0ibG5rMTEiIGlkPSJsaW5rX3NxdWFyZV9lbGVtZW50Ij48cGF0aCBjb2RlTGluZT0iNDAiIGQ9Ik0yMzUuNDEsMjYxLjg3IEMyMzUuNDEsMjg2LjcxIDIzNS40MSwyOTguNDQgMjM1LjQxLDMyMC40MiIgZmlsbD0ibm9uZSIgaWQ9InNxdWFyZS10by1lbGVtZW50IiBzdHlsZT0ic3Ryb2tlOiMxODE4MTg7c3Ryb2tlLXdpZHRoOjE7c3Ryb2tlLWRhc2hhcnJheTo3LDc7Ii8+PHBvbHlnb24gZmlsbD0ibm9uZSIgcG9pbnRzPSIyMzUuNDEsMzM4LjQyLDI0MS40MSwzMjAuNDIsMjI5LjQxLDMyMC40MiwyMzUuNDEsMzM4LjQyIiBzdHlsZT0ic3Ryb2tlOiMxODE4MTg7c3Ryb2tlLXdpZHRoOjE7Ii8+PC9nPjwhLS1saW5rIHZpc2l0b3IgdG8gZWxlbWVudC0tPjxnIGNsYXNzPSJsaW5rIiBkYXRhLWVudGl0eS0xPSJ2aXNpdG9yIiBkYXRhLWVudGl0eS0yPSJlbGVtZW50IiBkYXRhLXNvdXJjZS1saW5lPSI0MiIgZGF0YS11aWQ9ImxuazEyIiBpZD0ibGlua192aXNpdG9yX2VsZW1lbnQiPjxwYXRoIGNvZGVMaW5lPSI0MiIgZD0iTTM3Mi42NiwyNjIuMDggQzM0MS4wNSwyODYuOTEgMzA4LjAyODcsMzEyLjg3NCAyODAuMTE4NywzMzQuNzk0IiBmaWxsPSJub25lIiBpZD0idmlzaXRvci10by1lbGVtZW50IiBzdHlsZT0ic3Ryb2tlOiMxODE4MTg7c3Ryb2tlLXdpZHRoOjE7Ii8+PHBvbHlnb24gZmlsbD0iIzE4MTgxOCIgcG9pbnRzPSIyNzUuNCwzMzguNSwyODQuOTQ4NiwzMzYuMDg2OCwyNzkuMzMyMiwzMzUuNDExNywyODAuMDA3NCwzMjkuNzk1MywyNzUuNCwzMzguNSIgc3R5bGU9InN0cm9rZTojMTgxODE4O3N0cm9rZS13aWR0aDoxOyIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXNpemU9IjEzIiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjMzLjU2MDEiIHg9IjMzNS40MSIgeT0iMzA0Ljg0NjkiPnZpc2l0czwvdGV4dD48L2c+PCEtLVNSQz1baFA4X0puaW42Q1B0Vm1laEt3OHE0TkU2SWdaZ0dDVDZPYTRDbmRhSkoxRFZRWmpMZUkzTDV4ZjBBYmVZSWJqcklBTDJMNUxBQWo0YkthYS1aQmQwbi1aUHZvRDcxb09jbF9fcUYzLV9qZHAxVTlpOHFpQXFJUUhTTGFnbVpPdzI1SGhtQWppMWw4R0d1bWY0ZEwzMGtMS2NjR2Y0M1hFOU5vS25WZUVBQmRwMjE2cjJkaGdadThsTGJucVk4Ml9UYUhRVjByTTRELTlYYUtPNWo4VUdHeTJ2UHBCV01RRWpIVnhtUGlpMklEUUNCRjg3RENraXk2YUpNaTJMQ3VDYWphUTRLY1lobDV6Z2JaMW5UX0M5V0hzZE8xS2hVRXRyOHhvelplZzJyNVg3TFozbGozUDB0MlVOUzNrdlhEdEFnUTFUUWE5VEJHR2JneTZ6U2piTkFQVHQ3d1ZfME1LdFVBVlh3THREdG5udlgzaXJiRndpS2tjc1kyazlaNEk4MW1nbU84ckRYT0Z3aFJYdEQ3ZVNWVFlfRVRWTlZtT2NkOWRtWC1jVTZscWg2YS1EX2NCMkdwSmxseC13XzZSMnVzWnF6Tmh3cS1ZdXhOZmxHcEpfekRsYi10djhac3ZjYno3MW1FWFVEOWhDRl9VRDdsZkh1M0xpSVZ4ZElJX1hkcGRjeU9KTXlJWk1fWFl6RXBEWHB3OHVrV2tCc1ZyaGtZU2M3RGVXZENJWnl2dXMtbGsyQkJOeDFtMDBdLS0+PC9nPjwvc3ZnPg==" class="uml" alt="uml diagram" title="" /></p>
+<h2 id="2-element">2. Element: 図形の定義<a class="headerlink" href="#2-element" title="Permanent link">&para;</a></h2>
+<h3 id="shape">Shape インターフェース<a class="headerlink" href="#shape" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="p">(</span><span class="kd">ns </span><span class="nv">visitor-pattern.shape</span><span class="p">)</span>
+
+<span class="p">(</span><span class="kd">defmulti </span><span class="nv">translate</span>
+<span class="w">  </span><span class="s">&quot;図形を移動する&quot;</span>
+<span class="w">  </span><span class="p">(</span><span class="k">fn </span><span class="p">[</span><span class="nv">shape</span><span class="w"> </span><span class="nv">_dx</span><span class="w"> </span><span class="nv">_dy</span><span class="p">]</span><span class="w"> </span><span class="p">(</span><span class="ss">::type</span><span class="w"> </span><span class="nv">shape</span><span class="p">)))</span>
+
+<span class="p">(</span><span class="kd">defmulti </span><span class="nv">scale</span>
+<span class="w">  </span><span class="s">&quot;図形を拡大/縮小する&quot;</span>
+<span class="w">  </span><span class="p">(</span><span class="k">fn </span><span class="p">[</span><span class="nv">shape</span><span class="w"> </span><span class="nv">_factor</span><span class="p">]</span><span class="w"> </span><span class="p">(</span><span class="ss">::type</span><span class="w"> </span><span class="nv">shape</span><span class="p">)))</span>
+</code></pre></div>
+<h3 id="circle">Circle<a class="headerlink" href="#circle" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="p">(</span><span class="kd">ns </span><span class="nv">visitor-pattern.circle</span>
+<span class="w">  </span><span class="p">(</span><span class="ss">:require</span><span class="w"> </span><span class="p">[</span><span class="nv">visitor-pattern.shape</span><span class="w"> </span><span class="ss">:as</span><span class="w"> </span><span class="nv">shape</span><span class="p">]))</span>
+
+<span class="p">(</span><span class="kd">defn </span><span class="nv">make</span>
+<span class="w">  </span><span class="s">&quot;円を作成&quot;</span>
+<span class="w">  </span><span class="p">[</span><span class="nv">center</span><span class="w"> </span><span class="nv">radius</span><span class="p">]</span>
+<span class="w">  </span><span class="p">{</span><span class="ss">::shape/type</span><span class="w"> </span><span class="ss">::circle</span>
+<span class="w">   </span><span class="ss">::center</span><span class="w"> </span><span class="nv">center</span>
+<span class="w">   </span><span class="ss">::radius</span><span class="w"> </span><span class="nv">radius</span><span class="p">})</span>
+
+<span class="p">(</span><span class="kd">defmethod </span><span class="nv">shape/translate</span><span class="w"> </span><span class="ss">::circle</span><span class="w"> </span><span class="p">[</span><span class="nv">circle</span><span class="w"> </span><span class="nv">dx</span><span class="w"> </span><span class="nv">dy</span><span class="p">]</span>
+<span class="w">  </span><span class="p">(</span><span class="k">let </span><span class="p">[[</span><span class="nv">x</span><span class="w"> </span><span class="nv">y</span><span class="p">]</span><span class="w"> </span><span class="p">(</span><span class="ss">::center</span><span class="w"> </span><span class="nv">circle</span><span class="p">)]</span>
+<span class="w">    </span><span class="p">(</span><span class="nb">assoc </span><span class="nv">circle</span><span class="w"> </span><span class="ss">::center</span><span class="w"> </span><span class="p">[(</span><span class="nb">+ </span><span class="nv">x</span><span class="w"> </span><span class="nv">dx</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="nb">+ </span><span class="nv">y</span><span class="w"> </span><span class="nv">dy</span><span class="p">)])))</span>
+
+<span class="p">(</span><span class="kd">defmethod </span><span class="nv">shape/scale</span><span class="w"> </span><span class="ss">::circle</span><span class="w"> </span><span class="p">[</span><span class="nv">circle</span><span class="w"> </span><span class="nv">factor</span><span class="p">]</span>
+<span class="w">  </span><span class="p">(</span><span class="k">let </span><span class="p">[</span><span class="nv">radius</span><span class="w"> </span><span class="p">(</span><span class="ss">::radius</span><span class="w"> </span><span class="nv">circle</span><span class="p">)]</span>
+<span class="w">    </span><span class="p">(</span><span class="nb">assoc </span><span class="nv">circle</span><span class="w"> </span><span class="ss">::radius</span><span class="w"> </span><span class="p">(</span><span class="nb">* </span><span class="nv">radius</span><span class="w"> </span><span class="nv">factor</span><span class="p">))))</span>
+</code></pre></div>
+<h3 id="square">Square<a class="headerlink" href="#square" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="p">(</span><span class="kd">ns </span><span class="nv">visitor-pattern.square</span>
+<span class="w">  </span><span class="p">(</span><span class="ss">:require</span><span class="w"> </span><span class="p">[</span><span class="nv">visitor-pattern.shape</span><span class="w"> </span><span class="ss">:as</span><span class="w"> </span><span class="nv">shape</span><span class="p">]))</span>
+
+<span class="p">(</span><span class="kd">defn </span><span class="nv">make</span>
+<span class="w">  </span><span class="s">&quot;正方形を作成&quot;</span>
+<span class="w">  </span><span class="p">[</span><span class="nv">top-left</span><span class="w"> </span><span class="nv">side</span><span class="p">]</span>
+<span class="w">  </span><span class="p">{</span><span class="ss">::shape/type</span><span class="w"> </span><span class="ss">::square</span>
+<span class="w">   </span><span class="ss">::top-left</span><span class="w"> </span><span class="nv">top-left</span>
+<span class="w">   </span><span class="ss">::side</span><span class="w"> </span><span class="nv">side</span><span class="p">})</span>
+
+<span class="p">(</span><span class="kd">defmethod </span><span class="nv">shape/translate</span><span class="w"> </span><span class="ss">::square</span><span class="w"> </span><span class="p">[</span><span class="nv">square</span><span class="w"> </span><span class="nv">dx</span><span class="w"> </span><span class="nv">dy</span><span class="p">]</span>
+<span class="w">  </span><span class="p">(</span><span class="k">let </span><span class="p">[[</span><span class="nv">x</span><span class="w"> </span><span class="nv">y</span><span class="p">]</span><span class="w"> </span><span class="p">(</span><span class="ss">::top-left</span><span class="w"> </span><span class="nv">square</span><span class="p">)]</span>
+<span class="w">    </span><span class="p">(</span><span class="nb">assoc </span><span class="nv">square</span><span class="w"> </span><span class="ss">::top-left</span><span class="w"> </span><span class="p">[(</span><span class="nb">+ </span><span class="nv">x</span><span class="w"> </span><span class="nv">dx</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="nb">+ </span><span class="nv">y</span><span class="w"> </span><span class="nv">dy</span><span class="p">)])))</span>
+
+<span class="p">(</span><span class="kd">defmethod </span><span class="nv">shape/scale</span><span class="w"> </span><span class="ss">::square</span><span class="w"> </span><span class="p">[</span><span class="nv">square</span><span class="w"> </span><span class="nv">factor</span><span class="p">]</span>
+<span class="w">  </span><span class="p">(</span><span class="k">let </span><span class="p">[</span><span class="nv">side</span><span class="w"> </span><span class="p">(</span><span class="ss">::side</span><span class="w"> </span><span class="nv">square</span><span class="p">)]</span>
+<span class="w">    </span><span class="p">(</span><span class="nb">assoc </span><span class="nv">square</span><span class="w"> </span><span class="ss">::side</span><span class="w"> </span><span class="p">(</span><span class="nb">* </span><span class="nv">side</span><span class="w"> </span><span class="nv">factor</span><span class="p">))))</span>
+</code></pre></div>
+<h3 id="rectangle">Rectangle<a class="headerlink" href="#rectangle" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="p">(</span><span class="kd">ns </span><span class="nv">visitor-pattern.rectangle</span>
+<span class="w">  </span><span class="p">(</span><span class="ss">:require</span><span class="w"> </span><span class="p">[</span><span class="nv">visitor-pattern.shape</span><span class="w"> </span><span class="ss">:as</span><span class="w"> </span><span class="nv">shape</span><span class="p">]))</span>
+
+<span class="p">(</span><span class="kd">defn </span><span class="nv">make</span>
+<span class="w">  </span><span class="s">&quot;長方形を作成&quot;</span>
+<span class="w">  </span><span class="p">[</span><span class="nv">top-left</span><span class="w"> </span><span class="nv">width</span><span class="w"> </span><span class="nv">height</span><span class="p">]</span>
+<span class="w">  </span><span class="p">{</span><span class="ss">::shape/type</span><span class="w"> </span><span class="ss">::rectangle</span>
+<span class="w">   </span><span class="ss">::top-left</span><span class="w"> </span><span class="nv">top-left</span>
+<span class="w">   </span><span class="ss">::width</span><span class="w"> </span><span class="nv">width</span>
+<span class="w">   </span><span class="ss">::height</span><span class="w"> </span><span class="nv">height</span><span class="p">})</span>
+
+<span class="p">(</span><span class="kd">defmethod </span><span class="nv">shape/translate</span><span class="w"> </span><span class="ss">::rectangle</span><span class="w"> </span><span class="p">[</span><span class="nv">rect</span><span class="w"> </span><span class="nv">dx</span><span class="w"> </span><span class="nv">dy</span><span class="p">]</span>
+<span class="w">  </span><span class="p">(</span><span class="k">let </span><span class="p">[[</span><span class="nv">x</span><span class="w"> </span><span class="nv">y</span><span class="p">]</span><span class="w"> </span><span class="p">(</span><span class="ss">::top-left</span><span class="w"> </span><span class="nv">rect</span><span class="p">)]</span>
+<span class="w">    </span><span class="p">(</span><span class="nb">assoc </span><span class="nv">rect</span><span class="w"> </span><span class="ss">::top-left</span><span class="w"> </span><span class="p">[(</span><span class="nb">+ </span><span class="nv">x</span><span class="w"> </span><span class="nv">dx</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="nb">+ </span><span class="nv">y</span><span class="w"> </span><span class="nv">dy</span><span class="p">)])))</span>
+
+<span class="p">(</span><span class="kd">defmethod </span><span class="nv">shape/scale</span><span class="w"> </span><span class="ss">::rectangle</span><span class="w"> </span><span class="p">[</span><span class="nv">rect</span><span class="w"> </span><span class="nv">factor</span><span class="p">]</span>
+<span class="w">  </span><span class="p">(</span><span class="nb">-&gt; </span><span class="nv">rect</span>
+<span class="w">      </span><span class="p">(</span><span class="nf">update</span><span class="w"> </span><span class="ss">::width</span><span class="w"> </span><span class="nb">* </span><span class="nv">factor</span><span class="p">)</span>
+<span class="w">      </span><span class="p">(</span><span class="nf">update</span><span class="w"> </span><span class="ss">::height</span><span class="w"> </span><span class="nb">* </span><span class="nv">factor</span><span class="p">)))</span>
+</code></pre></div>
+<h3 id="_2">クラス図<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h3>
+<p><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiBjb250ZW50U3R5bGVUeXBlPSJ0ZXh0L2NzcyIgZGF0YS1kaWFncmFtLXR5cGU9IkNMQVNTIiBoZWlnaHQ9IjMxNnB4IiBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJub25lIiBzdHlsZT0id2lkdGg6NjkzcHg7aGVpZ2h0OjMxNnB4O2JhY2tncm91bmQ6I0ZGRkZGRjsiIHZlcnNpb249IjEuMSIgdmlld0JveD0iMCAwIDY5MyAzMTYiIHdpZHRoPSI2OTNweCIgem9vbUFuZFBhbj0ibWFnbmlmeSI+PGRlZnMvPjxnPjwhLS1jbGFzcyBzaGFwZS0tPjxnIGNsYXNzPSJlbnRpdHkiIGRhdGEtZW50aXR5PSJzaGFwZSIgZGF0YS1zb3VyY2UtbGluZT0iMyIgZGF0YS11aWQ9ImVudDAwMDIiIGlkPSJlbnRpdHlfc2hhcGUiPjxyZWN0IGZpbGw9IiNGMUYxRjEiIGhlaWdodD0iOTYuODkwNiIgcng9IjIuNSIgcnk9IjIuNSIgc3R5bGU9InN0cm9rZTojMTgxODE4O3N0cm9rZS13aWR0aDowLjU7IiB3aWR0aD0iMTkxLjYwNzQiIHg9IjIzMS42NSIgeT0iMjEyLjc4Ii8+PGVsbGlwc2UgY3g9IjMwMS4yODQzIiBjeT0iMjI4Ljc4IiBmaWxsPSIjQjRBN0U1IiByeD0iMTEiIHJ5PSIxMSIgc3R5bGU9InN0cm9rZTojMTgxODE4O3N0cm9rZS13aWR0aDoxOyIvPjxwYXRoIGQ9Ik0yOTcuMjA2MiwyMjQuNTQ1NiBMMjk3LjIwNjIsMjIyLjM4OTQgTDMwNC41OTY4LDIyMi4zODk0IEwzMDQuNTk2OCwyMjQuNTQ1NiBMMzAyLjEyOCwyMjQuNTQ1NiBMMzAyLjEyOCwyMzIuNjIzOCBMMzA0LjU5NjgsMjMyLjYyMzggTDMwNC41OTY4LDIzNC43OCBMMjk3LjIwNjIsMjM0Ljc4IEwyOTcuMjA2MiwyMzIuNjIzOCBMMjk5LjY3NDksMjMyLjYyMzggTDI5OS42NzQ5LDIyNC41NDU2IEwyOTcuMjA2MiwyMjQuNTQ1NiBaICIgZmlsbD0iIzAwMDAwMCIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmb250LXN0eWxlPSJpdGFsaWMiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iNDMuODM4OSIgeD0iMzIxLjc4NDMiIHk9IjIzMy42MjY3Ij5TaGFwZTwvdGV4dD48bGluZSBzdHlsZT0ic3Ryb2tlOiMxODE4MTg7c3Ryb2tlLXdpZHRoOjAuNTsiIHgxPSIyMzIuNjUiIHgyPSI0MjIuMjU3NCIgeTE9IjI0NC43OCIgeTI9IjI0NC43OCIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjUyLjQzODUiIHg9IjIzNy42NSIgeT0iMjYxLjc3NTEiPis6OnR5cGU8L3RleHQ+PGxpbmUgc3R5bGU9InN0cm9rZTojMTgxODE4O3N0cm9rZS13aWR0aDowLjU7IiB4MT0iMjMyLjY1IiB4Mj0iNDIyLjI1NzQiIHkxPSIyNjkuMDc2OSIgeTI9IjI2OS4wNzY5Ii8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTQiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iMTc5LjYwNzQiIHg9IjIzNy42NSIgeT0iMjg2LjA3MiI+K3RyYW5zbGF0ZShzaGFwZSwgZHgsIGR5KTwvdGV4dD48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSIxNTAuODg5NiIgeD0iMjM3LjY1IiB5PSIzMDIuMzY4OSI+K3NjYWxlKHNoYXBlLCBmYWN0b3IpPC90ZXh0PjwvZz48IS0tY2xhc3MgY2lyY2xlLS0+PGcgY2xhc3M9ImVudGl0eSIgZGF0YS1lbnRpdHk9ImNpcmNsZSIgZGF0YS1zb3VyY2UtbGluZT0iOSIgZGF0YS11aWQ9ImVudDAwMDMiIGlkPSJlbnRpdHlfY2lyY2xlIj48cmVjdCBmaWxsPSIjRjFGMUYxIiBoZWlnaHQ9IjEyOS40ODQ0IiByeD0iMi41IiByeT0iMi41IiBzdHlsZT0ic3Ryb2tlOiMxODE4MTg7c3Ryb2tlLXdpZHRoOjAuNTsiIHdpZHRoPSIxODYuOTA0MyIgeD0iNyIgeT0iMTUuMTUiLz48ZWxsaXBzZSBjeD0iNzYuMzkxNiIgY3k9IjMxLjE1IiBmaWxsPSIjQUREMUIyIiByeD0iMTEiIHJ5PSIxMSIgc3R5bGU9InN0cm9rZTojMTgxODE4O3N0cm9rZS13aWR0aDoxOyIvPjxwYXRoIGQ9Ik03OS4zNjA0LDM2Ljc5MDYgUTc4Ljc4MjIsMzcuMDg3NSA3OC4xNDE2LDM3LjIyODEgUTc3LjUwMSwzNy4zODQ0IDc2Ljc5NzksMzcuMzg0NCBRNzQuMjk3OSwzNy4zODQ0IDcyLjk2OTcsMzUuNzQzOCBRNzEuNjU3MiwzNC4wODc1IDcxLjY1NzIsMzAuOTYyNSBRNzEuNjU3MiwyNy44Mzc1IDcyLjk2OTcsMjYuMTgxMyBRNzQuMjk3OSwyNC41MjUgNzYuNzk3OSwyNC41MjUgUTc3LjUwMSwyNC41MjUgNzguMTQxNiwyNC42ODEzIFE3OC43OTc5LDI0LjgzNzUgNzkuMzYwNCwyNS4xMzQ0IEw3OS4zNjA0LDI3Ljg1MzEgUTc4LjczNTQsMjcuMjc1IDc4LjE0MTYsMjcuMDA5NCBRNzcuNTQ3OSwyNi43MjgxIDc2LjkyMjksMjYuNzI4MSBRNzUuNTc5MSwyNi43MjgxIDc0Ljg5MTYsMjcuODA2MyBRNzQuMjA0MSwyOC44Njg4IDc0LjIwNDEsMzAuOTYyNSBRNzQuMjA0MSwzMy4wNTYzIDc0Ljg5MTYsMzQuMTM0NCBRNzUuNTc5MSwzNS4xOTY5IDc2LjkyMjksMzUuMTk2OSBRNzcuNTQ3OSwzNS4xOTY5IDc4LjE0MTYsMzQuOTMxMyBRNzguNzM1NCwzNC42NSA3OS4zNjA0LDM0LjA3MTkgTDc5LjM2MDQsMzYuNzkwNiBaICIgZmlsbD0iIzAwMDAwMCIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjM5LjYyMTEiIHg9Ijk2Ljg5MTYiIHk9IjM1Ljk5NjciPkNpcmNsZTwvdGV4dD48bGluZSBzdHlsZT0ic3Ryb2tlOiMxODE4MTg7c3Ryb2tlLXdpZHRoOjAuNTsiIHgxPSI4IiB4Mj0iMTkyLjkwNDMiIHkxPSI0Ny4xNSIgeTI9IjQ3LjE1Ii8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTQiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iMTA4LjU4MiIgeD0iMTMiIHk9IjY0LjE0NTEiPis6OnR5cGU6IDo6Y2lyY2xlPC90ZXh0Pjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjExMS43Njc2IiB4PSIxMyIgeT0iODAuNDQyIj4rOjpjZW50ZXI6IFt4LCB5XTwvdGV4dD48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSIxMjguMjQ5IiB4PSIxMyIgeT0iOTYuNzM4OSI+Kzo6cmFkaXVzOiBudW1iZXI8L3RleHQ+PGxpbmUgc3R5bGU9InN0cm9rZTojMTgxODE4O3N0cm9rZS13aWR0aDowLjU7IiB4MT0iOCIgeDI9IjE5Mi45MDQzIiB5MT0iMTA0LjA0MDYiIHkyPSIxMDQuMDQwNiIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjE3NC45MDQzIiB4PSIxMyIgeT0iMTIxLjAzNTciPit0cmFuc2xhdGUoY2lyY2xlLCBkeCwgZHkpPC90ZXh0Pjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjE0Ni4xODY1IiB4PSIxMyIgeT0iMTM3LjMzMjYiPitzY2FsZShjaXJjbGUsIGZhY3Rvcik8L3RleHQ+PC9nPjwhLS1jbGFzcyBzcXVhcmUtLT48ZyBjbGFzcz0iZW50aXR5IiBkYXRhLWVudGl0eT0ic3F1YXJlIiBkYXRhLXNvdXJjZS1saW5lPSIxNyIgZGF0YS11aWQ9ImVudDAwMDQiIGlkPSJlbnRpdHlfc3F1YXJlIj48cmVjdCBmaWxsPSIjRjFGMUYxIiBoZWlnaHQ9IjEyOS40ODQ0IiByeD0iMi41IiByeT0iMi41IiBzdHlsZT0ic3Ryb2tlOiMxODE4MTg7c3Ryb2tlLXdpZHRoOjAuNTsiIHdpZHRoPSIxOTcuMzYzMyIgeD0iMjI4Ljc3IiB5PSIxNS4xNSIvPjxlbGxpcHNlIGN4PSIyOTguNDA0MyIgY3k9IjMxLjE1IiBmaWxsPSIjQUREMUIyIiByeD0iMTEiIHJ5PSIxMSIgc3R5bGU9InN0cm9rZTojMTgxODE4O3N0cm9rZS13aWR0aDoxOyIvPjxwYXRoIGQ9Ik0zMDEuMzczLDM2Ljc5MDYgUTMwMC43OTQ5LDM3LjA4NzUgMzAwLjE1NDMsMzcuMjI4MSBRMjk5LjUxMzcsMzcuMzg0NCAyOTguODEwNSwzNy4zODQ0IFEyOTYuMzEwNSwzNy4zODQ0IDI5NC45ODI0LDM1Ljc0MzggUTI5My42Njk5LDM0LjA4NzUgMjkzLjY2OTksMzAuOTYyNSBRMjkzLjY2OTksMjcuODM3NSAyOTQuOTgyNCwyNi4xODEzIFEyOTYuMzEwNSwyNC41MjUgMjk4LjgxMDUsMjQuNTI1IFEyOTkuNTEzNywyNC41MjUgMzAwLjE1NDMsMjQuNjgxMyBRMzAwLjgxMDUsMjQuODM3NSAzMDEuMzczLDI1LjEzNDQgTDMwMS4zNzMsMjcuODUzMSBRMzAwLjc0OCwyNy4yNzUgMzAwLjE1NDMsMjcuMDA5NCBRMjk5LjU2MDUsMjYuNzI4MSAyOTguOTM1NSwyNi43MjgxIFEyOTcuNTkxOCwyNi43MjgxIDI5Ni45MDQzLDI3LjgwNjMgUTI5Ni4yMTY4LDI4Ljg2ODggMjk2LjIxNjgsMzAuOTYyNSBRMjk2LjIxNjgsMzMuMDU2MyAyOTYuOTA0MywzNC4xMzQ0IFEyOTcuNTkxOCwzNS4xOTY5IDI5OC45MzU1LDM1LjE5NjkgUTI5OS41NjA1LDM1LjE5NjkgMzAwLjE1NDMsMzQuOTMxMyBRMzAwLjc0OCwzNC42NSAzMDEuMzczLDM0LjA3MTkgTDMwMS4zNzMsMzYuNzkwNiBaICIgZmlsbD0iIzAwMDAwMCIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjQ5LjU5NDciIHg9IjMxOC45MDQzIiB5PSIzNS45OTY3Ij5TcXVhcmU8L3RleHQ+PGxpbmUgc3R5bGU9InN0cm9rZTojMTgxODE4O3N0cm9rZS13aWR0aDowLjU7IiB4MT0iMjI5Ljc3IiB4Mj0iNDI1LjEzMzMiIHkxPSI0Ny4xNSIgeTI9IjQ3LjE1Ii8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTQiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iMTE5LjA0MSIgeD0iMjM0Ljc3IiB5PSI2NC4xNDUxIj4rOjp0eXBlOiA6OnNxdWFyZTwvdGV4dD48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSIxMTcuNjM5NiIgeD0iMjM0Ljc3IiB5PSI4MC40NDIiPis6OnRvcC1sZWZ0OiBbeCwgeV08L3RleHQ+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTQiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iMTEzLjY1NDMiIHg9IjIzNC43NyIgeT0iOTYuNzM4OSI+Kzo6c2lkZTogbnVtYmVyPC90ZXh0PjxsaW5lIHN0eWxlPSJzdHJva2U6IzE4MTgxODtzdHJva2Utd2lkdGg6MC41OyIgeDE9IjIyOS43NyIgeDI9IjQyNS4xMzMzIiB5MT0iMTA0LjA0MDYiIHkyPSIxMDQuMDQwNiIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjE4NS4zNjMzIiB4PSIyMzQuNzciIHk9IjEyMS4wMzU3Ij4rdHJhbnNsYXRlKHNxdWFyZSwgZHgsIGR5KTwvdGV4dD48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSIxNTYuNjQ1NSIgeD0iMjM0Ljc3IiB5PSIxMzcuMzMyNiI+K3NjYWxlKHNxdWFyZSwgZmFjdG9yKTwvdGV4dD48L2c+PCEtLWNsYXNzIHJlY3RhbmdsZS0tPjxnIGNsYXNzPSJlbnRpdHkiIGRhdGEtZW50aXR5PSJyZWN0YW5nbGUiIGRhdGEtc291cmNlLWxpbmU9IjI1IiBkYXRhLXVpZD0iZW50MDAwNSIgaWQ9ImVudGl0eV9yZWN0YW5nbGUiPjxyZWN0IGZpbGw9IiNGMUYxRjEiIGhlaWdodD0iMTQ1Ljc4MTMiIHJ4PSIyLjUiIHJ5PSIyLjUiIHN0eWxlPSJzdHJva2U6IzE4MTgxODtzdHJva2Utd2lkdGg6MC41OyIgd2lkdGg9IjIxNS43NTg4IiB4PSI0NjEuNTciIHk9IjciLz48ZWxsaXBzZSBjeD0iNTMwLjAxNDgiIGN5PSIyMyIgZmlsbD0iI0FERDFCMiIgcng9IjExIiByeT0iMTEiIHN0eWxlPSJzdHJva2U6IzE4MTgxODtzdHJva2Utd2lkdGg6MTsiLz48cGF0aCBkPSJNNTMyLjk4MzYsMjguNjQwNiBRNTMyLjQwNTQsMjguOTM3NSA1MzEuNzY0OCwyOS4wNzgxIFE1MzEuMTI0MiwyOS4yMzQ0IDUzMC40MjExLDI5LjIzNDQgUTUyNy45MjExLDI5LjIzNDQgNTI2LjU5MjksMjcuNTkzOCBRNTI1LjI4MDQsMjUuOTM3NSA1MjUuMjgwNCwyMi44MTI1IFE1MjUuMjgwNCwxOS42ODc1IDUyNi41OTI5LDE4LjAzMTMgUTUyNy45MjExLDE2LjM3NSA1MzAuNDIxMSwxNi4zNzUgUTUzMS4xMjQyLDE2LjM3NSA1MzEuNzY0OCwxNi41MzEzIFE1MzIuNDIxMSwxNi42ODc1IDUzMi45ODM2LDE2Ljk4NDQgTDUzMi45ODM2LDE5LjcwMzEgUTUzMi4zNTg2LDE5LjEyNSA1MzEuNzY0OCwxOC44NTk0IFE1MzEuMTcxMSwxOC41NzgxIDUzMC41NDYxLDE4LjU3ODEgUTUyOS4yMDIzLDE4LjU3ODEgNTI4LjUxNDgsMTkuNjU2MyBRNTI3LjgyNzMsMjAuNzE4OCA1MjcuODI3MywyMi44MTI1IFE1MjcuODI3MywyNC45MDYzIDUyOC41MTQ4LDI1Ljk4NDQgUTUyOS4yMDIzLDI3LjA0NjkgNTMwLjU0NjEsMjcuMDQ2OSBRNTMxLjE3MTEsMjcuMDQ2OSA1MzEuNzY0OCwyNi43ODEzIFE1MzIuMzU4NiwyNi41IDUzMi45ODM2LDI1LjkyMTkgTDUzMi45ODM2LDI4LjY0MDYgWiAiIGZpbGw9IiMwMDAwMDAiLz48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSI3MC4zNjkxIiB4PSI1NTAuNTE0OCIgeT0iMjcuODQ2NyI+UmVjdGFuZ2xlPC90ZXh0PjxsaW5lIHN0eWxlPSJzdHJva2U6IzE4MTgxODtzdHJva2Utd2lkdGg6MC41OyIgeDE9IjQ2Mi41NyIgeDI9IjY3Ni4zMjg4IiB5MT0iMzkiIHkyPSIzOSIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjEzNy40MzY1IiB4PSI0NjcuNTciIHk9IjU1Ljk5NTEiPis6OnR5cGU6IDo6cmVjdGFuZ2xlPC90ZXh0Pjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjExNy42Mzk2IiB4PSI0NjcuNTciIHk9IjcyLjI5MiI+Kzo6dG9wLWxlZnQ6IFt4LCB5XTwvdGV4dD48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSIxMjMuNTU5NiIgeD0iNDY3LjU3IiB5PSI4OC41ODg5Ij4rOjp3aWR0aDogbnVtYmVyPC90ZXh0Pjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjEyOS41OTU3IiB4PSI0NjcuNTciIHk9IjEwNC44ODU3Ij4rOjpoZWlnaHQ6IG51bWJlcjwvdGV4dD48bGluZSBzdHlsZT0ic3Ryb2tlOiMxODE4MTg7c3Ryb2tlLXdpZHRoOjAuNTsiIHgxPSI0NjIuNTciIHgyPSI2NzYuMzI4OCIgeTE9IjExMi4xODc1IiB5Mj0iMTEyLjE4NzUiLz48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSIyMDMuNzU4OCIgeD0iNDY3LjU3IiB5PSIxMjkuMTgyNiI+K3RyYW5zbGF0ZShyZWN0YW5nbGUsIGR4LCBkeSk8L3RleHQ+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTQiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iMTc1LjA0MSIgeD0iNDY3LjU3IiB5PSIxNDUuNDc5NSI+K3NjYWxlKHJlY3RhbmdsZSwgZmFjdG9yKTwvdGV4dD48L2c+PGcgY2xhc3M9ImVudGl0eSIgZGF0YS1lbnRpdHk9IkdNTjkiIGRhdGEtc291cmNlLWxpbmU9IjM5IiBkYXRhLXVpZD0iZW50MDAxMCIgaWQ9ImVudGl0eV9HTU45Ij48cGF0aCBkPSJNNDU3Ljk1LDIzMy41MyBMNDU3Ljk1LDI1Ny4yMiBMNDIzLjYzLDI2MS4yMiBMNDU3Ljk1LDI2NS4yMiBMNDU3Ljk1LDI4OC45Mjg0IEEwLDAgMCAwIDAgNDU3Ljk1LDI4OC45Mjg0IEw2ODYuOTUwMiwyODguOTI4NCBBMCwwIDAgMCAwIDY4Ni45NTAyLDI4OC45Mjg0IEw2ODYuOTUwMiwyNDMuNTMgTDY3Ni45NTAyLDIzMy41MyBMNDU3Ljk1LDIzMy41MyBBMCwwIDAgMCAwIDQ1Ny45NSwyMzMuNTMiIGZpbGw9IiNGRUZGREQiIHN0eWxlPSJzdHJva2U6IzE4MTgxODtzdHJva2Utd2lkdGg6MC41OyIvPjxwYXRoIGQ9Ik02NzYuOTUwMiwyMzMuNTMgTDY3Ni45NTAyLDI0My41MyBMNjg2Ljk1MDIsMjQzLjUzIEw2NzYuOTUwMiwyMzMuNTMiIGZpbGw9IiNGRUZGREQiIHN0eWxlPSJzdHJva2U6IzE4MTgxODtzdHJva2Utd2lkdGg6MC41OyIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXNpemU9IjEzIiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjE2OS4wMDAyIiB4PSI0NjMuOTUiIHk9IjI1MC41OTY5Ij4mIzEyNTEwOyYjMTI1MjM7JiMxMjQ4MTsmIzEyNTEzOyYjMTI0Nzc7JiMxMjQ4MzsmIzEyNDg5OyYjMTIzOTE7JiMyMzQ1MDsmIzMyNjgxOyYjMTIzNzM7JiMxMjQyODsmIzEyMzgzOzwvdGV4dD48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIxMyIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSIyMDguMDAwMiIgeD0iNDYzLjk1IiB5PSIyNjUuNzI5NyI+JiMyMjI1OTsmIzI0NDE4OyYjMTIzOTg7JiMyMDg0OTsmIzM2ODkwOyYjMTI0NTI7JiMxMjUzMTsmIzEyNDc5OyYjMTI1NDA7JiMxMjUwMTsmIzEyNDU1OyYjMTI1NDA7JiMxMjQ3MzsmIzEyMzkxOyYjMTIzNzc7JiMxMjI5MDs8L3RleHQ+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTMiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iMTgwLjgwMDUiIHg9IjQ2My45NSIgeT0iMjgwLjg2MjUiPjo6dHlwZSYjMTIzOTE7JiMxMjQ4NzsmIzEyNDUxOyYjMTI0NzM7JiMxMjQ5NzsmIzEyNDgzOyYjMTI0ODE7JiMxMjM3NTsmIzEyNDE0OyYjMTIzNzc7JiMxMjI5MDs8L3RleHQ+PC9nPjwhLS1saW5rIGNpcmNsZSB0byBzaGFwZS0tPjxnIGNsYXNzPSJsaW5rIiBkYXRhLWVudGl0eS0xPSJjaXJjbGUiIGRhdGEtZW50aXR5LTI9InNoYXBlIiBkYXRhLXNvdXJjZS1saW5lPSIzNCIgZGF0YS11aWQ9ImxuazYiIGlkPSJsaW5rX2NpcmNsZV9zaGFwZSI+PHBhdGggY29kZUxpbmU9IjM0IiBkPSJNMTgxLjc2LDE0NS4xMyBDMjA5Ljg4LDE2Ny4zNCAyMjYuNzQ1NiwxODAuNjYyIDI1Mi44ODU2LDIwMS4zMTIiIGZpbGw9Im5vbmUiIGlkPSJjaXJjbGUtdG8tc2hhcGUiIHN0eWxlPSJzdHJva2U6IzE4MTgxODtzdHJva2Utd2lkdGg6MTtzdHJva2UtZGFzaGFycmF5OjcsNzsiLz48cG9seWdvbiBmaWxsPSJub25lIiBwb2ludHM9IjI2Ny4wMSwyMTIuNDcsMjU2LjYwNDksMTk2LjYwMzksMjQ5LjE2NjIsMjA2LjAyMDIsMjY3LjAxLDIxMi40NyIgc3R5bGU9InN0cm9rZTojMTgxODE4O3N0cm9rZS13aWR0aDoxOyIvPjwvZz48IS0tbGluayBzcXVhcmUgdG8gc2hhcGUtLT48ZyBjbGFzcz0ibGluayIgZGF0YS1lbnRpdHktMT0ic3F1YXJlIiBkYXRhLWVudGl0eS0yPSJzaGFwZSIgZGF0YS1zb3VyY2UtbGluZT0iMzUiIGRhdGEtdWlkPSJsbms3IiBpZD0ibGlua19zcXVhcmVfc2hhcGUiPjxwYXRoIGNvZGVMaW5lPSIzNSIgZD0iTTMyNy40NSwxNDUuMTMgQzMyNy40NSwxNjcuMzQgMzI3LjQ1LDE3My44MiAzMjcuNDUsMTk0LjQ3IiBmaWxsPSJub25lIiBpZD0ic3F1YXJlLXRvLXNoYXBlIiBzdHlsZT0ic3Ryb2tlOiMxODE4MTg7c3Ryb2tlLXdpZHRoOjE7c3Ryb2tlLWRhc2hhcnJheTo3LDc7Ii8+PHBvbHlnb24gZmlsbD0ibm9uZSIgcG9pbnRzPSIzMjcuNDUsMjEyLjQ3LDMzMy40NSwxOTQuNDcsMzIxLjQ1LDE5NC40NywzMjcuNDUsMjEyLjQ3IiBzdHlsZT0ic3Ryb2tlOiMxODE4MTg7c3Ryb2tlLXdpZHRoOjE7Ii8+PC9nPjwhLS1saW5rIHJlY3RhbmdsZSB0byBzaGFwZS0tPjxnIGNsYXNzPSJsaW5rIiBkYXRhLWVudGl0eS0xPSJyZWN0YW5nbGUiIGRhdGEtZW50aXR5LTI9InNoYXBlIiBkYXRhLXNvdXJjZS1saW5lPSIzNiIgZGF0YS11aWQ9ImxuazgiIGlkPSJsaW5rX3JlY3RhbmdsZV9zaGFwZSI+PHBhdGggY29kZUxpbmU9IjM2IiBkPSJNNDcyLjA3LDE1My4wNiBDNDQ1LjE0LDE3My4wMSA0MzEuMDYxOSwxODMuNDQzMSA0MDYuNTAxOSwyMDEuNjQzMSIgZmlsbD0ibm9uZSIgaWQ9InJlY3RhbmdsZS10by1zaGFwZSIgc3R5bGU9InN0cm9rZTojMTgxODE4O3N0cm9rZS13aWR0aDoxO3N0cm9rZS1kYXNoYXJyYXk6Nyw3OyIvPjxwb2x5Z29uIGZpbGw9Im5vbmUiIHBvaW50cz0iMzkyLjA0LDIxMi4zNiw0MTAuMDc0MiwyMDYuNDYzNyw0MDIuOTI5NiwxOTYuODIyNCwzOTIuMDQsMjEyLjM2IiBzdHlsZT0ic3Ryb2tlOiMxODE4MTg7c3Ryb2tlLXdpZHRoOjE7Ii8+PC9nPjwhLS1TUkM9W1RQOURJeUNtNkNWbC1ISFg5eVRxVUN2MTQ0elV0TDR5UDZzczFSanM5WGF3TnMxZjQxNnlVMTFuV2s4QjMxNDZpZkZXdmVUdjZFQXRpNmN4aFFGcEs3Wm9JdnZfVmRyUWtTX3o1WE1xWUhzRkloY2ZiRTNMamNCUkprMU4tMzczd21Ybk5wNUhlbXgzWEtnM2piVzFLdWNiaFYwOUFYNllFWXM2SWFmR050ZktpUEx1UW5NeEh6N0pBUUFJVEFXdGVyNkUyYUdIZEk0S3R1V0JNcm11TlhCZ25FS3liTTEyNGNROW13bThtUmpIUzZWRjRhNVR0Zk80LSAtcmNiT2NpR3pBTGF2WllsNE5iZTRyNS1jZm5rTVlIaTlXNGhKTUZyTEpNR3RBTkJSRDhrbEFaSTc3VU9lU3ZZbGhyVDFuWWtiZnFjVTdfVDB3dmduZnA3cThRWkRTUlFmZFhCMmlkY1RkOVVZUFZnNW0tdEtYLTBQSEVBcUZjc1hjOF80MG5CQW03M2NlZjFGQzB2WHNDMWxDNHVHWUMwTkM5a1p5UHo3eDZSdzFsOEJtMl9PV2N6eUY5dzFkcU83Qi15VGxqR1ZXQVBXWlhEdldsQ0Q2WGxZdDJwd1dKejFycUd2R0Nvd3hEMU9HbFRpelNuXzRRejJ0ZVNOZ0UtSXdzT2R5MF0tLT48L2c+PC9zdmc+" class="uml" alt="uml diagram" title="" /></p>
+<h2 id="3-visitor-json">3. Visitor: JSON 変換<a class="headerlink" href="#3-visitor-json" title="Permanent link">&para;</a></h2>
+<h3 id="json-visitor">JSON Visitor の実装<a class="headerlink" href="#json-visitor" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="p">(</span><span class="kd">ns </span><span class="nv">visitor-pattern.json-visitor</span>
+<span class="w">  </span><span class="p">(</span><span class="ss">:require</span><span class="w"> </span><span class="p">[</span><span class="nv">visitor-pattern.shape</span><span class="w"> </span><span class="ss">:as</span><span class="w"> </span><span class="nv">shape</span><span class="p">]</span>
+<span class="w">            </span><span class="p">[</span><span class="nv">visitor-pattern.circle</span><span class="w"> </span><span class="ss">:as</span><span class="w"> </span><span class="nv">circle</span><span class="p">]</span>
+<span class="w">            </span><span class="p">[</span><span class="nv">visitor-pattern.square</span><span class="w"> </span><span class="ss">:as</span><span class="w"> </span><span class="nv">square</span><span class="p">]</span>
+<span class="w">            </span><span class="p">[</span><span class="nv">visitor-pattern.rectangle</span><span class="w"> </span><span class="ss">:as</span><span class="w"> </span><span class="nv">rectangle</span><span class="p">]))</span>
+
+<span class="p">(</span><span class="kd">defmulti </span><span class="nv">to-json</span>
+<span class="w">  </span><span class="s">&quot;図形を JSON 文字列に変換&quot;</span>
+<span class="w">  </span><span class="ss">::shape/type</span><span class="p">)</span>
+
+<span class="p">(</span><span class="kd">defmethod </span><span class="nv">to-json</span><span class="w"> </span><span class="ss">::circle/circle</span><span class="w"> </span><span class="p">[</span><span class="nv">circle</span><span class="p">]</span>
+<span class="w">  </span><span class="p">(</span><span class="k">let </span><span class="p">[{</span><span class="ss">:keys</span><span class="w"> </span><span class="p">[</span><span class="ss">::circle/center</span><span class="w"> </span><span class="ss">::circle/radius</span><span class="p">]}</span><span class="w"> </span><span class="nv">circle</span>
+<span class="w">        </span><span class="p">[</span><span class="nv">x</span><span class="w"> </span><span class="nv">y</span><span class="p">]</span><span class="w"> </span><span class="nv">center</span><span class="p">]</span>
+<span class="w">    </span><span class="p">(</span><span class="nf">format</span><span class="w"> </span><span class="s">&quot;{\&quot;type\&quot;:\&quot;circle\&quot;,\&quot;center\&quot;:[%s,%s],\&quot;radius\&quot;:%s}&quot;</span>
+<span class="w">            </span><span class="nv">x</span><span class="w"> </span><span class="nv">y</span><span class="w"> </span><span class="nv">radius</span><span class="p">)))</span>
+
+<span class="p">(</span><span class="kd">defmethod </span><span class="nv">to-json</span><span class="w"> </span><span class="ss">::square/square</span><span class="w"> </span><span class="p">[</span><span class="nv">square</span><span class="p">]</span>
+<span class="w">  </span><span class="p">(</span><span class="k">let </span><span class="p">[{</span><span class="ss">:keys</span><span class="w"> </span><span class="p">[</span><span class="ss">::square/top-left</span><span class="w"> </span><span class="ss">::square/side</span><span class="p">]}</span><span class="w"> </span><span class="nv">square</span>
+<span class="w">        </span><span class="p">[</span><span class="nv">x</span><span class="w"> </span><span class="nv">y</span><span class="p">]</span><span class="w"> </span><span class="nv">top-left</span><span class="p">]</span>
+<span class="w">    </span><span class="p">(</span><span class="nf">format</span><span class="w"> </span><span class="s">&quot;{\&quot;type\&quot;:\&quot;square\&quot;,\&quot;topLeft\&quot;:[%s,%s],\&quot;side\&quot;:%s}&quot;</span>
+<span class="w">            </span><span class="nv">x</span><span class="w"> </span><span class="nv">y</span><span class="w"> </span><span class="nv">side</span><span class="p">)))</span>
+
+<span class="p">(</span><span class="kd">defmethod </span><span class="nv">to-json</span><span class="w"> </span><span class="ss">::rectangle/rectangle</span><span class="w"> </span><span class="p">[</span><span class="nv">rect</span><span class="p">]</span>
+<span class="w">  </span><span class="p">(</span><span class="k">let </span><span class="p">[{</span><span class="ss">:keys</span><span class="w"> </span><span class="p">[</span><span class="ss">::rectangle/top-left</span><span class="w"> </span><span class="ss">::rectangle/width</span><span class="w"> </span><span class="ss">::rectangle/height</span><span class="p">]}</span><span class="w"> </span><span class="nv">rect</span>
+<span class="w">        </span><span class="p">[</span><span class="nv">x</span><span class="w"> </span><span class="nv">y</span><span class="p">]</span><span class="w"> </span><span class="nv">top-left</span><span class="p">]</span>
+<span class="w">    </span><span class="p">(</span><span class="nf">format</span><span class="w"> </span><span class="s">&quot;{\&quot;type\&quot;:\&quot;rectangle\&quot;,\&quot;topLeft\&quot;:[%s,%s],\&quot;width\&quot;:%s,\&quot;height\&quot;:%s}&quot;</span>
+<span class="w">            </span><span class="nv">x</span><span class="w"> </span><span class="nv">y</span><span class="w"> </span><span class="nv">width</span><span class="w"> </span><span class="nv">height</span><span class="p">)))</span>
+</code></pre></div>
+<h3 id="_3">使用例<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="p">(</span><span class="nf">require</span><span class="w"> </span><span class="o">&#39;</span><span class="p">[</span><span class="nv">visitor-pattern.json-visitor</span><span class="w"> </span><span class="ss">:as</span><span class="w"> </span><span class="nv">json</span><span class="p">])</span>
+<span class="p">(</span><span class="nf">require</span><span class="w"> </span><span class="o">&#39;</span><span class="p">[</span><span class="nv">visitor-pattern.circle</span><span class="w"> </span><span class="ss">:as</span><span class="w"> </span><span class="nv">circle</span><span class="p">])</span>
+
+<span class="p">(</span><span class="k">def </span><span class="nv">c</span><span class="w"> </span><span class="p">(</span><span class="nf">circle/make</span><span class="w"> </span><span class="p">[</span><span class="mi">10</span><span class="w"> </span><span class="mi">20</span><span class="p">]</span><span class="w"> </span><span class="mi">5</span><span class="p">))</span>
+<span class="p">(</span><span class="nf">json/to-json</span><span class="w"> </span><span class="nv">c</span><span class="p">)</span>
+<span class="c1">;; =&gt; &quot;{\&quot;type\&quot;:\&quot;circle\&quot;,\&quot;center\&quot;:[10,20],\&quot;radius\&quot;:5}&quot;</span>
+</code></pre></div>
+<h2 id="4-visitor-xml">4. Visitor: XML 変換<a class="headerlink" href="#4-visitor-xml" title="Permanent link">&para;</a></h2>
+<h3 id="xml-visitor">XML Visitor の実装<a class="headerlink" href="#xml-visitor" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="p">(</span><span class="kd">ns </span><span class="nv">visitor-pattern.xml-visitor</span>
+<span class="w">  </span><span class="p">(</span><span class="ss">:require</span><span class="w"> </span><span class="p">[</span><span class="nv">visitor-pattern.shape</span><span class="w"> </span><span class="ss">:as</span><span class="w"> </span><span class="nv">shape</span><span class="p">]</span>
+<span class="w">            </span><span class="p">[</span><span class="nv">visitor-pattern.circle</span><span class="w"> </span><span class="ss">:as</span><span class="w"> </span><span class="nv">circle</span><span class="p">]</span>
+<span class="w">            </span><span class="p">[</span><span class="nv">visitor-pattern.square</span><span class="w"> </span><span class="ss">:as</span><span class="w"> </span><span class="nv">square</span><span class="p">]</span>
+<span class="w">            </span><span class="p">[</span><span class="nv">visitor-pattern.rectangle</span><span class="w"> </span><span class="ss">:as</span><span class="w"> </span><span class="nv">rectangle</span><span class="p">]))</span>
+
+<span class="p">(</span><span class="kd">defmulti </span><span class="nv">to-xml</span>
+<span class="w">  </span><span class="s">&quot;図形を XML 文字列に変換&quot;</span>
+<span class="w">  </span><span class="ss">::shape/type</span><span class="p">)</span>
+
+<span class="p">(</span><span class="kd">defmethod </span><span class="nv">to-xml</span><span class="w"> </span><span class="ss">::circle/circle</span><span class="w"> </span><span class="p">[</span><span class="nv">circle</span><span class="p">]</span>
+<span class="w">  </span><span class="p">(</span><span class="k">let </span><span class="p">[{</span><span class="ss">:keys</span><span class="w"> </span><span class="p">[</span><span class="ss">::circle/center</span><span class="w"> </span><span class="ss">::circle/radius</span><span class="p">]}</span><span class="w"> </span><span class="nv">circle</span>
+<span class="w">        </span><span class="p">[</span><span class="nv">x</span><span class="w"> </span><span class="nv">y</span><span class="p">]</span><span class="w"> </span><span class="nv">center</span><span class="p">]</span>
+<span class="w">    </span><span class="p">(</span><span class="nf">format</span><span class="w"> </span><span class="s">&quot;&lt;circle&gt;&lt;center x=\&quot;%s\&quot; y=\&quot;%s\&quot;/&gt;&lt;radius&gt;%s&lt;/radius&gt;&lt;/circle&gt;&quot;</span>
+<span class="w">            </span><span class="nv">x</span><span class="w"> </span><span class="nv">y</span><span class="w"> </span><span class="nv">radius</span><span class="p">)))</span>
+
+<span class="p">(</span><span class="kd">defmethod </span><span class="nv">to-xml</span><span class="w"> </span><span class="ss">::square/square</span><span class="w"> </span><span class="p">[</span><span class="nv">square</span><span class="p">]</span>
+<span class="w">  </span><span class="p">(</span><span class="k">let </span><span class="p">[{</span><span class="ss">:keys</span><span class="w"> </span><span class="p">[</span><span class="ss">::square/top-left</span><span class="w"> </span><span class="ss">::square/side</span><span class="p">]}</span><span class="w"> </span><span class="nv">square</span>
+<span class="w">        </span><span class="p">[</span><span class="nv">x</span><span class="w"> </span><span class="nv">y</span><span class="p">]</span><span class="w"> </span><span class="nv">top-left</span><span class="p">]</span>
+<span class="w">    </span><span class="p">(</span><span class="nf">format</span><span class="w"> </span><span class="s">&quot;&lt;square&gt;&lt;topLeft x=\&quot;%s\&quot; y=\&quot;%s\&quot;/&gt;&lt;side&gt;%s&lt;/side&gt;&lt;/square&gt;&quot;</span>
+<span class="w">            </span><span class="nv">x</span><span class="w"> </span><span class="nv">y</span><span class="w"> </span><span class="nv">side</span><span class="p">)))</span>
+
+<span class="p">(</span><span class="kd">defmethod </span><span class="nv">to-xml</span><span class="w"> </span><span class="ss">::rectangle/rectangle</span><span class="w"> </span><span class="p">[</span><span class="nv">rect</span><span class="p">]</span>
+<span class="w">  </span><span class="p">(</span><span class="k">let </span><span class="p">[{</span><span class="ss">:keys</span><span class="w"> </span><span class="p">[</span><span class="ss">::rectangle/top-left</span><span class="w"> </span><span class="ss">::rectangle/width</span><span class="w"> </span><span class="ss">::rectangle/height</span><span class="p">]}</span><span class="w"> </span><span class="nv">rect</span>
+<span class="w">        </span><span class="p">[</span><span class="nv">x</span><span class="w"> </span><span class="nv">y</span><span class="p">]</span><span class="w"> </span><span class="nv">top-left</span><span class="p">]</span>
+<span class="w">    </span><span class="p">(</span><span class="nf">format</span><span class="w"> </span><span class="s">&quot;&lt;rectangle&gt;&lt;topLeft x=\&quot;%s\&quot; y=\&quot;%s\&quot;/&gt;&lt;width&gt;%s&lt;/width&gt;&lt;height&gt;%s&lt;/height&gt;&lt;/rectangle&gt;&quot;</span>
+<span class="w">            </span><span class="nv">x</span><span class="w"> </span><span class="nv">y</span><span class="w"> </span><span class="nv">width</span><span class="w"> </span><span class="nv">height</span><span class="p">)))</span>
+</code></pre></div>
+<h2 id="5-visitor">5. Visitor: 面積計算<a class="headerlink" href="#5-visitor" title="Permanent link">&para;</a></h2>
+<h3 id="area-visitor">Area Visitor の実装<a class="headerlink" href="#area-visitor" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="p">(</span><span class="kd">ns </span><span class="nv">visitor-pattern.area-visitor</span>
+<span class="w">  </span><span class="p">(</span><span class="ss">:require</span><span class="w"> </span><span class="p">[</span><span class="nv">visitor-pattern.shape</span><span class="w"> </span><span class="ss">:as</span><span class="w"> </span><span class="nv">shape</span><span class="p">]</span>
+<span class="w">            </span><span class="p">[</span><span class="nv">visitor-pattern.circle</span><span class="w"> </span><span class="ss">:as</span><span class="w"> </span><span class="nv">circle</span><span class="p">]</span>
+<span class="w">            </span><span class="p">[</span><span class="nv">visitor-pattern.square</span><span class="w"> </span><span class="ss">:as</span><span class="w"> </span><span class="nv">square</span><span class="p">]</span>
+<span class="w">            </span><span class="p">[</span><span class="nv">visitor-pattern.rectangle</span><span class="w"> </span><span class="ss">:as</span><span class="w"> </span><span class="nv">rectangle</span><span class="p">]))</span>
+
+<span class="p">(</span><span class="kd">defmulti </span><span class="nv">calculate-area</span>
+<span class="w">  </span><span class="s">&quot;図形の面積を計算&quot;</span>
+<span class="w">  </span><span class="ss">::shape/type</span><span class="p">)</span>
+
+<span class="p">(</span><span class="kd">defmethod </span><span class="nv">calculate-area</span><span class="w"> </span><span class="ss">::circle/circle</span><span class="w"> </span><span class="p">[</span><span class="nv">circle</span><span class="p">]</span>
+<span class="w">  </span><span class="p">(</span><span class="k">let </span><span class="p">[</span><span class="nv">radius</span><span class="w"> </span><span class="p">(</span><span class="ss">::circle/radius</span><span class="w"> </span><span class="nv">circle</span><span class="p">)]</span>
+<span class="w">    </span><span class="p">(</span><span class="nb">* </span><span class="nv">Math/PI</span><span class="w"> </span><span class="nv">radius</span><span class="w"> </span><span class="nv">radius</span><span class="p">)))</span>
+
+<span class="p">(</span><span class="kd">defmethod </span><span class="nv">calculate-area</span><span class="w"> </span><span class="ss">::square/square</span><span class="w"> </span><span class="p">[</span><span class="nv">square</span><span class="p">]</span>
+<span class="w">  </span><span class="p">(</span><span class="k">let </span><span class="p">[</span><span class="nv">side</span><span class="w"> </span><span class="p">(</span><span class="ss">::square/side</span><span class="w"> </span><span class="nv">square</span><span class="p">)]</span>
+<span class="w">    </span><span class="p">(</span><span class="nb">* </span><span class="nv">side</span><span class="w"> </span><span class="nv">side</span><span class="p">)))</span>
+
+<span class="p">(</span><span class="kd">defmethod </span><span class="nv">calculate-area</span><span class="w"> </span><span class="ss">::rectangle/rectangle</span><span class="w"> </span><span class="p">[</span><span class="nv">rect</span><span class="p">]</span>
+<span class="w">  </span><span class="p">(</span><span class="k">let </span><span class="p">[</span><span class="nv">width</span><span class="w"> </span><span class="p">(</span><span class="ss">::rectangle/width</span><span class="w"> </span><span class="nv">rect</span><span class="p">)</span>
+<span class="w">        </span><span class="nv">height</span><span class="w"> </span><span class="p">(</span><span class="ss">::rectangle/height</span><span class="w"> </span><span class="nv">rect</span><span class="p">)]</span>
+<span class="w">    </span><span class="p">(</span><span class="nb">* </span><span class="nv">width</span><span class="w"> </span><span class="nv">height</span><span class="p">)))</span>
+
+<span class="p">(</span><span class="kd">defn </span><span class="nv">total-area</span>
+<span class="w">  </span><span class="s">&quot;複数の図形の合計面積を計算&quot;</span>
+<span class="w">  </span><span class="p">[</span><span class="nv">shapes</span><span class="p">]</span>
+<span class="w">  </span><span class="p">(</span><span class="nb">reduce + </span><span class="p">(</span><span class="nb">map </span><span class="nv">calculate-area</span><span class="w"> </span><span class="nv">shapes</span><span class="p">)))</span>
+</code></pre></div>
+<h2 id="6-visitor">6. Visitor: 周囲長計算<a class="headerlink" href="#6-visitor" title="Permanent link">&para;</a></h2>
+<h3 id="perimeter-visitor">Perimeter Visitor の実装<a class="headerlink" href="#perimeter-visitor" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="p">(</span><span class="kd">ns </span><span class="nv">visitor-pattern.perimeter-visitor</span>
+<span class="w">  </span><span class="p">(</span><span class="ss">:require</span><span class="w"> </span><span class="p">[</span><span class="nv">visitor-pattern.shape</span><span class="w"> </span><span class="ss">:as</span><span class="w"> </span><span class="nv">shape</span><span class="p">]</span>
+<span class="w">            </span><span class="p">[</span><span class="nv">visitor-pattern.circle</span><span class="w"> </span><span class="ss">:as</span><span class="w"> </span><span class="nv">circle</span><span class="p">]</span>
+<span class="w">            </span><span class="p">[</span><span class="nv">visitor-pattern.square</span><span class="w"> </span><span class="ss">:as</span><span class="w"> </span><span class="nv">square</span><span class="p">]</span>
+<span class="w">            </span><span class="p">[</span><span class="nv">visitor-pattern.rectangle</span><span class="w"> </span><span class="ss">:as</span><span class="w"> </span><span class="nv">rectangle</span><span class="p">]))</span>
+
+<span class="p">(</span><span class="kd">defmulti </span><span class="nv">calculate-perimeter</span>
+<span class="w">  </span><span class="s">&quot;図形の周囲長を計算&quot;</span>
+<span class="w">  </span><span class="ss">::shape/type</span><span class="p">)</span>
+
+<span class="p">(</span><span class="kd">defmethod </span><span class="nv">calculate-perimeter</span><span class="w"> </span><span class="ss">::circle/circle</span><span class="w"> </span><span class="p">[</span><span class="nv">circle</span><span class="p">]</span>
+<span class="w">  </span><span class="p">(</span><span class="k">let </span><span class="p">[</span><span class="nv">radius</span><span class="w"> </span><span class="p">(</span><span class="ss">::circle/radius</span><span class="w"> </span><span class="nv">circle</span><span class="p">)]</span>
+<span class="w">    </span><span class="p">(</span><span class="nb">* </span><span class="mi">2</span><span class="w"> </span><span class="nv">Math/PI</span><span class="w"> </span><span class="nv">radius</span><span class="p">)))</span>
+
+<span class="p">(</span><span class="kd">defmethod </span><span class="nv">calculate-perimeter</span><span class="w"> </span><span class="ss">::square/square</span><span class="w"> </span><span class="p">[</span><span class="nv">square</span><span class="p">]</span>
+<span class="w">  </span><span class="p">(</span><span class="k">let </span><span class="p">[</span><span class="nv">side</span><span class="w"> </span><span class="p">(</span><span class="ss">::square/side</span><span class="w"> </span><span class="nv">square</span><span class="p">)]</span>
+<span class="w">    </span><span class="p">(</span><span class="nb">* </span><span class="mi">4</span><span class="w"> </span><span class="nv">side</span><span class="p">)))</span>
+
+<span class="p">(</span><span class="kd">defmethod </span><span class="nv">calculate-perimeter</span><span class="w"> </span><span class="ss">::rectangle/rectangle</span><span class="w"> </span><span class="p">[</span><span class="nv">rect</span><span class="p">]</span>
+<span class="w">  </span><span class="p">(</span><span class="k">let </span><span class="p">[</span><span class="nv">width</span><span class="w"> </span><span class="p">(</span><span class="ss">::rectangle/width</span><span class="w"> </span><span class="nv">rect</span><span class="p">)</span>
+<span class="w">        </span><span class="nv">height</span><span class="w"> </span><span class="p">(</span><span class="ss">::rectangle/height</span><span class="w"> </span><span class="nv">rect</span><span class="p">)]</span>
+<span class="w">    </span><span class="p">(</span><span class="nb">* </span><span class="mi">2</span><span class="w"> </span><span class="p">(</span><span class="nb">+ </span><span class="nv">width</span><span class="w"> </span><span class="nv">height</span><span class="p">))))</span>
+</code></pre></div>
+<h2 id="7-visitor">7. Visitor パターンの構造<a class="headerlink" href="#7-visitor" title="Permanent link">&para;</a></h2>
+<p><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiBjb250ZW50U3R5bGVUeXBlPSJ0ZXh0L2NzcyIgZGF0YS1kaWFncmFtLXR5cGU9IkNMQVNTIiBoZWlnaHQ9IjM5OXB4IiBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJub25lIiBzdHlsZT0id2lkdGg6ODE4cHg7aGVpZ2h0OjM5OXB4O2JhY2tncm91bmQ6I0ZGRkZGRjsiIHZlcnNpb249IjEuMSIgdmlld0JveD0iMCAwIDgxOCAzOTkiIHdpZHRoPSI4MThweCIgem9vbUFuZFBhbj0ibWFnbmlmeSI+PGRlZnMvPjxnPjwhLS1jbHVzdGVyIEVsZW1lbnRzICg/PyktLT48ZyBjbGFzcz0iY2x1c3RlciIgZGF0YS1lbnRpdHk9IkVsZW1lbnRzIC4uLi4iIGRhdGEtc291cmNlLWxpbmU9IjMiIGRhdGEtdWlkPSJlbnQwMDAyIiBpZD0iY2x1c3Rlcl9FbGVtZW50cyAuLi4uIj48cGF0aCBkPSJNMjU2LjY0LDE0NS4zIEwzNzYuMjQzNCwxNDUuMyBBMy43NSwzLjc1IDAgMCAxIDM3OC43NDM0LDE0Ny44IEwzODUuNzQzNCwxNjcuNTk2OSBMNjE3LjY0LDE2Ny41OTY5IEEyLjUsMi41IDAgMCAxIDYyMC4xNCwxNzAuMDk2OSBMNjIwLjE0LDI5MC42OSBBMi41LDIuNSAwIDAgMSA2MTcuNjQsMjkzLjE5IEwyNTYuNjQsMjkzLjE5IEEyLjUsMi41IDAgMCAxIDI1NC4xNCwyOTAuNjkgTDI1NC4xNCwxNDcuOCBBMi41LDIuNSAwIDAgMSAyNTYuNjQsMTQ1LjMiIGZpbGw9Im5vbmUiIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MS41OyIvPjxsaW5lIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MS41OyIgeDE9IjI1NC4xNCIgeDI9IjM4NS43NDM0IiB5MT0iMTY3LjU5NjkiIHkyPSIxNjcuNTk2OSIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmb250LXdlaWdodD0iYm9sZCIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSIxMTguNjAzNCIgeD0iMjU4LjE0IiB5PSIxNjAuMjk1MSI+RWxlbWVudHMgKCYjMjIyNTk7JiMyNDQxODspPC90ZXh0PjwvZz48IS0tY2x1c3RlciBWaXNpdG9ycyAoPz8pLS0+PGcgY2xhc3M9ImNsdXN0ZXIiIGRhdGEtZW50aXR5PSJWaXNpdG9ycyAuLi4uIiBkYXRhLXNvdXJjZS1saW5lPSIyMSIgZGF0YS11aWQ9ImVudDAwMDYiIGlkPSJjbHVzdGVyX1Zpc2l0b3JzIC4uLi4iPjxwYXRoIGQ9Ik0zOS42NCw2IEwxNDYuNjI0Myw2IEEzLjc1LDMuNzUgMCAwIDEgMTQ5LjEyNDMsOC41IEwxNTYuMTI0MywyOC4yOTY5IEw4MDguNjQsMjguMjk2OSBBMi41LDIuNSAwIDAgMSA4MTEuMTQsMzAuNzk2OSBMODExLjE0LDExOC44IEEyLjUsMi41IDAgMCAxIDgwOC42NCwxMjEuMyBMMzkuNjQsMTIxLjMgQTIuNSwyLjUgMCAwIDEgMzcuMTQsMTE4LjggTDM3LjE0LDguNSBBMi41LDIuNSAwIDAgMSAzOS42NCw2IiBmaWxsPSJub25lIiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjEuNTsiLz48bGluZSBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjEuNTsiIHgxPSIzNy4xNCIgeDI9IjE1Ni4xMjQzIiB5MT0iMjguMjk2OSIgeTI9IjI4LjI5NjkiLz48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZm9udC13ZWlnaHQ9ImJvbGQiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iMTA1Ljk4NDMiIHg9IjQxLjE0IiB5PSIyMC45OTUxIj5WaXNpdG9ycyAoJiMyNTgwNTsmIzIwMzE2Oyk8L3RleHQ+PC9nPjwhLS1jbGFzcyBjaXJjbGUtLT48ZyBjbGFzcz0iZW50aXR5IiBkYXRhLWVudGl0eT0iY2lyY2xlIiBkYXRhLXNvdXJjZS1saW5lPSI0IiBkYXRhLXVpZD0iZW50MDAwMyIgaWQ9ImVudGl0eV9jaXJjbGUiPjxyZWN0IGZpbGw9IiNGMUYxRjEiIGhlaWdodD0iODAuNTkzOCIgcng9IjIuNSIgcnk9IjIuNSIgc3R5bGU9InN0cm9rZTojMTgxODE4O3N0cm9rZS13aWR0aDowLjU7IiB3aWR0aD0iNzguMjA2MSIgeD0iMjcwLjA0IiB5PSIxODguNDUiLz48ZWxsaXBzZSBjeD0iMjg4LjAwMzIiIGN5PSIyMDQuNDUiIGZpbGw9IiNBREQxQjIiIHJ4PSIxMSIgcnk9IjExIiBzdHlsZT0ic3Ryb2tlOiMxODE4MTg7c3Ryb2tlLXdpZHRoOjE7Ii8+PHBhdGggZD0iTTI5MC45NzIsMjEwLjA5MDYgUTI5MC4zOTM5LDIxMC4zODc1IDI4OS43NTMyLDIxMC41MjgxIFEyODkuMTEyNiwyMTAuNjg0NCAyODguNDA5NSwyMTAuNjg0NCBRMjg1LjkwOTUsMjEwLjY4NDQgMjg0LjU4MTQsMjA5LjA0MzggUTI4My4yNjg5LDIwNy4zODc1IDI4My4yNjg5LDIwNC4yNjI1IFEyODMuMjY4OSwyMDEuMTM3NSAyODQuNTgxNCwxOTkuNDgxMyBRMjg1LjkwOTUsMTk3LjgyNSAyODguNDA5NSwxOTcuODI1IFEyODkuMTEyNiwxOTcuODI1IDI4OS43NTMyLDE5Ny45ODEzIFEyOTAuNDA5NSwxOTguMTM3NSAyOTAuOTcyLDE5OC40MzQ0IEwyOTAuOTcyLDIwMS4xNTMxIFEyOTAuMzQ3LDIwMC41NzUgMjg5Ljc1MzIsMjAwLjMwOTQgUTI4OS4xNTk1LDIwMC4wMjgxIDI4OC41MzQ1LDIwMC4wMjgxIFEyODcuMTkwNywyMDAuMDI4MSAyODYuNTAzMiwyMDEuMTA2MyBRMjg1LjgxNTcsMjAyLjE2ODggMjg1LjgxNTcsMjA0LjI2MjUgUTI4NS44MTU3LDIwNi4zNTYzIDI4Ni41MDMyLDIwNy40MzQ0IFEyODcuMTkwNywyMDguNDk2OSAyODguNTM0NSwyMDguNDk2OSBRMjg5LjE1OTUsMjA4LjQ5NjkgMjg5Ljc1MzIsMjA4LjIzMTMgUTI5MC4zNDcsMjA3Ljk1IDI5MC45NzIsMjA3LjM3MTkgTDI5MC45NzIsMjEwLjA5MDYgWiAiIGZpbGw9IiMwMDAwMDAiLz48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSIzOS42MjExIiB4PSIzMDIuNjYxNyIgeT0iMjA5LjI5NjciPkNpcmNsZTwvdGV4dD48bGluZSBzdHlsZT0ic3Ryb2tlOiMxODE4MTg7c3Ryb2tlLXdpZHRoOjAuNTsiIHgxPSIyNzEuMDQiIHgyPSIzNDcuMjQ2MSIgeTE9IjIyMC40NSIgeTI9IjIyMC40NSIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjY2LjIwNjEiIHg9IjI3Ni4wNCIgeT0iMjM3LjQ0NTEiPis6OmNlbnRlcjwvdGV4dD48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSI2NC40NDI0IiB4PSIyNzYuMDQiIHk9IjI1My43NDIiPis6OnJhZGl1czwvdGV4dD48bGluZSBzdHlsZT0ic3Ryb2tlOiMxODE4MTg7c3Ryb2tlLXdpZHRoOjAuNTsiIHgxPSIyNzEuMDQiIHgyPSIzNDcuMjQ2MSIgeTE9IjI2MS4wNDM4IiB5Mj0iMjYxLjA0MzgiLz48L2c+PCEtLWNsYXNzIHNxdWFyZS0tPjxnIGNsYXNzPSJlbnRpdHkiIGRhdGEtZW50aXR5PSJzcXVhcmUiIGRhdGEtc291cmNlLWxpbmU9IjkiIGRhdGEtdWlkPSJlbnQwMDA0IiBpZD0iZW50aXR5X3NxdWFyZSI+PHJlY3QgZmlsbD0iI0YxRjFGMSIgaGVpZ2h0PSI4MC41OTM4IiByeD0iMi41IiByeT0iMi41IiBzdHlsZT0ic3Ryb2tlOiMxODE4MTg7c3Ryb2tlLXdpZHRoOjAuNTsiIHdpZHRoPSI4NC4wNzgxIiB4PSIzODMuMSIgeT0iMTg4LjQ1Ii8+PGVsbGlwc2UgY3g9IjM5OS4yMTc1IiBjeT0iMjA0LjQ1IiBmaWxsPSIjQUREMUIyIiByeD0iMTEiIHJ5PSIxMSIgc3R5bGU9InN0cm9rZTojMTgxODE4O3N0cm9rZS13aWR0aDoxOyIvPjxwYXRoIGQ9Ik00MDIuMTg2MywyMTAuMDkwNiBRNDAxLjYwODIsMjEwLjM4NzUgNDAwLjk2NzUsMjEwLjUyODEgUTQwMC4zMjY5LDIxMC42ODQ0IDM5OS42MjM4LDIxMC42ODQ0IFEzOTcuMTIzOCwyMTAuNjg0NCAzOTUuNzk1NywyMDkuMDQzOCBRMzk0LjQ4MzIsMjA3LjM4NzUgMzk0LjQ4MzIsMjA0LjI2MjUgUTM5NC40ODMyLDIwMS4xMzc1IDM5NS43OTU3LDE5OS40ODEzIFEzOTcuMTIzOCwxOTcuODI1IDM5OS42MjM4LDE5Ny44MjUgUTQwMC4zMjY5LDE5Ny44MjUgNDAwLjk2NzUsMTk3Ljk4MTMgUTQwMS42MjM4LDE5OC4xMzc1IDQwMi4xODYzLDE5OC40MzQ0IEw0MDIuMTg2MywyMDEuMTUzMSBRNDAxLjU2MTMsMjAwLjU3NSA0MDAuOTY3NSwyMDAuMzA5NCBRNDAwLjM3MzgsMjAwLjAyODEgMzk5Ljc0ODgsMjAwLjAyODEgUTM5OC40MDUsMjAwLjAyODEgMzk3LjcxNzUsMjAxLjEwNjMgUTM5Ny4wMywyMDIuMTY4OCAzOTcuMDMsMjA0LjI2MjUgUTM5Ny4wMywyMDYuMzU2MyAzOTcuNzE3NSwyMDcuNDM0NCBRMzk4LjQwNSwyMDguNDk2OSAzOTkuNzQ4OCwyMDguNDk2OSBRNDAwLjM3MzgsMjA4LjQ5NjkgNDAwLjk2NzUsMjA4LjIzMTMgUTQwMS41NjEzLDIwNy45NSA0MDIuMTg2MywyMDcuMzcxOSBMNDAyLjE4NjMsMjEwLjA5MDYgWiAiIGZpbGw9IiMwMDAwMDAiLz48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSI0OS41OTQ3IiB4PSI0MTMuNDY1OSIgeT0iMjA5LjI5NjciPlNxdWFyZTwvdGV4dD48bGluZSBzdHlsZT0ic3Ryb2tlOiMxODE4MTg7c3Ryb2tlLXdpZHRoOjAuNTsiIHgxPSIzODQuMSIgeDI9IjQ2Ni4xNzgxIiB5MT0iMjIwLjQ1IiB5Mj0iMjIwLjQ1Ii8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTQiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iNzIuMDc4MSIgeD0iMzg5LjEiIHk9IjIzNy40NDUxIj4rOjp0b3AtbGVmdDwvdGV4dD48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSI0OS44NDc3IiB4PSIzODkuMSIgeT0iMjUzLjc0MiI+Kzo6c2lkZTwvdGV4dD48bGluZSBzdHlsZT0ic3Ryb2tlOiMxODE4MTg7c3Ryb2tlLXdpZHRoOjAuNTsiIHgxPSIzODQuMSIgeDI9IjQ2Ni4xNzgxIiB5MT0iMjYxLjA0MzgiIHkyPSIyNjEuMDQzOCIvPjwvZz48IS0tY2xhc3MgcmVjdGFuZ2xlLS0+PGcgY2xhc3M9ImVudGl0eSIgZGF0YS1lbnRpdHk9InJlY3RhbmdsZSIgZGF0YS1zb3VyY2UtbGluZT0iMTQiIGRhdGEtdWlkPSJlbnQwMDA1IiBpZD0iZW50aXR5X3JlY3RhbmdsZSI+PHJlY3QgZmlsbD0iI0YxRjFGMSIgaGVpZ2h0PSI5Ni44OTA2IiByeD0iMi41IiByeT0iMi41IiBzdHlsZT0ic3Ryb2tlOiMxODE4MTg7c3Ryb2tlLXdpZHRoOjAuNTsiIHdpZHRoPSIxMDIuMzY5MSIgeD0iNTAxLjk2IiB5PSIxODAuMyIvPjxlbGxpcHNlIGN4PSI1MTYuOTYiIGN5PSIxOTYuMyIgZmlsbD0iI0FERDFCMiIgcng9IjExIiByeT0iMTEiIHN0eWxlPSJzdHJva2U6IzE4MTgxODtzdHJva2Utd2lkdGg6MTsiLz48cGF0aCBkPSJNNTE5LjkyODgsMjAxLjk0MDYgUTUxOS4zNTA2LDIwMi4yMzc1IDUxOC43MSwyMDIuMzc4MSBRNTE4LjA2OTQsMjAyLjUzNDQgNTE3LjM2NjMsMjAyLjUzNDQgUTUxNC44NjYzLDIwMi41MzQ0IDUxMy41MzgxLDIwMC44OTM3IFE1MTIuMjI1NiwxOTkuMjM3NSA1MTIuMjI1NiwxOTYuMTEyNSBRNTEyLjIyNTYsMTkyLjk4NzUgNTEzLjUzODEsMTkxLjMzMTIgUTUxNC44NjYzLDE4OS42NzUgNTE3LjM2NjMsMTg5LjY3NSBRNTE4LjA2OTQsMTg5LjY3NSA1MTguNzEsMTg5LjgzMTIgUTUxOS4zNjYzLDE4OS45ODc1IDUxOS45Mjg4LDE5MC4yODQ0IEw1MTkuOTI4OCwxOTMuMDAzMSBRNTE5LjMwMzgsMTkyLjQyNSA1MTguNzEsMTkyLjE1OTQgUTUxOC4xMTYzLDE5MS44NzgxIDUxNy40OTEzLDE5MS44NzgxIFE1MTYuMTQ3NSwxOTEuODc4MSA1MTUuNDYsMTkyLjk1NjIgUTUxNC43NzI1LDE5NC4wMTg3IDUxNC43NzI1LDE5Ni4xMTI1IFE1MTQuNzcyNSwxOTguMjA2MiA1MTUuNDYsMTk5LjI4NDQgUTUxNi4xNDc1LDIwMC4zNDY5IDUxNy40OTEzLDIwMC4zNDY5IFE1MTguMTE2MywyMDAuMzQ2OSA1MTguNzEsMjAwLjA4MTIgUTUxOS4zMDM4LDE5OS44IDUxOS45Mjg4LDE5OS4yMjE5IEw1MTkuOTI4OCwyMDEuOTQwNiBaICIgZmlsbD0iIzAwMDAwMCIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjcwLjM2OTEiIHg9IjUzMC45NiIgeT0iMjAxLjE0NjciPlJlY3RhbmdsZTwvdGV4dD48bGluZSBzdHlsZT0ic3Ryb2tlOiMxODE4MTg7c3Ryb2tlLXdpZHRoOjAuNTsiIHgxPSI1MDIuOTYiIHgyPSI2MDMuMzI5MSIgeTE9IjIxMi4zIiB5Mj0iMjEyLjMiLz48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSI3Mi4wNzgxIiB4PSI1MDcuOTYiIHk9IjIyOS4yOTUxIj4rOjp0b3AtbGVmdDwvdGV4dD48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSI1OS43NTI5IiB4PSI1MDcuOTYiIHk9IjI0NS41OTIiPis6OndpZHRoPC90ZXh0Pjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjY1Ljc4OTEiIHg9IjUwNy45NiIgeT0iMjYxLjg4ODkiPis6OmhlaWdodDwvdGV4dD48bGluZSBzdHlsZT0ic3Ryb2tlOiMxODE4MTg7c3Ryb2tlLXdpZHRoOjAuNTsiIHgxPSI1MDIuOTYiIHgyPSI2MDMuMzI5MSIgeTE9IjI2OS4xOTA2IiB5Mj0iMjY5LjE5MDYiLz48L2c+PCEtLWNsYXNzIGpzb24tLT48ZyBjbGFzcz0iZW50aXR5IiBkYXRhLWVudGl0eT0ianNvbiIgZGF0YS1zb3VyY2UtbGluZT0iMjIiIGRhdGEtdWlkPSJlbnQwMDA3IiBpZD0iZW50aXR5X2pzb24iPjxyZWN0IGZpbGw9IiNGMUYxRjEiIGhlaWdodD0iNjQuMjk2OSIgcng9IjIuNSIgcnk9IjIuNSIgc3R5bGU9InN0cm9rZTojMTgxODE4O3N0cm9rZS13aWR0aDowLjU7IiB3aWR0aD0iMTI0LjYyODkiIHg9IjUyLjgzIiB5PSI0MSIvPjxlbGxpcHNlIGN4PSI3Ni41MTgiIGN5PSI1NyIgZmlsbD0iI0FERDFCMiIgcng9IjExIiByeT0iMTEiIHN0eWxlPSJzdHJva2U6IzE4MTgxODtzdHJva2Utd2lkdGg6MTsiLz48cGF0aCBkPSJNNzkuNDg2Nyw2Mi42NDA2IFE3OC45MDg2LDYyLjkzNzUgNzguMjY4LDYzLjA3ODEgUTc3LjYyNzQsNjMuMjM0NCA3Ni45MjQyLDYzLjIzNDQgUTc0LjQyNDIsNjMuMjM0NCA3My4wOTYxLDYxLjU5MzggUTcxLjc4MzYsNTkuOTM3NSA3MS43ODM2LDU2LjgxMjUgUTcxLjc4MzYsNTMuNjg3NSA3My4wOTYxLDUyLjAzMTMgUTc0LjQyNDIsNTAuMzc1IDc2LjkyNDIsNTAuMzc1IFE3Ny42Mjc0LDUwLjM3NSA3OC4yNjgsNTAuNTMxMyBRNzguOTI0Miw1MC42ODc1IDc5LjQ4NjcsNTAuOTg0NCBMNzkuNDg2Nyw1My43MDMxIFE3OC44NjE3LDUzLjEyNSA3OC4yNjgsNTIuODU5NCBRNzcuNjc0Miw1Mi41NzgxIDc3LjA0OTIsNTIuNTc4MSBRNzUuNzA1NSw1Mi41NzgxIDc1LjAxOCw1My42NTYzIFE3NC4zMzA1LDU0LjcxODggNzQuMzMwNSw1Ni44MTI1IFE3NC4zMzA1LDU4LjkwNjMgNzUuMDE4LDU5Ljk4NDQgUTc1LjcwNTUsNjEuMDQ2OSA3Ny4wNDkyLDYxLjA0NjkgUTc3LjY3NDIsNjEuMDQ2OSA3OC4yNjgsNjAuNzgxMyBRNzguODYxNyw2MC41IDc5LjQ4NjcsNTkuOTIxOSBMNzkuNDg2Nyw2Mi42NDA2IFogIiBmaWxsPSIjMDAwMDAwIi8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTQiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iNzMuMzIyMyIgeD0iOTIuNDQ4NyIgeT0iNjEuODQ2NyI+SnNvblZpc2l0b3I8L3RleHQ+PGxpbmUgc3R5bGU9InN0cm9rZTojMTgxODE4O3N0cm9rZS13aWR0aDowLjU7IiB4MT0iNTMuODMiIHgyPSIxNzYuNDU4OSIgeTE9IjczIiB5Mj0iNzMiLz48bGluZSBzdHlsZT0ic3Ryb2tlOiMxODE4MTg7c3Ryb2tlLXdpZHRoOjAuNTsiIHgxPSI1My44MyIgeDI9IjE3Ni40NTg5IiB5MT0iODEiIHkyPSI4MSIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjExMi42Mjg5IiB4PSI1OC44MyIgeT0iOTcuOTk1MSI+K3RvLWpzb24oc2hhcGUpPC90ZXh0PjwvZz48IS0tY2xhc3MgeG1sLS0+PGcgY2xhc3M9ImVudGl0eSIgZGF0YS1lbnRpdHk9InhtbCIgZGF0YS1zb3VyY2UtbGluZT0iMjYiIGRhdGEtdWlkPSJlbnQwMDA4IiBpZD0iZW50aXR5X3htbCI+PHJlY3QgZmlsbD0iI0YxRjFGMSIgaGVpZ2h0PSI2NC4yOTY5IiByeD0iMi41IiByeT0iMi41IiBzdHlsZT0ic3Ryb2tlOiMxODE4MTg7c3Ryb2tlLXdpZHRoOjAuNTsiIHdpZHRoPSIxMjEuODE5MyIgeD0iNDYyLjIzIiB5PSI0MSIvPjxlbGxpcHNlIGN4PSI0ODUuNDM4MSIgY3k9IjU3IiBmaWxsPSIjQUREMUIyIiByeD0iMTEiIHJ5PSIxMSIgc3R5bGU9InN0cm9rZTojMTgxODE4O3N0cm9rZS13aWR0aDoxOyIvPjxwYXRoIGQ9Ik00ODguNDA2OSw2Mi42NDA2IFE0ODcuODI4Nyw2Mi45Mzc1IDQ4Ny4xODgxLDYzLjA3ODEgUTQ4Ni41NDc1LDYzLjIzNDQgNDg1Ljg0NDQsNjMuMjM0NCBRNDgzLjM0NDQsNjMuMjM0NCA0ODIuMDE2Miw2MS41OTM4IFE0ODAuNzAzNyw1OS45Mzc1IDQ4MC43MDM3LDU2LjgxMjUgUTQ4MC43MDM3LDUzLjY4NzUgNDgyLjAxNjIsNTIuMDMxMyBRNDgzLjM0NDQsNTAuMzc1IDQ4NS44NDQ0LDUwLjM3NSBRNDg2LjU0NzUsNTAuMzc1IDQ4Ny4xODgxLDUwLjUzMTMgUTQ4Ny44NDQ0LDUwLjY4NzUgNDg4LjQwNjksNTAuOTg0NCBMNDg4LjQwNjksNTMuNzAzMSBRNDg3Ljc4MTksNTMuMTI1IDQ4Ny4xODgxLDUyLjg1OTQgUTQ4Ni41OTQ0LDUyLjU3ODEgNDg1Ljk2OTQsNTIuNTc4MSBRNDg0LjYyNTYsNTIuNTc4MSA0ODMuOTM4MSw1My42NTYzIFE0ODMuMjUwNiw1NC43MTg4IDQ4My4yNTA2LDU2LjgxMjUgUTQ4My4yNTA2LDU4LjkwNjMgNDgzLjkzODEsNTkuOTg0NCBRNDg0LjYyNTYsNjEuMDQ2OSA0ODUuOTY5NCw2MS4wNDY5IFE0ODYuNTk0NCw2MS4wNDY5IDQ4Ny4xODgxLDYwLjc4MTMgUTQ4Ny43ODE5LDYwLjUgNDg4LjQwNjksNTkuOTIxOSBMNDg4LjQwNjksNjIuNjQwNiBaICIgZmlsbD0iIzAwMDAwMCIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjcxLjU3OTEiIHg9IjUwMS4yNjIxIiB5PSI2MS44NDY3Ij5YbWxWaXNpdG9yPC90ZXh0PjxsaW5lIHN0eWxlPSJzdHJva2U6IzE4MTgxODtzdHJva2Utd2lkdGg6MC41OyIgeDE9IjQ2My4yMyIgeDI9IjU4My4wNDkzIiB5MT0iNzMiIHkyPSI3MyIvPjxsaW5lIHN0eWxlPSJzdHJva2U6IzE4MTgxODtzdHJva2Utd2lkdGg6MC41OyIgeDE9IjQ2My4yMyIgeDI9IjU4My4wNDkzIiB5MT0iODEiIHkyPSI4MSIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjEwOS44MTkzIiB4PSI0NjguMjMiIHk9Ijk3Ljk5NTEiPit0by14bWwoc2hhcGUpPC90ZXh0PjwvZz48IS0tY2xhc3MgYXJlYS0tPjxnIGNsYXNzPSJlbnRpdHkiIGRhdGEtZW50aXR5PSJhcmVhIiBkYXRhLXNvdXJjZS1saW5lPSIzMCIgZGF0YS11aWQ9ImVudDAwMDkiIGlkPSJlbnRpdHlfYXJlYSI+PHJlY3QgZmlsbD0iI0YxRjFGMSIgaGVpZ2h0PSI2NC4yOTY5IiByeD0iMi41IiByeT0iMi41IiBzdHlsZT0ic3Ryb2tlOiMxODE4MTg7c3Ryb2tlLXdpZHRoOjAuNTsiIHdpZHRoPSIxNzYuNzg3MSIgeD0iNjE4Ljc1IiB5PSI0MSIvPjxlbGxpcHNlIGN4PSI2NjQuNDAwNCIgY3k9IjU3IiBmaWxsPSIjQUREMUIyIiByeD0iMTEiIHJ5PSIxMSIgc3R5bGU9InN0cm9rZTojMTgxODE4O3N0cm9rZS13aWR0aDoxOyIvPjxwYXRoIGQ9Ik02NjcuMzY5MSw2Mi42NDA2IFE2NjYuNzkxLDYyLjkzNzUgNjY2LjE1MDQsNjMuMDc4MSBRNjY1LjUwOTgsNjMuMjM0NCA2NjQuODA2Niw2My4yMzQ0IFE2NjIuMzA2Niw2My4yMzQ0IDY2MC45Nzg1LDYxLjU5MzggUTY1OS42NjYsNTkuOTM3NSA2NTkuNjY2LDU2LjgxMjUgUTY1OS42NjYsNTMuNjg3NSA2NjAuOTc4NSw1Mi4wMzEzIFE2NjIuMzA2Niw1MC4zNzUgNjY0LjgwNjYsNTAuMzc1IFE2NjUuNTA5OCw1MC4zNzUgNjY2LjE1MDQsNTAuNTMxMyBRNjY2LjgwNjYsNTAuNjg3NSA2NjcuMzY5MSw1MC45ODQ0IEw2NjcuMzY5MSw1My43MDMxIFE2NjYuNzQ0MSw1My4xMjUgNjY2LjE1MDQsNTIuODU5NCBRNjY1LjU1NjYsNTIuNTc4MSA2NjQuOTMxNiw1Mi41NzgxIFE2NjMuNTg3OSw1Mi41NzgxIDY2Mi45MDA0LDUzLjY1NjMgUTY2Mi4yMTI5LDU0LjcxODggNjYyLjIxMjksNTYuODEyNSBRNjYyLjIxMjksNTguOTA2MyA2NjIuOTAwNCw1OS45ODQ0IFE2NjMuNTg3OSw2MS4wNDY5IDY2NC45MzE2LDYxLjA0NjkgUTY2NS41NTY2LDYxLjA0NjkgNjY2LjE1MDQsNjAuNzgxMyBRNjY2Ljc0NDEsNjAuNSA2NjcuMzY5MSw1OS45MjE5IEw2NjcuMzY5MSw2Mi42NDA2IFogIiBmaWxsPSIjMDAwMDAwIi8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTQiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iNzYuOTg2MyIgeD0iNjg0LjkwMDQiIHk9IjYxLjg0NjciPkFyZWFWaXNpdG9yPC90ZXh0PjxsaW5lIHN0eWxlPSJzdHJva2U6IzE4MTgxODtzdHJva2Utd2lkdGg6MC41OyIgeDE9IjYxOS43NSIgeDI9Ijc5NC41MzcxIiB5MT0iNzMiIHkyPSI3MyIvPjxsaW5lIHN0eWxlPSJzdHJva2U6IzE4MTgxODtzdHJva2Utd2lkdGg6MC41OyIgeDE9IjYxOS43NSIgeDI9Ijc5NC41MzcxIiB5MT0iODEiIHkyPSI4MSIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjE2NC43ODcxIiB4PSI2MjQuNzUiIHk9Ijk3Ljk5NTEiPitjYWxjdWxhdGUtYXJlYShzaGFwZSk8L3RleHQ+PC9nPjwhLS1jbGFzcyBwZXJpbWV0ZXItLT48ZyBjbGFzcz0iZW50aXR5IiBkYXRhLWVudGl0eT0icGVyaW1ldGVyIiBkYXRhLXNvdXJjZS1saW5lPSIzNCIgZGF0YS11aWQ9ImVudDAwMTAiIGlkPSJlbnRpdHlfcGVyaW1ldGVyIj48cmVjdCBmaWxsPSIjRjFGMUYxIiBoZWlnaHQ9IjY0LjI5NjkiIHJ4PSIyLjUiIHJ5PSIyLjUiIHN0eWxlPSJzdHJva2U6IzE4MTgxODtzdHJva2Utd2lkdGg6MC41OyIgd2lkdGg9IjIxNC41MTQ2IiB4PSIyMTIuODkiIHk9IjQxIi8+PGVsbGlwc2UgY3g9IjI1OS4yNjE2IiBjeT0iNTciIGZpbGw9IiNBREQxQjIiIHJ4PSIxMSIgcnk9IjExIiBzdHlsZT0ic3Ryb2tlOiMxODE4MTg7c3Ryb2tlLXdpZHRoOjE7Ii8+PHBhdGggZD0iTTI2Mi4yMzAzLDYyLjY0MDYgUTI2MS42NTIyLDYyLjkzNzUgMjYxLjAxMTYsNjMuMDc4MSBRMjYwLjM3MSw2My4yMzQ0IDI1OS42Njc4LDYzLjIzNDQgUTI1Ny4xNjc4LDYzLjIzNDQgMjU1LjgzOTcsNjEuNTkzOCBRMjU0LjUyNzIsNTkuOTM3NSAyNTQuNTI3Miw1Ni44MTI1IFEyNTQuNTI3Miw1My42ODc1IDI1NS44Mzk3LDUyLjAzMTMgUTI1Ny4xNjc4LDUwLjM3NSAyNTkuNjY3OCw1MC4zNzUgUTI2MC4zNzEsNTAuMzc1IDI2MS4wMTE2LDUwLjUzMTMgUTI2MS42Njc4LDUwLjY4NzUgMjYyLjIzMDMsNTAuOTg0NCBMMjYyLjIzMDMsNTMuNzAzMSBRMjYxLjYwNTMsNTMuMTI1IDI2MS4wMTE2LDUyLjg1OTQgUTI2MC40MTc4LDUyLjU3ODEgMjU5Ljc5MjgsNTIuNTc4MSBRMjU4LjQ0OTEsNTIuNTc4MSAyNTcuNzYxNiw1My42NTYzIFEyNTcuMDc0MSw1NC43MTg4IDI1Ny4wNzQxLDU2LjgxMjUgUTI1Ny4wNzQxLDU4LjkwNjMgMjU3Ljc2MTYsNTkuOTg0NCBRMjU4LjQ0OTEsNjEuMDQ2OSAyNTkuNzkyOCw2MS4wNDY5IFEyNjAuNDE3OCw2MS4wNDY5IDI2MS4wMTE2LDYwLjc4MTMgUTI2MS42MDUzLDYwLjUgMjYyLjIzMDMsNTkuOTIxOSBMMjYyLjIzMDMsNjIuNjQwNiBaICIgZmlsbD0iIzAwMDAwMCIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjExMy4yNzE1IiB4PSIyNzkuNzYxNiIgeT0iNjEuODQ2NyI+UGVyaW1ldGVyVmlzaXRvcjwvdGV4dD48bGluZSBzdHlsZT0ic3Ryb2tlOiMxODE4MTg7c3Ryb2tlLXdpZHRoOjAuNTsiIHgxPSIyMTMuODkiIHgyPSI0MjYuNDA0NiIgeTE9IjczIiB5Mj0iNzMiLz48bGluZSBzdHlsZT0ic3Ryb2tlOiMxODE4MTg7c3Ryb2tlLXdpZHRoOjAuNTsiIHgxPSIyMTMuODkiIHgyPSI0MjYuNDA0NiIgeTE9IjgxIiB5Mj0iODEiLz48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSIyMDIuNTE0NiIgeD0iMjE4Ljg5IiB5PSI5Ny45OTUxIj4rY2FsY3VsYXRlLXBlcmltZXRlcihzaGFwZSk8L3RleHQ+PC9nPjxnIGNsYXNzPSJlbnRpdHkiIGRhdGEtZW50aXR5PSJHTU4yMyIgZGF0YS1zb3VyY2UtbGluZT0iNTMiIGRhdGEtdWlkPSJlbnQwMDI0IiBpZD0iZW50aXR5X0dNTjIzIj48cGF0aCBkPSJNNiwyMDEuMDUgTDYsMjU2LjQ0ODQgQTAsMCAwIDAgMCA2LDI1Ni40NDg0IEwyMjQuMjg1MywyNTYuNDQ4NCBBMCwwIDAgMCAwIDIyNC4yODUzLDI1Ni40NDg0IEwyMjQuMjg1MywyMTEuMDUgTDIxNC4yODUzLDIwMS4wNSBMMTE5LjE0LDIwMS4wNSBMMTE1LjE0LDEwNS42MSBMMTExLjE0LDIwMS4wNSBMNiwyMDEuMDUgQTAsMCAwIDAgMCA2LDIwMS4wNSIgZmlsbD0iI0ZFRkZERCIgc3R5bGU9InN0cm9rZTojMTgxODE4O3N0cm9rZS13aWR0aDowLjU7Ii8+PHBhdGggZD0iTTIxNC4yODUzLDIwMS4wNSBMMjE0LjI4NTMsMjExLjA1IEwyMjQuMjg1MywyMTEuMDUgTDIxNC4yODUzLDIwMS4wNSIgZmlsbD0iI0ZFRkZERCIgc3R5bGU9InN0cm9rZTojMTgxODE4O3N0cm9rZS13aWR0aDowLjU7Ii8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTMiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iMTg0LjI4NTMiIHg9IjEyIiB5PSIyMTguMTE2OSI+JiMyMTUwODtWaXNpdG9yJiMxMjM5OTsmIzIwODQwOyYjMTIzOTA7JiMxMjM5ODsmIzIyMjU5OyYjMjQ0MTg7JiMxMjQ3OTsmIzEyNDUyOyYjMTI1MDM7JiMxMjM5NTs8L3RleHQ+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTMiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iMTU2LjAwMDIiIHg9IjEyIiB5PSIyMzMuMjQ5NyI+JiMyMzU1MDsmIzEyMzc3OyYjMTI0Mjc7JiMyMDk2NjsmIzI5NzAyOyYjMTI0MzQ7JiMyMzQ1NTsmIzM1MDEzOyYjMTIzNzU7JiMxMjQxNDsmIzEyMzc3OyYjMTIyOTA7PC90ZXh0Pjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXNpemU9IjEzIiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjE5Ny4yODUzIiB4PSIxMiIgeT0iMjQ4LjM4MjUiPiYjMjYwMzI7JiMxMjM3NTsmIzEyMzU2O1Zpc2l0b3ImIzEyMzk4OyYjMzY4NjE7JiMyMTE1MjsmIzEyMzY0OyYjMjM0ODE7JiMyNjEzMTsmIzEyMzkxOyYjMTIzNzc7JiMxMjI5MDs8L3RleHQ+PC9nPjxnIGNsYXNzPSJlbnRpdHkiIGRhdGEtZW50aXR5PSJHTU4yNiIgZGF0YS1zb3VyY2UtbGluZT0iNTkiIGRhdGEtdWlkPSJlbnQwMDI3IiBpZD0iZW50aXR5X0dNTjI2Ij48cGF0aCBkPSJNMjA3LjY0LDMzNy4xOSBMMjA3LjY0LDM5Mi41ODg0IEEwLDAgMCAwIDAgMjA3LjY0LDM5Mi41ODg0IEw0MTAuNjQwMiwzOTIuNTg4NCBBMCwwIDAgMCAwIDQxMC42NDAyLDM5Mi41ODg0IEw0MTAuNjQwMiwzNDcuMTkgTDQwMC42NDAyLDMzNy4xOSBMMzEzLjE0LDMzNy4xOSBMMzA5LjE0LDI2OS4yNyBMMzA1LjE0LDMzNy4xOSBMMjA3LjY0LDMzNy4xOSBBMCwwIDAgMCAwIDIwNy42NCwzMzcuMTkiIGZpbGw9IiNGRUZGREQiIHN0eWxlPSJzdHJva2U6IzE4MTgxODtzdHJva2Utd2lkdGg6MC41OyIvPjxwYXRoIGQ9Ik00MDAuNjQwMiwzMzcuMTkgTDQwMC42NDAyLDM0Ny4xOSBMNDEwLjY0MDIsMzQ3LjE5IEw0MDAuNjQwMiwzMzcuMTkiIGZpbGw9IiNGRUZGREQiIHN0eWxlPSJzdHJva2U6IzE4MTgxODtzdHJva2Utd2lkdGg6MC41OyIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXNpemU9IjEzIiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjE4Mi4wMDAyIiB4PSIyMTMuNjQiIHk9IjM1NC4yNTY5Ij4mIzI2MDMyOyYjMTIzNzU7JiMxMjM1NjsmIzIyMjU5OyYjMjQ0MTg7JiMxMjQzNDsmIzM2ODYxOyYjMjExNTI7JiMxMjM3NzsmIzEyNDI3OyYjMjI1ODA7JiMyMTUxMjsmIzEyMzk5OyYjMTIyODk7PC90ZXh0Pjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXNpemU9IjEzIiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjE0NS4yODUzIiB4PSIyMTMuNjQiIHk9IjM2OS4zODk3Ij4mIzIwODQwOyYjMTIzOTA7JiMxMjM5ODtWaXNpdG9yJiMxMjQzNDsmIzI2MzU2OyYjMjYwMzI7JiMxMjM3NzsmIzEyNDI3OzwvdGV4dD48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIxMyIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSIxMDQuMDAwMSIgeD0iMjEzLjY0IiB5PSIzODQuNTIyNSI+JiMyNDUxNzsmIzM1MjAxOyYjMTIzNjQ7JiMxMjM1NDsmIzEyNDI2OyYjMTI0MTQ7JiMxMjM3NzsmIzEyMjkwOzwvdGV4dD48L2c+PCEtLWxpbmsganNvbiB0byBjaXJjbGUtLT48ZyBjbGFzcz0ibGluayIgZGF0YS1lbnRpdHktMT0ianNvbiIgZGF0YS1lbnRpdHktMj0iY2lyY2xlIiBkYXRhLXNvdXJjZS1saW5lPSIzOSIgZGF0YS11aWQ9ImxuazExIiBpZD0ibGlua19qc29uX2NpcmNsZSI+PHBhdGggY29kZUxpbmU9IjM5IiBkPSJNMTUzLjQ2LDEwNS41NyBDMTY2LjA4LDExNC41IDE4MC42MSwxMjMuMzkgMTk1LjE0LDEyOS4zIEMyMTQuNzcsMTM3LjI4IDIyNC4wOSwxMjYuMjEgMjQyLjE0LDEzNy4zIEMyNjEuOTYsMTQ5LjQ3IDI3NC42ODE4LDE2NC43NjIyIDI4NS45OTE4LDE4My4xMTIyIiBmaWxsPSJub25lIiBpZD0ianNvbi10by1jaXJjbGUiIHN0eWxlPSJzdHJva2U6IzE4MTgxODtzdHJva2Utd2lkdGg6MTsiLz48cG9seWdvbiBmaWxsPSIjMTgxODE4IiBwb2ludHM9IjI4OS4xNCwxODguMjIsMjg3LjgyMjksMTc4LjQ1OTYsMjg2LjUxNjUsMTgzLjk2MzUsMjgxLjAxMjYsMTgyLjY1NzEsMjg5LjE0LDE4OC4yMiIgc3R5bGU9InN0cm9rZTojMTgxODE4O3N0cm9rZS13aWR0aDoxOyIvPjwvZz48IS0tbGluayBqc29uIHRvIHNxdWFyZS0tPjxnIGNsYXNzPSJsaW5rIiBkYXRhLWVudGl0eS0xPSJqc29uIiBkYXRhLWVudGl0eS0yPSJzcXVhcmUiIGRhdGEtc291cmNlLWxpbmU9IjQwIiBkYXRhLXVpZD0ibG5rMTIiIGlkPSJsaW5rX2pzb25fc3F1YXJlIj48cGF0aCBjb2RlTGluZT0iNDAiIGQ9Ik0xNTEuODUsMTA1Ljc5IEMxNjQuNzEsMTE1LjA4IDE3OS44LDEyNC4xMyAxOTUuMTQsMTI5LjMgQzIzMS4xOSwxNDEuNDUgMzMzLjEzLDExOC40MSAzNjYuMTQsMTM3LjMgQzM4NS44MywxNDguNTcgMzk3LjM3MzgsMTY0LjA0IDQwNi45MzM4LDE4Mi44NyIgZmlsbD0ibm9uZSIgaWQ9Impzb24tdG8tc3F1YXJlIiBzdHlsZT0ic3Ryb2tlOiMxODE4MTg7c3Ryb2tlLXdpZHRoOjE7Ii8+PHBvbHlnb24gZmlsbD0iIzE4MTgxOCIgcG9pbnRzPSI0MDkuNjUsMTg4LjIyLDQwOS4xNDI0LDE3OC4zODQyLDQwNy4zODY1LDE4My43NjE3LDQwMi4wMDkxLDE4Mi4wMDU4LDQwOS42NSwxODguMjIiIHN0eWxlPSJzdHJva2U6IzE4MTgxODtzdHJva2Utd2lkdGg6MTsiLz48L2c+PCEtLWxpbmsganNvbiB0byByZWN0YW5nbGUtLT48ZyBjbGFzcz0ibGluayIgZGF0YS1lbnRpdHktMT0ianNvbiIgZGF0YS1lbnRpdHktMj0icmVjdGFuZ2xlIiBkYXRhLXNvdXJjZS1saW5lPSI0MSIgZGF0YS11aWQ9ImxuazEzIiBpZD0ibGlua19qc29uX3JlY3RhbmdsZSI+PHBhdGggY29kZUxpbmU9IjQxIiBkPSJNMTUxLjM5LDEwNS42NyBDMTY0LjMzLDExNS4wOCAxNzkuNTksMTI0LjIyIDE5NS4xNCwxMjkuMyBDMjI1Ljc5LDEzOS4zIDQ1Ni41LDEyMi41MSA0ODUuMTQsMTM3LjMgQzUwMy4yOSwxNDYuNjggNTE0LjU5OTUsMTU4LjM2MjYgNTI1LjU2OTUsMTc0Ljg3MjYiIGZpbGw9Im5vbmUiIGlkPSJqc29uLXRvLXJlY3RhbmdsZSIgc3R5bGU9InN0cm9rZTojMTgxODE4O3N0cm9rZS13aWR0aDoxOyIvPjxwb2x5Z29uIGZpbGw9IiMxODE4MTgiIHBvaW50cz0iNTI4Ljg5LDE3OS44Nyw1MjcuMjQwOCwxNzAuMTYwMiw1MjYuMTIyOSwxNzUuNzA1NSw1MjAuNTc3NiwxNzQuNTg3NSw1MjguODksMTc5Ljg3IiBzdHlsZT0ic3Ryb2tlOiMxODE4MTg7c3Ryb2tlLXdpZHRoOjE7Ii8+PC9nPjwhLS1saW5rIHhtbCB0byBjaXJjbGUtLT48ZyBjbGFzcz0ibGluayIgZGF0YS1lbnRpdHktMT0ieG1sIiBkYXRhLWVudGl0eS0yPSJjaXJjbGUiIGRhdGEtc291cmNlLWxpbmU9IjQyIiBkYXRhLXVpZD0ibG5rMTQiIGlkPSJsaW5rX3htbF9jaXJjbGUiPjxwYXRoIGNvZGVMaW5lPSI0MiIgZD0iTTQ4Ni45MSwxMDUuNjEgQzQ3NC40NSwxMTQuNzcgNDU5LjksMTIzLjc5IDQ0NS4xNCwxMjkuMyBDNDExLjY3LDE0MS44MSAzOTUuNDUsMTE4LjM4IDM2NS4xNCwxMzcuMyBDMzQ2LjM0LDE0OS4wNCAzMzUuNDc2OSwxNjQuMjQwNyAzMjYuNDY2OSwxODIuODMwNyIgZmlsbD0ibm9uZSIgaWQ9InhtbC10by1jaXJjbGUiIHN0eWxlPSJzdHJva2U6IzE4MTgxODtzdHJva2Utd2lkdGg6MTsiLz48cG9seWdvbiBmaWxsPSIjMTgxODE4IiBwb2ludHM9IjMyMy44NSwxODguMjMsMzMxLjM3NDgsMTgxLjg3NTcsMzI2LjAzMDcsMTgzLjczMDYsMzI0LjE3NTgsMTc4LjM4NjUsMzIzLjg1LDE4OC4yMyIgc3R5bGU9InN0cm9rZTojMTgxODE4O3N0cm9rZS13aWR0aDoxOyIvPjwvZz48IS0tbGluayB4bWwgdG8gc3F1YXJlLS0+PGcgY2xhc3M9ImxpbmsiIGRhdGEtZW50aXR5LTE9InhtbCIgZGF0YS1lbnRpdHktMj0ic3F1YXJlIiBkYXRhLXNvdXJjZS1saW5lPSI0MyIgZGF0YS11aWQ9ImxuazE1IiBpZD0ibGlua194bWxfc3F1YXJlIj48cGF0aCBjb2RlTGluZT0iNDMiIGQ9Ik01MDMuMDcsMTA1LjYxIEM0ODcuODQsMTI5LjQ4IDQ3MC4wMjc1LDE1Ny40MDIgNDUzLjY0NzUsMTgzLjA3MiIgZmlsbD0ibm9uZSIgaWQ9InhtbC10by1zcXVhcmUiIHN0eWxlPSJzdHJva2U6IzE4MTgxODtzdHJva2Utd2lkdGg6MTsiLz48cG9seWdvbiBmaWxsPSIjMTgxODE4IiBwb2ludHM9IjQ1MC40MiwxODguMTMsNDU4LjYzMzIsMTgyLjY5NDcsNDUzLjEwOTYsMTgzLjkxNSw0NTEuODg5MywxNzguMzkxNCw0NTAuNDIsMTg4LjEzIiBzdHlsZT0ic3Ryb2tlOiMxODE4MTg7c3Ryb2tlLXdpZHRoOjE7Ii8+PC9nPjwhLS1saW5rIHhtbCB0byByZWN0YW5nbGUtLT48ZyBjbGFzcz0ibGluayIgZGF0YS1lbnRpdHktMT0ieG1sIiBkYXRhLWVudGl0eS0yPSJyZWN0YW5nbGUiIGRhdGEtc291cmNlLWxpbmU9IjQ0IiBkYXRhLXVpZD0ibG5rMTYiIGlkPSJsaW5rX3htbF9yZWN0YW5nbGUiPjxwYXRoIGNvZGVMaW5lPSI0NCIgZD0iTTUyOS4yOSwxMDUuNjEgQzUzMy40NywxMjcuMDIgNTM3LjkzMDQsMTQ5Ljg3MTIgNTQyLjY2MDQsMTc0LjEwMTIiIGZpbGw9Im5vbmUiIGlkPSJ4bWwtdG8tcmVjdGFuZ2xlIiBzdHlsZT0ic3Ryb2tlOiMxODE4MTg7c3Ryb2tlLXdpZHRoOjE7Ii8+PHBvbHlnb24gZmlsbD0iIzE4MTgxOCIgcG9pbnRzPSI1NDMuODEsMTc5Ljk5LDU0Ni4wMTE1LDE3MC4zOTA0LDU0Mi44NTIsMTc1LjA4MjYsNTM4LjE1OTcsMTcxLjkyMzEsNTQzLjgxLDE3OS45OSIgc3R5bGU9InN0cm9rZTojMTgxODE4O3N0cm9rZS13aWR0aDoxOyIvPjwvZz48IS0tbGluayBhcmVhIHRvIGNpcmNsZS0tPjxnIGNsYXNzPSJsaW5rIiBkYXRhLWVudGl0eS0xPSJhcmVhIiBkYXRhLWVudGl0eS0yPSJjaXJjbGUiIGRhdGEtc291cmNlLWxpbmU9IjQ1IiBkYXRhLXVpZD0ibG5rMTciIGlkPSJsaW5rX2FyZWFfY2lyY2xlIj48cGF0aCBjb2RlTGluZT0iNDUiIGQ9Ik02NTcuNTIsMTA1Ljc4IEM2NDAuMzMsMTE1LjEzIDYyMC41LDEyNC4yMiA2MDEuMTQsMTI5LjMgQzU3NS43NywxMzUuOTcgMzg3Ljg0LDEyNC4xNSAzNjUuMTQsMTM3LjMgQzM0NS44MSwxNDguNSAzMzQuODA5OSwxNjMuODk4MiAzMjUuODc5OSwxODIuNzM4MiIgZmlsbD0ibm9uZSIgaWQ9ImFyZWEtdG8tY2lyY2xlIiBzdHlsZT0ic3Ryb2tlOiMxODE4MTg7c3Ryb2tlLXdpZHRoOjE7Ii8+PHBvbHlnb24gZmlsbD0iIzE4MTgxOCIgcG9pbnRzPSIzMjMuMzEsMTg4LjE2LDMzMC43NzkzLDE4MS43NDA2LDMyNS40NTE2LDE4My42NDE4LDMyMy41NTAzLDE3OC4zMTQxLDMyMy4zMSwxODguMTYiIHN0eWxlPSJzdHJva2U6IzE4MTgxODtzdHJva2Utd2lkdGg6MTsiLz48L2c+PCEtLWxpbmsgYXJlYSB0byBzcXVhcmUtLT48ZyBjbGFzcz0ibGluayIgZGF0YS1lbnRpdHktMT0iYXJlYSIgZGF0YS1lbnRpdHktMj0ic3F1YXJlIiBkYXRhLXNvdXJjZS1saW5lPSI0NiIgZGF0YS11aWQ9ImxuazE4IiBpZD0ibGlua19hcmVhX3NxdWFyZSI+PHBhdGggY29kZUxpbmU9IjQ2IiBkPSJNNjU2Ljg4LDEwNS42OCBDNjM5LjgxLDExNC45IDYyMC4yMSwxMjMuOTQgNjAxLjE0LDEyOS4zIEM1NzYuMDUsMTM2LjM1IDUwNi42MiwxMjQuMTEgNDg0LjE0LDEzNy4zIEM0NjQuNTgsMTQ4Ljc4IDQ1My4wNTg3LDE2NC4yNjY0IDQ0My40Njg3LDE4My4wNDY0IiBmaWxsPSJub25lIiBpZD0iYXJlYS10by1zcXVhcmUiIHN0eWxlPSJzdHJva2U6IzE4MTgxODtzdHJva2Utd2lkdGg6MTsiLz48cG9seWdvbiBmaWxsPSIjMTgxODE4IiBwb2ludHM9IjQ0MC43NCwxODguMzksNDQ4LjM5NTUsMTgyLjE5MzcsNDQzLjAxMzksMTgzLjkzNyw0NDEuMjcwNywxNzguNTU1NCw0NDAuNzQsMTg4LjM5IiBzdHlsZT0ic3Ryb2tlOiMxODE4MTg7c3Ryb2tlLXdpZHRoOjE7Ii8+PC9nPjwhLS1saW5rIGFyZWEgdG8gcmVjdGFuZ2xlLS0+PGcgY2xhc3M9ImxpbmsiIGRhdGEtZW50aXR5LTE9ImFyZWEiIGRhdGEtZW50aXR5LTI9InJlY3RhbmdsZSIgZGF0YS1zb3VyY2UtbGluZT0iNDciIGRhdGEtdWlkPSJsbmsxOSIgaWQ9ImxpbmtfYXJlYV9yZWN0YW5nbGUiPjxwYXRoIGNvZGVMaW5lPSI0NyIgZD0iTTY3NS42MSwxMDUuNjEgQzY1NC4xNCwxMjcuMDIgNjI5LjU2NzksMTUxLjUyMjYgNjA1LjI3NzksMTc1Ljc1MjYiIGZpbGw9Im5vbmUiIGlkPSJhcmVhLXRvLXJlY3RhbmdsZSIgc3R5bGU9InN0cm9rZTojMTgxODE4O3N0cm9rZS13aWR0aDoxOyIvPjxwb2x5Z29uIGZpbGw9IiMxODE4MTgiIHBvaW50cz0iNjAxLjAzLDE3OS45OSw2MTAuMjI2OCwxNzYuNDY1OCw2MDQuNTY5OSwxNzYuNDU4OCw2MDQuNTc2OSwxNzAuODAyLDYwMS4wMywxNzkuOTkiIHN0eWxlPSJzdHJva2U6IzE4MTgxODtzdHJva2Utd2lkdGg6MTsiLz48L2c+PCEtLWxpbmsgcGVyaW1ldGVyIHRvIGNpcmNsZS0tPjxnIGNsYXNzPSJsaW5rIiBkYXRhLWVudGl0eS0xPSJwZXJpbWV0ZXIiIGRhdGEtZW50aXR5LTI9ImNpcmNsZSIgZGF0YS1zb3VyY2UtbGluZT0iNDgiIGRhdGEtdWlkPSJsbmsyMCIgaWQ9ImxpbmtfcGVyaW1ldGVyX2NpcmNsZSI+PHBhdGggY29kZUxpbmU9IjQ4IiBkPSJNMzE3Ljg5LDEwNS42MSBDMzE2LjE4LDEyOS40OCAzMTQuMjQ5LDE1Ni40NzU0IDMxMi40MDksMTgyLjE0NTQiIGZpbGw9Im5vbmUiIGlkPSJwZXJpbWV0ZXItdG8tY2lyY2xlIiBzdHlsZT0ic3Ryb2tlOiMxODE4MTg7c3Ryb2tlLXdpZHRoOjE7Ii8+PHBvbHlnb24gZmlsbD0iIzE4MTgxOCIgcG9pbnRzPSIzMTEuOTgsMTg4LjEzLDMxNi42MTMyLDE3OS40MzksMzEyLjMzNzUsMTgzLjE0MjgsMzA4LjYzMzcsMTc4Ljg2NywzMTEuOTgsMTg4LjEzIiBzdHlsZT0ic3Ryb2tlOiMxODE4MTg7c3Ryb2tlLXdpZHRoOjE7Ii8+PC9nPjwhLS1saW5rIHBlcmltZXRlciB0byBzcXVhcmUtLT48ZyBjbGFzcz0ibGluayIgZGF0YS1lbnRpdHktMT0icGVyaW1ldGVyIiBkYXRhLWVudGl0eS0yPSJzcXVhcmUiIGRhdGEtc291cmNlLWxpbmU9IjQ5IiBkYXRhLXVpZD0ibG5rMjEiIGlkPSJsaW5rX3BlcmltZXRlcl9zcXVhcmUiPjxwYXRoIGNvZGVMaW5lPSI0OSIgZD0iTTM0My42MywxMDUuNzMgQzM1MC45NSwxMTUuNzQgMzU4Ljk4LDEyNi45MiAzNjYuMTQsMTM3LjMgQzM3Ny41MywxNTMuODEgMzg2LjQ1NDMsMTY3LjI4MDEgMzk2Ljc2NDMsMTgzLjI0MDEiIGZpbGw9Im5vbmUiIGlkPSJwZXJpbWV0ZXItdG8tc3F1YXJlIiBzdHlsZT0ic3Ryb2tlOiMxODE4MTg7c3Ryb2tlLXdpZHRoOjE7Ii8+PHBvbHlnb24gZmlsbD0iIzE4MTgxOCIgcG9pbnRzPSI0MDAuMDIsMTg4LjI4LDM5OC40OTY0LDE3OC41NDk3LDM5Ny4zMDY5LDE4NC4wODAxLDM5MS43NzY1LDE4Mi44OTA3LDQwMC4wMiwxODguMjgiIHN0eWxlPSJzdHJva2U6IzE4MTgxODtzdHJva2Utd2lkdGg6MTsiLz48L2c+PCEtLWxpbmsgcGVyaW1ldGVyIHRvIHJlY3RhbmdsZS0tPjxnIGNsYXNzPSJsaW5rIiBkYXRhLWVudGl0eS0xPSJwZXJpbWV0ZXIiIGRhdGEtZW50aXR5LTI9InJlY3RhbmdsZSIgZGF0YS1zb3VyY2UtbGluZT0iNTAiIGRhdGEtdWlkPSJsbmsyMiIgaWQ9ImxpbmtfcGVyaW1ldGVyX3JlY3RhbmdsZSI+PHBhdGggY29kZUxpbmU9IjUwIiBkPSJNMzg0LjMxLDEwNS42NyBDNDAzLjU0LDExNC4yMyA0MjQuOSwxMjIuOSA0NDUuMTQsMTI5LjMgQzQ2Mi40MywxMzQuNzcgNDY5LjgsMTI3LjY0IDQ4NS4xNCwxMzcuMyBDNTAxLjk0LDE0Ny44NyA1MTIuNjUyNSwxNTkuMjQxNSA1MjMuNjAyNSwxNzUuMTExNSIgZmlsbD0ibm9uZSIgaWQ9InBlcmltZXRlci10by1yZWN0YW5nbGUiIHN0eWxlPSJzdHJva2U6IzE4MTgxODtzdHJva2Utd2lkdGg6MTsiLz48cG9seWdvbiBmaWxsPSIjMTgxODE4IiBwb2ludHM9IjUyNy4wMSwxODAuMDUsNTI1LjE5MTEsMTcwLjM3MDYsNTI0LjE3MDQsMTc1LjkzNDYsNTE4LjYwNjQsMTc0LjkxMzksNTI3LjAxLDE4MC4wNSIgc3R5bGU9InN0cm9rZTojMTgxODE4O3N0cm9rZS13aWR0aDoxOyIvPjwvZz48IS0tU1JDPVtQTDlGWW5DbjdCdGRLdUlVVGY0MXB0aUc1bDZXOXQ1MWw2UkpSMWp0UFo4Y0FPZ29pMWNqb2dmR2trMFZMZDFIZ09CRzVUb0JYemVGNHJGeENLcElQMlFianpfeHZSc056cDhaM2NiUDhPdUFZN0NhbkF3S2RFdUY5QmM5TVJiNzduRHU1TzBBdUtGSzh4MXA4b1M1QVFNME0tUmlidmJ6dGt4MDl5M2hPRVN3dkpXZDdPVzRuN3dxSHJUc1RoM2I0LXVjWmhmcThDMEhZOGd6MW1GNExtaFhudkwyaVloQm9PNXFpdzFUYVlaazQybkhzR2xOeThXc1RHemZMX1JUcTJVcXJ2Vk11WVlmU1BTQUFYY3RESFFkUl94RUZnT3JSV2JNWGREX29Oc0JkUnphY0hrdEgxekxQM2w5VEFfOEtfd1o4V3pxRXNzb1RwYjFBVHNzSGV3RktPdTdFUDhhU3ZqRHRNdDJRSzdpSXdSWUFZeE43UGZyUXNFRFY5NGlrblEtSmVqTlJ6X1l2YmMxd3Y4ZThXbzIyNWstQnZDODZYbUszTXViUk9MNGp4dUN1bExid20xQTlXZFNQckFvMGg4M195NjA2SnFCM3dOTFhIYi1yc2dZck5KcnEtZndoa2tsLWtheGhOdTBTXzU3Z20td1ZjTFVKRndEZGtqd1JBUVZiYi02TWpiWlZ0SFNXeU5SZG53dGRqRmJWNlBFcGhMd1JRUV81LXpGalZlTWtBSmlHZlRlOHJWZXJkWjVDRURldkxFU052aEhJdmpQN29sR3Y4eE5ya0Y1c1FLdFM1bld2aUZiSERhQ01qTXdGY2RwbldwXzBHMDBdLS0+PC9nPjwvc3ZnPg==" class="uml" alt="uml diagram" title="" /></p>
+<h2 id="8">8. シーケンス図<a class="headerlink" href="#8" title="Permanent link">&para;</a></h2>
+<p><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiBjb250ZW50U3R5bGVUeXBlPSJ0ZXh0L2NzcyIgZGF0YS1kaWFncmFtLXR5cGU9IlNFUVVFTkNFIiBoZWlnaHQ9IjY1NHB4IiBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJub25lIiBzdHlsZT0id2lkdGg6NTE5cHg7aGVpZ2h0OjY1NHB4O2JhY2tncm91bmQ6I0ZGRkZGRjsiIHZlcnNpb249IjEuMSIgdmlld0JveD0iMCAwIDUxOSA2NTQiIHdpZHRoPSI1MTlweCIgem9vbUFuZFBhbj0ibWFnbmlmeSI+PGRlZnMvPjxnPjxnPjx0aXRsZT5Kc29uVmlzaXRvcjwvdGl0bGU+PHJlY3QgZmlsbD0iI0ZGRkZGRiIgaGVpZ2h0PSI1OC4yNjU2IiBzdHlsZT0ic3Ryb2tlOiMxODE4MTg7c3Ryb2tlLXdpZHRoOjE7IiB3aWR0aD0iMTAiIHg9IjIyMS44MDI5IiB5PSIxNTUuNTYyNSIvPjwvZz48Zz48dGl0bGU+QXJlYVZpc2l0b3I8L3RpdGxlPjxyZWN0IGZpbGw9IiNGRkZGRkYiIGhlaWdodD0iNTguMjY1NiIgc3R5bGU9InN0cm9rZTojMTgxODE4O3N0cm9rZS13aWR0aDoxOyIgd2lkdGg9IjEwIiB4PSIzMjAuOTU3MiIgeT0iMjg2LjA5MzgiLz48L2c+PGc+PHRpdGxlPkFyZWFWaXNpdG9yPC90aXRsZT48cmVjdCBmaWxsPSIjRkZGRkZGIiBoZWlnaHQ9IjEyMC41MzEzIiBzdHlsZT0ic3Ryb2tlOiMxODE4MTg7c3Ryb2tlLXdpZHRoOjE7IiB3aWR0aD0iMTAiIHg9IjMyMC45NTcyIiB5PSI0MTYuNjI1Ii8+PC9nPjxyZWN0IGZpbGw9Im5vbmUiIGhlaWdodD0iNTkuMjY1NiIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxLjU7IiB3aWR0aD0iMjMxLjYxNzIiIHg9IjI3MC40NjQiIHk9IjQzMS42MjUiLz48Zz48dGl0bGU+Q2xpZW50PC90aXRsZT48cmVjdCBmaWxsPSIjMDAwMDAwIiBmaWxsLW9wYWNpdHk9IjAuMDAwMDAiIGhlaWdodD0iNDkxLjk5MjIiIHdpZHRoPSI4IiB4PSIyNC4yNjUxIiB5PSI4MS4yOTY5Ii8+PGxpbmUgc3R5bGU9InN0cm9rZTojMTgxODE4O3N0cm9rZS13aWR0aDowLjU7c3Ryb2tlLWRhc2hhcnJheTo1LDU7IiB4MT0iMjgiIHgyPSIyOCIgeTE9IjgxLjI5NjkiIHkyPSI1NzMuMjg5MSIvPjwvZz48Zz48dGl0bGU+U2hhcGU8L3RpdGxlPjxyZWN0IGZpbGw9IiMwMDAwMDAiIGZpbGwtb3BhY2l0eT0iMC4wMDAwMCIgaGVpZ2h0PSI0OTEuOTkyMiIgd2lkdGg9IjgiIHg9Ijg5LjgwMjciIHk9IjgxLjI5NjkiLz48bGluZSBzdHlsZT0ic3Ryb2tlOiMxODE4MTg7c3Ryb2tlLXdpZHRoOjAuNTtzdHJva2UtZGFzaGFycmF5OjUsNTsiIHgxPSI5My41MzAzIiB4Mj0iOTMuNTMwMyIgeTE9IjgxLjI5NjkiIHkyPSI1NzMuMjg5MSIvPjwvZz48Zz48dGl0bGU+SnNvblZpc2l0b3I8L3RpdGxlPjxyZWN0IGZpbGw9IiMwMDAwMDAiIGZpbGwtb3BhY2l0eT0iMC4wMDAwMCIgaGVpZ2h0PSI0OTEuOTkyMiIgd2lkdGg9IjgiIHg9IjIyMi44MDI5IiB5PSI4MS4yOTY5Ii8+PGxpbmUgc3R5bGU9InN0cm9rZTojMTgxODE4O3N0cm9rZS13aWR0aDowLjU7c3Ryb2tlLWRhc2hhcnJheTo1LDU7IiB4MT0iMjI2LjE0MTciIHgyPSIyMjYuMTQxNyIgeTE9IjgxLjI5NjkiIHkyPSI1NzMuMjg5MSIvPjwvZz48Zz48dGl0bGU+QXJlYVZpc2l0b3I8L3RpdGxlPjxyZWN0IGZpbGw9IiMwMDAwMDAiIGZpbGwtb3BhY2l0eT0iMC4wMDAwMCIgaGVpZ2h0PSI0OTEuOTkyMiIgd2lkdGg9IjgiIHg9IjMyMS45NTcyIiB5PSI4MS4yOTY5Ii8+PGxpbmUgc3R5bGU9InN0cm9rZTojMTgxODE4O3N0cm9rZS13aWR0aDowLjU7c3Ryb2tlLWRhc2hhcnJheTo1LDU7IiB4MT0iMzI1LjQ2NCIgeDI9IjMyNS40NjQiIHkxPSI4MS4yOTY5IiB5Mj0iNTczLjI4OTEiLz48L2c+PGcgY2xhc3M9InBhcnRpY2lwYW50IHBhcnRpY2lwYW50LWhlYWQiIGRhdGEtcGFydGljaXBhbnQ9IkNsaWVudCI+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTQiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iNDAuNTMwMyIgeD0iNSIgeT0iNzcuOTk1MSI+Q2xpZW50PC90ZXh0PjxlbGxpcHNlIGN4PSIyOC4yNjUxIiBjeT0iMTMuNSIgZmlsbD0iI0UyRTJGMCIgcng9IjgiIHJ5PSI4IiBzdHlsZT0ic3Ryb2tlOiMxODE4MTg7c3Ryb2tlLXdpZHRoOjAuNTsiLz48cGF0aCBkPSJNMjguMjY1MSwyMS41IEwyOC4yNjUxLDQ4LjUgTTE1LjI2NTEsMjkuNSBMNDEuMjY1MSwyOS41IE0yOC4yNjUxLDQ4LjUgTDE1LjI2NTEsNjMuNSBNMjguMjY1MSw0OC41IEw0MS4yNjUxLDYzLjUiIGZpbGw9Im5vbmUiIHN0eWxlPSJzdHJva2U6IzE4MTgxODtzdHJva2Utd2lkdGg6MC41OyIvPjwvZz48ZyBjbGFzcz0icGFydGljaXBhbnQgcGFydGljaXBhbnQtdGFpbCIgZGF0YS1wYXJ0aWNpcGFudD0iQ2xpZW50Ij48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSI0MC41MzAzIiB4PSI1IiB5PSI1ODUuMjg0MiI+Q2xpZW50PC90ZXh0PjxlbGxpcHNlIGN4PSIyOC4yNjUxIiBjeT0iNTk3LjA4NTkiIGZpbGw9IiNFMkUyRjAiIHJ4PSI4IiByeT0iOCIgc3R5bGU9InN0cm9rZTojMTgxODE4O3N0cm9rZS13aWR0aDowLjU7Ii8+PHBhdGggZD0iTTI4LjI2NTEsNjA1LjA4NTkgTDI4LjI2NTEsNjMyLjA4NTkgTTE1LjI2NTEsNjEzLjA4NTkgTDQxLjI2NTEsNjEzLjA4NTkgTTI4LjI2NTEsNjMyLjA4NTkgTDE1LjI2NTEsNjQ3LjA4NTkgTTI4LjI2NTEsNjMyLjA4NTkgTDQxLjI2NTEsNjQ3LjA4NTkiIGZpbGw9Im5vbmUiIHN0eWxlPSJzdHJva2U6IzE4MTgxODtzdHJva2Utd2lkdGg6MC41OyIvPjwvZz48ZyBjbGFzcz0icGFydGljaXBhbnQgcGFydGljaXBhbnQtaGVhZCIgZGF0YS1wYXJ0aWNpcGFudD0ic2hhcGUiPjxyZWN0IGZpbGw9IiNFMkUyRjAiIGhlaWdodD0iNDYuNTkzOCIgcng9IjIuNSIgcnk9IjIuNSIgc3R5bGU9InN0cm9rZTojMTgxODE4O3N0cm9rZS13aWR0aDowLjU7IiB3aWR0aD0iNjQuNTQ0OSIgeD0iNjEuNTMwMyIgeT0iMzMuNzAzMSIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjQzLjgzODkiIHg9IjcxLjg4MzMiIHk9IjUzLjY5ODIiPlNoYXBlPC90ZXh0Pjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjUwLjU0NDkiIHg9IjY4LjUzMDMiIHk9IjY5Ljk5NTEiPihDaXJjbGUpPC90ZXh0PjwvZz48ZyBjbGFzcz0icGFydGljaXBhbnQgcGFydGljaXBhbnQtdGFpbCIgZGF0YS1wYXJ0aWNpcGFudD0ic2hhcGUiPjxyZWN0IGZpbGw9IiNFMkUyRjAiIGhlaWdodD0iNDYuNTkzOCIgcng9IjIuNSIgcnk9IjIuNSIgc3R5bGU9InN0cm9rZTojMTgxODE4O3N0cm9rZS13aWR0aDowLjU7IiB3aWR0aD0iNjQuNTQ0OSIgeD0iNjEuNTMwMyIgeT0iNTcyLjI4OTEiLz48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSI0My44Mzg5IiB4PSI3MS44ODMzIiB5PSI1OTIuMjg0MiI+U2hhcGU8L3RleHQ+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTQiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iNTAuNTQ0OSIgeD0iNjguNTMwMyIgeT0iNjA4LjU4MTEiPihDaXJjbGUpPC90ZXh0PjwvZz48ZyBjbGFzcz0icGFydGljaXBhbnQgcGFydGljaXBhbnQtaGVhZCIgZGF0YS1wYXJ0aWNpcGFudD0ianNvbiI+PHJlY3QgZmlsbD0iI0UyRTJGMCIgaGVpZ2h0PSIzMC4yOTY5IiByeD0iMi41IiByeT0iMi41IiBzdHlsZT0ic3Ryb2tlOiMxODE4MTg7c3Ryb2tlLXdpZHRoOjAuNTsiIHdpZHRoPSI4Ny4zMjIzIiB4PSIxODMuMTQxNyIgeT0iNTAiLz48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSI3My4zMjIzIiB4PSIxOTAuMTQxNyIgeT0iNjkuOTk1MSI+SnNvblZpc2l0b3I8L3RleHQ+PC9nPjxnIGNsYXNzPSJwYXJ0aWNpcGFudCBwYXJ0aWNpcGFudC10YWlsIiBkYXRhLXBhcnRpY2lwYW50PSJqc29uIj48cmVjdCBmaWxsPSIjRTJFMkYwIiBoZWlnaHQ9IjMwLjI5NjkiIHJ4PSIyLjUiIHJ5PSIyLjUiIHN0eWxlPSJzdHJva2U6IzE4MTgxODtzdHJva2Utd2lkdGg6MC41OyIgd2lkdGg9Ijg3LjMyMjMiIHg9IjE4My4xNDE3IiB5PSI1NzIuMjg5MSIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjczLjMyMjMiIHg9IjE5MC4xNDE3IiB5PSI1OTIuMjg0MiI+SnNvblZpc2l0b3I8L3RleHQ+PC9nPjxnIGNsYXNzPSJwYXJ0aWNpcGFudCBwYXJ0aWNpcGFudC1oZWFkIiBkYXRhLXBhcnRpY2lwYW50PSJhcmVhIj48cmVjdCBmaWxsPSIjRTJFMkYwIiBoZWlnaHQ9IjMwLjI5NjkiIHJ4PSIyLjUiIHJ5PSIyLjUiIHN0eWxlPSJzdHJva2U6IzE4MTgxODtzdHJva2Utd2lkdGg6MC41OyIgd2lkdGg9IjkwLjk4NjMiIHg9IjI4MC40NjQiIHk9IjUwIi8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTQiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iNzYuOTg2MyIgeD0iMjg3LjQ2NCIgeT0iNjkuOTk1MSI+QXJlYVZpc2l0b3I8L3RleHQ+PC9nPjxnIGNsYXNzPSJwYXJ0aWNpcGFudCBwYXJ0aWNpcGFudC10YWlsIiBkYXRhLXBhcnRpY2lwYW50PSJhcmVhIj48cmVjdCBmaWxsPSIjRTJFMkYwIiBoZWlnaHQ9IjMwLjI5NjkiIHJ4PSIyLjUiIHJ5PSIyLjUiIHN0eWxlPSJzdHJva2U6IzE4MTgxODtzdHJva2Utd2lkdGg6MC41OyIgd2lkdGg9IjkwLjk4NjMiIHg9IjI4MC40NjQiIHk9IjU3Mi4yODkxIi8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTQiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iNzYuOTg2MyIgeD0iMjg3LjQ2NCIgeT0iNTkyLjI4NDIiPkFyZWFWaXNpdG9yPC90ZXh0PjwvZz48Zz48dGl0bGU+SnNvblZpc2l0b3I8L3RpdGxlPjxyZWN0IGZpbGw9IiNGRkZGRkYiIGhlaWdodD0iNTguMjY1NiIgc3R5bGU9InN0cm9rZTojMTgxODE4O3N0cm9rZS13aWR0aDoxOyIgd2lkdGg9IjEwIiB4PSIyMjEuODAyOSIgeT0iMTU1LjU2MjUiLz48L2c+PGc+PHRpdGxlPkFyZWFWaXNpdG9yPC90aXRsZT48cmVjdCBmaWxsPSIjRkZGRkZGIiBoZWlnaHQ9IjU4LjI2NTYiIHN0eWxlPSJzdHJva2U6IzE4MTgxODtzdHJva2Utd2lkdGg6MTsiIHdpZHRoPSIxMCIgeD0iMzIwLjk1NzIiIHk9IjI4Ni4wOTM4Ii8+PC9nPjxnPjx0aXRsZT5BcmVhVmlzaXRvcjwvdGl0bGU+PHJlY3QgZmlsbD0iI0ZGRkZGRiIgaGVpZ2h0PSIxMjAuNTMxMyIgc3R5bGU9InN0cm9rZTojMTgxODE4O3N0cm9rZS13aWR0aDoxOyIgd2lkdGg9IjEwIiB4PSIzMjAuOTU3MiIgeT0iNDE2LjYyNSIvPjwvZz48cmVjdCBmaWxsPSIjRUVFRUVFIiBoZWlnaHQ9IjMiIHN0eWxlPSJzdHJva2U6I0VFRUVFRTtzdHJva2Utd2lkdGg6MTsiIHdpZHRoPSI1MTIuMDgxMiIgeD0iMCIgeT0iMTExLjg2MzMiLz48bGluZSBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7IiB4MT0iMCIgeDI9IjUxMi4wODEyIiB5MT0iMTExLjg2MzMiIHkyPSIxMTEuODYzMyIvPjxsaW5lIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTsiIHgxPSIwIiB4Mj0iNTEyLjA4MTIiIHkxPSIxMTQuODYzMyIgeTI9IjExNC44NjMzIi8+PHJlY3QgZmlsbD0iI0VFRUVFRSIgaGVpZ2h0PSIyMy4xMzI4IiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjI7IiB3aWR0aD0iODAuNjU2OCIgeD0iMjE1LjcxMjIiIHk9IjEwMS4yOTY5Ii8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTMiIGZvbnQtd2VpZ2h0PSJib2xkIiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjYyLjEzMDkiIHg9IjIyMS43MTIyIiB5PSIxMTcuMzYzOCI+SlNPTiYjMjI3OTM7JiMyNTU2Mzs8L3RleHQ+PGcgY2xhc3M9Im1lc3NhZ2UiIGRhdGEtcGFydGljaXBhbnQtMT0iQ2xpZW50IiBkYXRhLXBhcnRpY2lwYW50LTI9Impzb24iPjxwb2x5Z29uIGZpbGw9IiMxODE4MTgiIHBvaW50cz0iMjA5LjgwMjksMTUxLjU2MjUsMjE5LjgwMjksMTU1LjU2MjUsMjA5LjgwMjksMTU5LjU2MjUsMjEzLjgwMjksMTU1LjU2MjUiIHN0eWxlPSJzdHJva2U6IzE4MTgxODtzdHJva2Utd2lkdGg6MTsiLz48bGluZSBzdHlsZT0ic3Ryb2tlOiMxODE4MTg7c3Ryb2tlLXdpZHRoOjE7IiB4MT0iMjguMjY1MSIgeDI9IjIxNS44MDI5IiB5MT0iMTU1LjU2MjUiIHkyPSIxNTUuNTYyNSIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXNpemU9IjEzIiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9Ijg5LjMyNDIiIHg9IjM1LjI2NTEiIHk9IjE1MC40OTY2Ij50by1qc29uKGNpcmNsZSk8L3RleHQ+PC9nPjxnIGNsYXNzPSJtZXNzYWdlIiBkYXRhLXBhcnRpY2lwYW50LTE9Impzb24iIGRhdGEtcGFydGljaXBhbnQtMj0ic2hhcGUiPjxwb2x5Z29uIGZpbGw9IiMxODE4MTgiIHBvaW50cz0iMTA0LjgwMjcsMTgwLjY5NTMsOTQuODAyNywxODQuNjk1MywxMDQuODAyNywxODguNjk1MywxMDAuODAyNywxODQuNjk1MyIgc3R5bGU9InN0cm9rZTojMTgxODE4O3N0cm9rZS13aWR0aDoxOyIvPjxsaW5lIHN0eWxlPSJzdHJva2U6IzE4MTgxODtzdHJva2Utd2lkdGg6MTsiIHgxPSI5OC44MDI3IiB4Mj0iMjIwLjgwMjkiIHkxPSIxODQuNjk1MyIgeTI9IjE4NC42OTUzIi8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTMiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iMTA0LjAwMDEiIHg9IjExMC44MDI3IiB5PSIxNzkuNjI5NCI+JiMyMjQxMTsmIzEyMzkxOyYjMTI0ODc7JiMxMjQ1MTsmIzEyNDczOyYjMTI0OTc7JiMxMjQ4MzsmIzEyNDgxOzwvdGV4dD48L2c+PGcgY2xhc3M9Im1lc3NhZ2UiIGRhdGEtcGFydGljaXBhbnQtMT0ianNvbiIgZGF0YS1wYXJ0aWNpcGFudC0yPSJDbGllbnQiPjxwb2x5Z29uIGZpbGw9IiMxODE4MTgiIHBvaW50cz0iMzkuMjY1MSwyMDkuODI4MSwyOS4yNjUxLDIxMy44MjgxLDM5LjI2NTEsMjE3LjgyODEsMzUuMjY1MSwyMTMuODI4MSIgc3R5bGU9InN0cm9rZTojMTgxODE4O3N0cm9rZS13aWR0aDoxOyIvPjxsaW5lIHN0eWxlPSJzdHJva2U6IzE4MTgxODtzdHJva2Utd2lkdGg6MTtzdHJva2UtZGFzaGFycmF5OjIsMjsiIHgxPSIzMy4yNjUxIiB4Mj0iMjI1LjgwMjkiIHkxPSIyMTMuODI4MSIgeTI9IjIxMy44MjgxIi8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTMiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iNzEuMDQzIiB4PSI0NS4yNjUxIiB5PSIyMDguNzYyMiI+SlNPTiYjMjU5OTE7JiMyMzM4MzsmIzIxMDE1OzwvdGV4dD48L2c+PHJlY3QgZmlsbD0iI0VFRUVFRSIgaGVpZ2h0PSIzIiBzdHlsZT0ic3Ryb2tlOiNFRUVFRUU7c3Ryb2tlLXdpZHRoOjE7IiB3aWR0aD0iNTEyLjA4MTIiIHg9IjAiIHk9IjI0Mi4zOTQ1Ii8+PGxpbmUgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIgeDE9IjAiIHgyPSI1MTIuMDgxMiIgeTE9IjI0Mi4zOTQ1IiB5Mj0iMjQyLjM5NDUiLz48bGluZSBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7IiB4MT0iMCIgeDI9IjUxMi4wODEyIiB5MT0iMjQ1LjM5NDUiIHkyPSIyNDUuMzk0NSIvPjxyZWN0IGZpbGw9IiNFRUVFRUUiIGhlaWdodD0iMjMuMTMyOCIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoyOyIgd2lkdGg9IjcwLjUyNTkiIHg9IjIyMC43Nzc2IiB5PSIyMzEuODI4MSIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXNpemU9IjEzIiBmb250LXdlaWdodD0iYm9sZCIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSI1Mi4wMDAxIiB4PSIyMjYuNzc3NiIgeT0iMjQ3Ljg5NSI+JiMzODc1NDsmIzMxMzA5OyYjMzUzMzY7JiMzMTYzOTs8L3RleHQ+PGcgY2xhc3M9Im1lc3NhZ2UiIGRhdGEtcGFydGljaXBhbnQtMT0iQ2xpZW50IiBkYXRhLXBhcnRpY2lwYW50LTI9ImFyZWEiPjxwb2x5Z29uIGZpbGw9IiMxODE4MTgiIHBvaW50cz0iMzA4Ljk1NzIsMjgyLjA5MzgsMzE4Ljk1NzIsMjg2LjA5MzgsMzA4Ljk1NzIsMjkwLjA5MzgsMzEyLjk1NzIsMjg2LjA5MzgiIHN0eWxlPSJzdHJva2U6IzE4MTgxODtzdHJva2Utd2lkdGg6MTsiLz48bGluZSBzdHlsZT0ic3Ryb2tlOiMxODE4MTg7c3Ryb2tlLXdpZHRoOjE7IiB4MT0iMjguMjY1MSIgeDI9IjMxNC45NTcyIiB5MT0iMjg2LjA5MzgiIHkyPSIyODYuMDkzOCIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXNpemU9IjEzIiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjEzNy43NTY4IiB4PSIzNS4yNjUxIiB5PSIyODEuMDI3OCI+Y2FsY3VsYXRlLWFyZWEoY2lyY2xlKTwvdGV4dD48L2c+PGcgY2xhc3M9Im1lc3NhZ2UiIGRhdGEtcGFydGljaXBhbnQtMT0iYXJlYSIgZGF0YS1wYXJ0aWNpcGFudC0yPSJzaGFwZSI+PHBvbHlnb24gZmlsbD0iIzE4MTgxOCIgcG9pbnRzPSIxMDQuODAyNywzMTEuMjI2Niw5NC44MDI3LDMxNS4yMjY2LDEwNC44MDI3LDMxOS4yMjY2LDEwMC44MDI3LDMxNS4yMjY2IiBzdHlsZT0ic3Ryb2tlOiMxODE4MTg7c3Ryb2tlLXdpZHRoOjE7Ii8+PGxpbmUgc3R5bGU9InN0cm9rZTojMTgxODE4O3N0cm9rZS13aWR0aDoxOyIgeDE9Ijk4LjgwMjciIHgyPSIzMTkuOTU3MiIgeTE9IjMxNS4yMjY2IiB5Mj0iMzE1LjIyNjYiLz48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIxMyIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSIxMDQuMDAwMSIgeD0iMTEwLjgwMjciIHk9IjMxMC4xNjA2Ij4mIzIyNDExOyYjMTIzOTE7JiMxMjQ4NzsmIzEyNDUxOyYjMTI0NzM7JiMxMjQ5NzsmIzEyNDgzOyYjMTI0ODE7PC90ZXh0PjwvZz48ZyBjbGFzcz0ibWVzc2FnZSIgZGF0YS1wYXJ0aWNpcGFudC0xPSJhcmVhIiBkYXRhLXBhcnRpY2lwYW50LTI9IkNsaWVudCI+PHBvbHlnb24gZmlsbD0iIzE4MTgxOCIgcG9pbnRzPSIzOS4yNjUxLDM0MC4zNTk0LDI5LjI2NTEsMzQ0LjM1OTQsMzkuMjY1MSwzNDguMzU5NCwzNS4yNjUxLDM0NC4zNTk0IiBzdHlsZT0ic3Ryb2tlOiMxODE4MTg7c3Ryb2tlLXdpZHRoOjE7Ii8+PGxpbmUgc3R5bGU9InN0cm9rZTojMTgxODE4O3N0cm9rZS13aWR0aDoxO3N0cm9rZS1kYXNoYXJyYXk6MiwyOyIgeDE9IjMzLjI2NTEiIHgyPSIzMjQuOTU3MiIgeTE9IjM0NC4zNTk0IiB5Mj0iMzQ0LjM1OTQiLz48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIxMyIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSIzOSIgeD0iNDUuMjY1MSIgeT0iMzM5LjI5MzUiPiYjMzg3NTQ7JiMzMTMwOTsmIzIwNTE2OzwvdGV4dD48L2c+PHJlY3QgZmlsbD0iI0VFRUVFRSIgaGVpZ2h0PSIzIiBzdHlsZT0ic3Ryb2tlOiNFRUVFRUU7c3Ryb2tlLXdpZHRoOjE7IiB3aWR0aD0iNTEyLjA4MTIiIHg9IjAiIHk9IjM3Mi45MjU4Ii8+PGxpbmUgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIgeDE9IjAiIHgyPSI1MTIuMDgxMiIgeTE9IjM3Mi45MjU4IiB5Mj0iMzcyLjkyNTgiLz48bGluZSBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7IiB4MT0iMCIgeDI9IjUxMi4wODEyIiB5MT0iMzc1LjkyNTgiIHkyPSIzNzUuOTI1OCIvPjxyZWN0IGZpbGw9IiNFRUVFRUUiIGhlaWdodD0iMjMuMTMyOCIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoyOyIgd2lkdGg9IjEwOS41MjYiIHg9IjIwMS4yNzc2IiB5PSIzNjIuMzU5NCIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXNpemU9IjEzIiBmb250LXdlaWdodD0iYm9sZCIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSI5MS4wMDAxIiB4PSIyMDcuMjc3NiIgeT0iMzc4LjQyNjMiPiYjMzUwNzk7JiMyNTk2ODsmIzIyMjU5OyYjMjQ0MTg7JiMxMjM5ODsmIzIwOTY2OyYjMjk3MDI7PC90ZXh0PjxnIGNsYXNzPSJtZXNzYWdlIiBkYXRhLXBhcnRpY2lwYW50LTE9IkNsaWVudCIgZGF0YS1wYXJ0aWNpcGFudC0yPSJhcmVhIj48cG9seWdvbiBmaWxsPSIjMTgxODE4IiBwb2ludHM9IjMwOC45NTcyLDQxMi42MjUsMzE4Ljk1NzIsNDE2LjYyNSwzMDguOTU3Miw0MjAuNjI1LDMxMi45NTcyLDQxNi42MjUiIHN0eWxlPSJzdHJva2U6IzE4MTgxODtzdHJva2Utd2lkdGg6MTsiLz48bGluZSBzdHlsZT0ic3Ryb2tlOiMxODE4MTg7c3Ryb2tlLXdpZHRoOjE7IiB4MT0iMjguMjY1MSIgeDI9IjMxNC45NTcyIiB5MT0iNDE2LjYyNSIgeTI9IjQxNi42MjUiLz48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIxMyIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSIxMTkuODM3NCIgeD0iMzUuMjY1MSIgeT0iNDExLjU1OTEiPnRvdGFsLWFyZWEoc2hhcGVzKTwvdGV4dD48L2c+PHBhdGggZD0iTTI3MC40NjQsNDMxLjYyNSBMMzQ3LjA4OCw0MzEuNjI1IEwzNDcuMDg4LDQzOC43NTc4IEwzMzcuMDg4LDQ0OC43NTc4IEwyNzAuNDY0LDQ0OC43NTc4IEwyNzAuNDY0LDQzMS42MjUiIGZpbGw9IiNFRUVFRUUiIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MS41OyIvPjxyZWN0IGZpbGw9Im5vbmUiIGhlaWdodD0iNTkuMjY1NiIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxLjU7IiB3aWR0aD0iMjMxLjYxNzIiIHg9IjI3MC40NjQiIHk9IjQzMS42MjUiLz48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIxMyIgZm9udC13ZWlnaHQ9ImJvbGQiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iMzEuNjI0IiB4PSIyODUuNDY0IiB5PSI0NDQuNjkxOSI+bG9vcDwvdGV4dD48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIxMSIgZm9udC13ZWlnaHQ9ImJvbGQiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iNDMuMDU0NSIgeD0iMzYyLjA4OCIgeT0iNDQzLjgzNTQiPlsmIzIxNTA4OyYjMjIyNTk7JiMyNDQxODtdPC90ZXh0PjxnIGNsYXNzPSJtZXNzYWdlIiBkYXRhLXBhcnRpY2lwYW50LTE9ImFyZWEiIGRhdGEtcGFydGljaXBhbnQtMj0iYXJlYSI+PGxpbmUgc3R5bGU9InN0cm9rZTojMTgxODE4O3N0cm9rZS13aWR0aDoxOyIgeDE9IjMzMC45NTcyIiB4Mj0iMzcyLjk1NzIiIHkxPSI0NjkuODkwNiIgeTI9IjQ2OS44OTA2Ii8+PGxpbmUgc3R5bGU9InN0cm9rZTojMTgxODE4O3N0cm9rZS13aWR0aDoxOyIgeDE9IjM3Mi45NTcyIiB4Mj0iMzcyLjk1NzIiIHkxPSI0NjkuODkwNiIgeTI9IjQ4Mi44OTA2Ii8+PGxpbmUgc3R5bGU9InN0cm9rZTojMTgxODE4O3N0cm9rZS13aWR0aDoxOyIgeDE9IjMzMS45NTcyIiB4Mj0iMzcyLjk1NzIiIHkxPSI0ODIuODkwNiIgeTI9IjQ4Mi44OTA2Ii8+PHBvbHlnb24gZmlsbD0iIzE4MTgxOCIgcG9pbnRzPSIzNDEuOTU3Miw0NzguODkwNiwzMzEuOTU3Miw0ODIuODkwNiwzNDEuOTU3Miw0ODYuODkwNiwzMzcuOTU3Miw0ODIuODkwNiIgc3R5bGU9InN0cm9rZTojMTgxODE4O3N0cm9rZS13aWR0aDoxOyIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXNpemU9IjEzIiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjE0Mi4xMjQiIHg9IjMzNy45NTcyIiB5PSI0NjQuODI0NyI+Y2FsY3VsYXRlLWFyZWEoc2hhcGUpPC90ZXh0PjwvZz48ZyBjbGFzcz0ibWVzc2FnZSIgZGF0YS1wYXJ0aWNpcGFudC0xPSJhcmVhIiBkYXRhLXBhcnRpY2lwYW50LTI9IkNsaWVudCI+PHBvbHlnb24gZmlsbD0iIzE4MTgxOCIgcG9pbnRzPSIzOS4yNjUxLDUzMy4xNTYzLDI5LjI2NTEsNTM3LjE1NjMsMzkuMjY1MSw1NDEuMTU2MywzNS4yNjUxLDUzNy4xNTYzIiBzdHlsZT0ic3Ryb2tlOiMxODE4MTg7c3Ryb2tlLXdpZHRoOjE7Ii8+PGxpbmUgc3R5bGU9InN0cm9rZTojMTgxODE4O3N0cm9rZS13aWR0aDoxO3N0cm9rZS1kYXNoYXJyYXk6MiwyOyIgeDE9IjMzLjI2NTEiIHgyPSIzMjQuOTU3MiIgeTE9IjUzNy4xNTYzIiB5Mj0iNTM3LjE1NjMiLz48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIxMyIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSI1Mi4wMDAxIiB4PSI0NS4yNjUxIiB5PSI1MzIuMDkwMyI+JiMyMTUxMjsmIzM1MzM2OyYjMzg3NTQ7JiMzMTMwOTs8L3RleHQ+PC9nPjxwYXRoIGQ9Ik0zMzUsNTAyLjg5MDYgTDMzNSw1NTcuODkwNiBMNDk5LDU1Ny44OTA2IEw0OTksNTEyLjg5MDYgTDQ4OSw1MDIuODkwNiBMMzM1LDUwMi44OTA2IiBmaWxsPSIjRkVGRkREIiBzdHlsZT0ic3Ryb2tlOiMxODE4MTg7c3Ryb2tlLXdpZHRoOjAuNTsiLz48cGF0aCBkPSJNNDg5LDUwMi44OTA2IEw0ODksNTEyLjg5MDYgTDQ5OSw1MTIuODkwNiBMNDg5LDUwMi44OTA2IiBmaWxsPSIjRkVGRkREIiBzdHlsZT0ic3Ryb2tlOiMxODE4MTg7c3Ryb2tlLXdpZHRoOjAuNTsiLz48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIxMyIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSIxNDMuMDAwMiIgeD0iMzQxIiB5PSI1MTkuOTU3NSI+JiMxMjUxMDsmIzEyNTIzOyYjMTI0ODE7JiMxMjUxMzsmIzEyNDc3OyYjMTI0ODM7JiMxMjQ4OTsmIzEyMzk1OyYjMTI0MjQ7JiMxMjQyNjsmIzEyMjg5OzwvdGV4dD48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIxMyIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSIxMTcuMDAwMSIgeD0iMzQxIiB5PSI1MzUuMDkwMyI+JiMyMjI1OTsmIzI0NDE4OyYjMTIzOTg7JiMyMjQxMTsmIzEyMzk1OyYjMjI1MjI7JiMxMjM4OTsmIzEyMzU2OyYjMTIzOTA7PC90ZXh0Pjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXNpemU9IjEzIiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjE0My4wMDAyIiB4PSIzNDEiIHk9IjU1MC4yMjMxIj4mIzM2OTY5OyYjMjA5OTk7JiMxMjM5NDsmIzIwOTY2OyYjMjk3MDI7JiMxMjM2NDsmIzIxNjI4OyYjMTI0MDA7JiMxMjQyODsmIzEyNDE0OyYjMTIzNzc7PC90ZXh0PjwhLS1TUkM9W1pQMF9KeTkwNjhWdC1uR045WFp1MFlHckNNbUNFZjB1a0xuQThwTERJemhKY01rOUJPZUgxWU02WTE0SEhJOFhTVEE4Ti1SRHlVVFJVQnFaMkNCV1RkVHZ4bFMtbHZWZXI3NW5yWjhEY3c4SVNRY2Zjb0xZS3ZwODVxZDlFQklKTVRGTEJJRUxtQ0ozTmxvc1prS3lucHVtRkxGNElFSE90RFU5TlRTV2dtR0hUdUdxM1VWby10a3lNdnJTalIyYzhVTTBxcGlvMGNTbVRUQm5BUWFoMEtIcVFmdUlRZ1dINFhBbUwxOHFScnkwVXVPVzFGeUhfMHk4NlgwNDRCMDVBQ1o1VzhvU0V4YTktTGtKSHFyS0NEUTNPeEZ2Tk1WUWx2b3pIRERYU3pxamJYU0hFaDdxNHFseUlTU0ZjdWdvZXNKX2V3WjBMS0tibUNsVExSdGJ1Y1JUUzc4enVncnRGa3UwNl9BbUR3c1ZSVk1hM1lNTVNmR010Yno3b3Q1QWNEU2hBY29mbEJzY1o0V1htb3ZpS1VSckkybkNZTXpRc3V1dWtrUEhhSTg4c1gwQ0g2eTg3aTBWb25yS1dHdDBaeTBfWHA5M2x5dFlaR3R1X0lVbTlzMExPM3FxUHRxVVhTMVVMTWpXRFR4dTBaTzJsbVJpNnpYamg4VlpTSnkwXS0tPjwvZz48L3N2Zz4=" class="uml" alt="uml diagram" title="" /></p>
+<h2 id="9-visitor">9. 新しい Visitor の追加<a class="headerlink" href="#9-visitor" title="Permanent link">&para;</a></h2>
+<p>Visitor パターンの利点は、新しい操作を追加しやすいことです。</p>
+<h3 id="visitor">例: 描画 Visitor<a class="headerlink" href="#visitor" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="p">(</span><span class="kd">ns </span><span class="nv">visitor-pattern.draw-visitor</span>
+<span class="w">  </span><span class="p">(</span><span class="ss">:require</span><span class="w"> </span><span class="p">[</span><span class="nv">visitor-pattern.shape</span><span class="w"> </span><span class="ss">:as</span><span class="w"> </span><span class="nv">shape</span><span class="p">]</span>
+<span class="w">            </span><span class="p">[</span><span class="nv">visitor-pattern.circle</span><span class="w"> </span><span class="ss">:as</span><span class="w"> </span><span class="nv">circle</span><span class="p">]</span>
+<span class="w">            </span><span class="p">[</span><span class="nv">visitor-pattern.square</span><span class="w"> </span><span class="ss">:as</span><span class="w"> </span><span class="nv">square</span><span class="p">]))</span>
+
+<span class="p">(</span><span class="kd">defmulti </span><span class="nv">draw</span>
+<span class="w">  </span><span class="s">&quot;図形を描画コマンドに変換&quot;</span>
+<span class="w">  </span><span class="ss">::shape/type</span><span class="p">)</span>
+
+<span class="p">(</span><span class="kd">defmethod </span><span class="nv">draw</span><span class="w"> </span><span class="ss">::circle/circle</span><span class="w"> </span><span class="p">[</span><span class="nv">circle</span><span class="p">]</span>
+<span class="w">  </span><span class="p">(</span><span class="k">let </span><span class="p">[{</span><span class="ss">:keys</span><span class="w"> </span><span class="p">[</span><span class="ss">::circle/center</span><span class="w"> </span><span class="ss">::circle/radius</span><span class="p">]}</span><span class="w"> </span><span class="nv">circle</span>
+<span class="w">        </span><span class="p">[</span><span class="nv">x</span><span class="w"> </span><span class="nv">y</span><span class="p">]</span><span class="w"> </span><span class="nv">center</span><span class="p">]</span>
+<span class="w">    </span><span class="p">{</span><span class="ss">:command</span><span class="w"> </span><span class="ss">:draw-circle</span>
+<span class="w">     </span><span class="ss">:center</span><span class="w"> </span><span class="p">[</span><span class="nv">x</span><span class="w"> </span><span class="nv">y</span><span class="p">]</span>
+<span class="w">     </span><span class="ss">:radius</span><span class="w"> </span><span class="nv">radius</span><span class="p">}))</span>
+
+<span class="p">(</span><span class="kd">defmethod </span><span class="nv">draw</span><span class="w"> </span><span class="ss">::square/square</span><span class="w"> </span><span class="p">[</span><span class="nv">square</span><span class="p">]</span>
+<span class="w">  </span><span class="p">(</span><span class="k">let </span><span class="p">[{</span><span class="ss">:keys</span><span class="w"> </span><span class="p">[</span><span class="ss">::square/top-left</span><span class="w"> </span><span class="ss">::square/side</span><span class="p">]}</span><span class="w"> </span><span class="nv">square</span>
+<span class="w">        </span><span class="p">[</span><span class="nv">x</span><span class="w"> </span><span class="nv">y</span><span class="p">]</span><span class="w"> </span><span class="nv">top-left</span><span class="p">]</span>
+<span class="w">    </span><span class="p">{</span><span class="ss">:command</span><span class="w"> </span><span class="ss">:draw-rect</span>
+<span class="w">     </span><span class="ss">:position</span><span class="w"> </span><span class="p">[</span><span class="nv">x</span><span class="w"> </span><span class="nv">y</span><span class="p">]</span>
+<span class="w">     </span><span class="ss">:width</span><span class="w"> </span><span class="nv">side</span>
+<span class="w">     </span><span class="ss">:height</span><span class="w"> </span><span class="nv">side</span><span class="p">}))</span>
+</code></pre></div>
+<h2 id="10">10. パターンの利点と欠点<a class="headerlink" href="#10" title="Permanent link">&para;</a></h2>
+<h3 id="_4">利点<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>操作の追加が容易</strong>: 新しい Visitor を追加するだけで新しい操作を実装可能</li>
+<li><strong>関連操作の集約</strong>: 同じ操作に関するコードが一箇所にまとまる</li>
+<li><strong>要素の独立性</strong>: 要素クラスに操作のコードを含めなくてよい</li>
+</ol>
+<h3 id="_5">欠点<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>要素の追加が困難</strong>: 新しい要素タイプを追加すると、すべての Visitor を更新する必要がある</li>
+<li><strong>カプセル化の破壊</strong>: Visitor は要素の内部状態にアクセスする必要がある</li>
+</ol>
+<h2 id="11">11. 関数型プログラミングでの特徴<a class="headerlink" href="#11" title="Permanent link">&para;</a></h2>
+<p>Clojure での Visitor パターンの実装には以下の特徴があります：</p>
+<ol>
+<li><strong>マルチメソッド</strong>: 型に基づいたディスパッチで多態性を実現</li>
+<li><strong>オープンシステム</strong>: 新しいメソッドを後から追加可能</li>
+<li><strong>データとしての要素</strong>: 要素は単なるマップとして表現</li>
+<li><strong>純粋関数</strong>: Visitor は副作用のない純粋関数として実装</li>
+</ol>
+<p><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiBjb250ZW50U3R5bGVUeXBlPSJ0ZXh0L2NzcyIgZGF0YS1kaWFncmFtLXR5cGU9IkRFU0NSSVBUSU9OIiBoZWlnaHQ9IjM3MnB4IiBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJub25lIiBzdHlsZT0id2lkdGg6NDM4cHg7aGVpZ2h0OjM3MnB4O2JhY2tncm91bmQ6I0ZGRkZGRjsiIHZlcnNpb249IjEuMSIgdmlld0JveD0iMCAwIDQzOCAzNzIiIHdpZHRoPSI0MzhweCIgem9vbUFuZFBhbj0ibWFnbmlmeSI+PHRpdGxlPkNsb2p1cmUgJiMxMjM5MTsmIzEyMzk4OyBWaXNpdG9yICYjMTI0OTc7JiMxMjQ3OTsmIzEyNTQwOyYjMTI1MzE7PC90aXRsZT48ZGVmcy8+PGc+PGcgY2xhc3M9InRpdGxlIiBkYXRhLXNvdXJjZS1saW5lPSIxIj48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZm9udC13ZWlnaHQ9ImJvbGQiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iMjA2LjQ1ODYiIHg9IjEwOS4wMjA4IiB5PSIyMi45OTUxIj5DbG9qdXJlICYjMTIzOTE7JiMxMjM5ODsgVmlzaXRvciAmIzEyNDk3OyYjMTI0Nzk7JiMxMjU0MDsmIzEyNTMxOzwvdGV4dD48L2c+PCEtLWNsdXN0ZXIgPz8gKEVsZW1lbnQpLS0+PGcgY2xhc3M9ImNsdXN0ZXIiIGRhdGEtZW50aXR5PSIuLiAuRWxlbWVudC4iIGRhdGEtc291cmNlLWxpbmU9IjMiIGRhdGEtdWlkPSJlbnQwMDAyIiBpZD0iY2x1c3Rlcl8uLiAuRWxlbWVudC4iPjxyZWN0IGZpbGw9Im5vbmUiIGhlaWdodD0iNzMuMyIgcng9IjIuNSIgcnk9IjIuNSIgc3R5bGU9InN0cm9rZTojMTgxODE4O3N0cm9rZS13aWR0aDoxOyIgd2lkdGg9IjI2NSIgeD0iNyIgeT0iNDQuMjk2OSIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmb250LXdlaWdodD0iYm9sZCIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSIxMTAuMjcwNCIgeD0iODQuMzY0OCIgeT0iNTkuMjkyIj4mIzM1MjAxOyYjMzIwMzI7IChFbGVtZW50KTwvdGV4dD48L2c+PCEtLWNsdXN0ZXIgVmlzaXRvci0tPjxnIGNsYXNzPSJjbHVzdGVyIiBkYXRhLWVudGl0eT0iVmlzaXRvciIgZGF0YS1zb3VyY2UtbGluZT0iOCIgZGF0YS11aWQ9ImVudDAwMDUiIGlkPSJjbHVzdGVyX1Zpc2l0b3IiPjxyZWN0IGZpbGw9Im5vbmUiIGhlaWdodD0iMTk2LjcxIiByeD0iMi41IiByeT0iMi41IiBzdHlsZT0ic3Ryb2tlOiMxODE4MTg7c3Ryb2tlLXdpZHRoOjE7IiB3aWR0aD0iMTczIiB4PSIxMTciIHk9IjE2OS43MTY5Ii8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTQiIGZvbnQtd2VpZ2h0PSJib2xkIiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjUxLjk4MDUiIHg9IjE3Ny41MDk4IiB5PSIxODQuNzEyIj5WaXNpdG9yPC90ZXh0PjwvZz48IS0tZW50aXR5IG1hcC0tPjxnIGNsYXNzPSJlbnRpdHkiIGRhdGEtZW50aXR5PSJtYXAiIGRhdGEtc291cmNlLWxpbmU9IjQiIGRhdGEtdWlkPSJlbnQwMDAzIiBpZD0iZW50aXR5X21hcCI+PHJlY3QgZmlsbD0iI0YxRjFGMSIgaGVpZ2h0PSIyMi4yOTY5IiByeD0iMi41IiByeT0iMi41IiBzdHlsZT0ic3Ryb2tlOiMxODE4MTg7c3Ryb2tlLXdpZHRoOjAuNTsiIHdpZHRoPSIxMDMuOTk5NiIgeD0iMjMiIHk9Ijc5LjI5NjkiLz48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSI4My45OTk2IiB4PSIzMyIgeT0iOTUuMjkyIj4mIzEyNTEwOyYjMTI0ODM7JiMxMjUwMzsmIzEyNDg3OyYjMTI1NDA7JiMxMjQ3OTs8L3RleHQ+PC9nPjwhLS1lbnRpdHkgdHlwZS0tPjxnIGNsYXNzPSJlbnRpdHkiIGRhdGEtZW50aXR5PSJ0eXBlIiBkYXRhLXNvdXJjZS1saW5lPSI1IiBkYXRhLXVpZD0iZW50MDAwNCIgaWQ9ImVudGl0eV90eXBlIj48cmVjdCBmaWxsPSIjRjFGMUYxIiBoZWlnaHQ9IjIyLjI5NjkiIHJ4PSIyLjUiIHJ5PSIyLjUiIHN0eWxlPSJzdHJva2U6IzE4MTgxODtzdHJva2Utd2lkdGg6MC41OyIgd2lkdGg9IjkzLjE1ODEiIHg9IjE2Mi40MiIgeT0iNzkuMjk2OSIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjczLjE1ODEiIHg9IjE3Mi40MiIgeT0iOTUuMjkyIj46OnR5cGUgJiMxMjQ2MTsmIzEyNTQwOzwvdGV4dD48L2c+PCEtLWVudGl0eSBkZWZtdWx0aS0tPjxnIGNsYXNzPSJlbnRpdHkiIGRhdGEtZW50aXR5PSJkZWZtdWx0aSIgZGF0YS1zb3VyY2UtbGluZT0iOSIgZGF0YS11aWQ9ImVudDAwMDYiIGlkPSJlbnRpdHlfZGVmbXVsdGkiPjxyZWN0IGZpbGw9IiNGMUYxRjEiIGhlaWdodD0iMjIuMjk2OSIgcng9IjIuNSIgcnk9IjIuNSIgc3R5bGU9InN0cm9rZTojMTgxODE4O3N0cm9rZS13aWR0aDowLjU7IiB3aWR0aD0iNzguMjA4IiB4PSIxNDQuOSIgeT0iMjA0LjcxNjkiLz48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSI1OC4yMDgiIHg9IjE1NC45IiB5PSIyMjAuNzEyIj5kZWZtdWx0aTwvdGV4dD48L2c+PCEtLWVudGl0eSBkZWZtZXRob2QtLT48ZyBjbGFzcz0iZW50aXR5IiBkYXRhLWVudGl0eT0iZGVmbWV0aG9kIiBkYXRhLXNvdXJjZS1saW5lPSIxMCIgZGF0YS11aWQ9ImVudDAwMDciIGlkPSJlbnRpdHlfZGVmbWV0aG9kIj48cmVjdCBmaWxsPSIjRjFGMUYxIiBoZWlnaHQ9IjIyLjI5NjkiIHJ4PSIyLjUiIHJ5PSIyLjUiIHN0eWxlPSJzdHJva2U6IzE4MTgxODtzdHJva2Utd2lkdGg6MC41OyIgd2lkdGg9Ijk2LjQ5NDEiIHg9IjEzMi43NSIgeT0iMzI4LjEyNjkiLz48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSI3Ni40OTQxIiB4PSIxNDIuNzUiIHk9IjM0NC4xMjIiPmRlZm1ldGhvZDwvdGV4dD48L2c+PGcgY2xhc3M9ImVudGl0eSIgZGF0YS1lbnRpdHk9IkdNTjExIiBkYXRhLXNvdXJjZS1saW5lPSIxOCIgZGF0YS11aWQ9ImVudDAwMTIiIGlkPSJlbnRpdHlfR01OMTEiPjxwYXRoIGQ9Ik0zMDYuNSwxODAuNTk2OSBMMzA2LjUsMjExLjg2NjkgTDIyMy4zOCwyMTUuODY2OSBMMzA2LjUsMjE5Ljg2NjkgTDMwNi41LDI1MS4xMjgxIEEwLDAgMCAwIDAgMzA2LjUsMjUxLjEyODEgTDQzMS41MDAxLDI1MS4xMjgxIEEwLDAgMCAwIDAgNDMxLjUwMDEsMjUxLjEyODEgTDQzMS41MDAxLDE5MC41OTY5IEw0MjEuNTAwMSwxODAuNTk2OSBMMzA2LjUsMTgwLjU5NjkgQTAsMCAwIDAgMCAzMDYuNSwxODAuNTk2OSIgZmlsbD0iI0ZFRkZERCIgc3R5bGU9InN0cm9rZTojMTgxODE4O3N0cm9rZS13aWR0aDowLjU7Ii8+PHBhdGggZD0iTTQyMS41MDAxLDE4MC41OTY5IEw0MjEuNTAwMSwxOTAuNTk2OSBMNDMxLjUwMDEsMTkwLjU5NjkgTDQyMS41MDAxLDE4MC41OTY5IiBmaWxsPSIjRkVGRkREIiBzdHlsZT0ic3Ryb2tlOiMxODE4MTg7c3Ryb2tlLXdpZHRoOjAuNTsiLz48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIxMyIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSIxMDQuMDAwMSIgeD0iMzEyLjUiIHk9IjE5Ny42NjM4Ij4mIzEyNTEwOyYjMTI1MjM7JiMxMjQ4MTsmIzEyNTEzOyYjMTI0Nzc7JiMxMjQ4MzsmIzEyNDg5OyYjMTIzNjQ7PC90ZXh0Pjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXNpemU9IjEzIiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9Ijc4LjAwMDEiIHg9IjMxMi41IiB5PSIyMTIuNzk2NiI+JiMyMjQxMTsmIzEyMzk1OyYjMjI1MjI7JiMxMjM4OTsmIzEyMzU2OyYjMTIzOTA7PC90ZXh0Pjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXNpemU9IjEzIiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjEwNC4wMDAxIiB4PSIzMTIuNSIgeT0iMjI3LjkyOTQiPiYjMzY5Njk7JiMyMDk5OTsmIzEyMzk0OyYjMTI1MTM7JiMxMjQ3NzsmIzEyNDgzOyYjMTI0ODk7JiMxMjQzNDs8L3RleHQ+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTMiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iNjUuMDAwMSIgeD0iMzEyLjUiIHk9IjI0My4wNjIyIj4mIzM2OTg0OyYjMjUyNDY7JiMxMjM3NTsmIzEyNDE0OyYjMTIzNzc7PC90ZXh0PjwvZz48IS0tbGluayBtYXAgdG8gZGVmbXVsdGktLT48ZyBjbGFzcz0ibGluayIgZGF0YS1lbnRpdHktMT0ibWFwIiBkYXRhLWVudGl0eS0yPSJkZWZtdWx0aSIgZGF0YS1zb3VyY2UtbGluZT0iMTMiIGRhdGEtdWlkPSJsbms4IiBpZD0ibGlua19tYXBfZGVmbXVsdGkiPjxwYXRoIGQ9Ik03OS41OCwxMDEuNzQ2OSBDODUuMzcsMTE0LjA5NjkgOTYuMTUsMTM1LjA5NjkgMTA5LDE1MC41OTY5IEMxMjYuOTQsMTcyLjI0NjkgMTQ3LjgyOTQsMTg5LjAwNTMgMTY0LjAwOTQsMjAwLjc4NTMiIGZpbGw9Im5vbmUiIGlkPSJtYXAtdG8tZGVmbXVsdGkiIHN0eWxlPSJzdHJva2U6IzE4MTgxODtzdHJva2Utd2lkdGg6MTsiLz48cG9seWdvbiBmaWxsPSIjMTgxODE4IiBwb2ludHM9IjE2OC44NiwyMDQuMzE2OSwxNjMuOTM4NCwxOTUuNzg1OSwxNjQuODE3OCwyMDEuMzczOSwxNTkuMjI5NywyMDIuMjUzMywxNjguODYsMjA0LjMxNjkiIHN0eWxlPSJzdHJva2U6IzE4MTgxODtzdHJva2Utd2lkdGg6MTsiLz48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIxMyIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSI3OC4wMDAxIiB4PSIxMTAiIHk9IjE0Ni42NjM4Ij4mIzEyNDg3OyYjMTI0NTE7JiMxMjQ3MzsmIzEyNDk3OyYjMTI0ODM7JiMxMjQ4MTs8L3RleHQ+PC9nPjwhLS1saW5rIHR5cGUgdG8gZGVmbXVsdGktLT48ZyBjbGFzcz0ibGluayIgZGF0YS1lbnRpdHktMT0idHlwZSIgZGF0YS1lbnRpdHktMj0iZGVmbXVsdGkiIGRhdGEtc291cmNlLWxpbmU9IjE0IiBkYXRhLXVpZD0ibG5rOSIgaWQ9ImxpbmtfdHlwZV9kZWZtdWx0aSI+PHBhdGggZD0iTTIwNi44NywxMDEuOTc2OSBDMjAyLjE1LDEyNS4yODY5IDE5Mi4wMjkzLDE3NS4xOTU5IDE4Ny4zMTkzLDE5OC40ODU5IiBmaWxsPSJub25lIiBpZD0idHlwZS10by1kZWZtdWx0aSIgc3R5bGU9InN0cm9rZTojMTgxODE4O3N0cm9rZS13aWR0aDoxOyIvPjxwb2x5Z29uIGZpbGw9IiMxODE4MTgiIHBvaW50cz0iMTg2LjEzLDIwNC4zNjY5LDE5MS44MzQ2LDE5Ni4zMzgzLDE4Ny4xMjExLDE5OS40NjYxLDE4My45OTMzLDE5NC43NTI2LDE4Ni4xMywyMDQuMzY2OSIgc3R5bGU9InN0cm9rZTojMTgxODE4O3N0cm9rZS13aWR0aDoxOyIvPjwvZz48IS0tbGluayBkZWZtdWx0aSB0byBkZWZtZXRob2QtLT48ZyBjbGFzcz0ibGluayIgZGF0YS1lbnRpdHktMT0iZGVmbXVsdGkiIGRhdGEtZW50aXR5LTI9ImRlZm1ldGhvZCIgZGF0YS1zb3VyY2UtbGluZT0iMTUiIGRhdGEtdWlkPSJsbmsxMCIgaWQ9ImxpbmtfZGVmbXVsdGlfZGVmbWV0aG9kIj48cGF0aCBkPSJNMTgzLjc0LDIyNy4yMTY5IEMxODMuMTgsMjUwLjE1NjkgMTgxLjk2NjYsMjk5LjAzODcgMTgxLjQwNjYsMzIxLjk1ODciIGZpbGw9Im5vbmUiIGlkPSJkZWZtdWx0aS10by1kZWZtZXRob2QiIHN0eWxlPSJzdHJva2U6IzE4MTgxODtzdHJva2Utd2lkdGg6MTsiLz48cG9seWdvbiBmaWxsPSIjMTgxODE4IiBwb2ludHM9IjE4MS4yNiwzMjcuOTU2OSwxODUuNDc4NiwzMTkuMDU3MywxODEuMzgyMSwzMjIuOTU4NCwxNzcuNDgxLDMxOC44NjE5LDE4MS4yNiwzMjcuOTU2OSIgc3R5bGU9InN0cm9rZTojMTgxODE4O3N0cm9rZS13aWR0aDoxOyIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXNpemU9IjEzIiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjEwNC4wMDAxIiB4PSIxODMuNDEiIHk9IjI5NC4xOTM4Ij4mIzIyNDExOyYjMTIzOTU7JiMyMjUyMjsmIzEyMzg5OyYjMTIzNTY7JiMxMjM5MDsmIzM2OTg0OyYjMjUyNDY7PC90ZXh0PjwvZz48IS0tU1JDPVtQTDJ4Slc5MTVFdGxMem5pZkdLX2kwTUR5SFZpRC1tMFFfUDFiZzRtbmtCRWNFMmhxT1JPaDFlWkhlYXNNWVhILVBZUkhWYUJQcVBPODlQZHBsRUVaNkdpUzJsRVRka3ZHQVB4ZmNWU1lSZ0hwNzlhVlN2Z21sZzN6R2owQlhlb0k1ajZ4bHFDd1ZscjZaVXNPdjY4TDZ2d2swLUQ4MF9IT3JzbXJnbTdoRmxNZzJPVTFickNXaXZTdUZqb2hzRVFyOUVYN01TbjdBcGJwbVNpT3FGSEo3Z25aOW5YMExPdThUalBNOTRFc0tYSll4TFFsTkFXWnRRTmtjTnJSZS1wSW1kU2U1S1BMRmg1Z3FpcXhoOHVQSGdMTHNFY0V3UDNmazZDdGdPZDFLMlFJTzV2cjZmQnA5aEI5RlNWOHpGMi1lUkxmc2l5UFpnM19xYW1ldVZvZ0NfcWtBUEw1XzNObUpIVy1jQXcxOTY2UUZqLTBHMDBdLS0+PC9nPjwvc3ZnPg==" class="uml" alt="uml diagram" title="" /></p>
+<h2 id="_6">まとめ<a class="headerlink" href="#_6" title="Permanent link">&para;</a></h2>
+<p>本章では、Visitor パターンについて学びました：</p>
+<ol>
+<li><strong>データ構造と操作の分離</strong>: 図形データと操作を独立して定義</li>
+<li><strong>複数の Visitor</strong>: JSON、XML、面積、周囲長の各変換</li>
+<li><strong>マルチメソッドによる実装</strong>: 型に基づいたディスパッチ</li>
+<li><strong>拡張性</strong>: 新しい操作の追加が容易</li>
+</ol>
+<p>Visitor パターンは、データ構造が安定していて、操作を頻繁に追加する必要がある場面で有効です。</p>
+<h2 id="_7">参考コード<a class="headerlink" href="#_7" title="Permanent link">&para;</a></h2>
+<p>本章のコード例は以下のファイルで確認できます：</p>
+<ul>
+<li>ソースコード: <code>app/clojure/part4/src/visitor_pattern/</code></li>
+<li>テストコード: <code>app/clojure/part4/spec/visitor_pattern/</code></li>
+</ul>
+<h2 id="4">第4部のまとめ<a class="headerlink" href="#4" title="Permanent link">&para;</a></h2>
+<p>第4部では、振る舞いパターンについて学びました：</p>
+<ul>
+<li><strong>Strategy パターン</strong>: アルゴリズムをカプセル化し交換可能にする</li>
+<li><strong>Command パターン</strong>: 操作をデータ化し、Undo/Redo を実現</li>
+<li><strong>Visitor パターン</strong>: データ構造と操作を分離し、新しい操作を追加しやすくする</li>
+</ul>
+<p>これらのパターンは、関数型プログラミングの特性を活かして簡潔に実装できます。</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+    <a href="https://github.com/k2works" target="_blank" rel="noopener" title="GitHub Repository/claude-code-booster" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "toc.integrate", "search.suggest", "search.highlight"], "search": "../../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.e71a0d61.min.js"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+      
+        <script src="../../docs/assets/js/extra.js"></script>
+      
+    
+  </body>
+</html>
