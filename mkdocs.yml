@@ -103,3 +103,5 @@ nav:
           - 7. Composite パターン: scala/07-composite-pattern.md
           - 8. Decorator パターン: scala/08-decorator-pattern.md
           - 9. Adapter パターン: scala/09-adapter-pattern.md
+      - 第4部 - 振る舞いパターン:
+          - 10. Strategy パターン: scala/10-strategy-pattern.md
