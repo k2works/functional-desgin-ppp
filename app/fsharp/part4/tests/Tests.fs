@@ -946,3 +946,195 @@ module TreeVisitorTests =
         let tree = Node [ Leaf 1; Leaf 2; Node [ Leaf 3; Leaf 4 ] ]
         let sum = TreeVisitor.fold id List.sum tree
         Assert.Equal(10, sum)
+
+// ============================================
+// Chapter 13: Abstract Factory パターン テスト
+// ============================================
+
+open FunctionalDesign.Part4.AbstractFactoryPattern
+
+// ============================================
+// 1. ShapeFactory テスト
+// ============================================
+
+module ShapeFactoryTests =
+
+    [<Fact>]
+    let ``StandardFactoryで円を作成できる`` () =
+        let factory = ShapeFactory.Standard
+        let shape = ShapeFactory.createCircle factory (10.0, 20.0) 5.0
+        match shape.Shape with
+        | FunctionalDesign.Part4.VisitorPattern.Shape.Circle((x, y), r) ->
+            Assert.Equal(10.0, x)
+            Assert.Equal(20.0, y)
+            Assert.Equal(5.0, r)
+        | _ -> Assert.True(false, "Should be circle")
+        Assert.True(shape.Style.OutlineColor.IsNone)
+        Assert.True(shape.Style.FillColor.IsNone)
+
+    [<Fact>]
+    let ``OutlinedFactoryで輪郭線付き図形を作成できる`` () =
+        let factory = ShapeFactory.Outlined("black", 2.0)
+        let shape = ShapeFactory.createSquare factory (0.0, 0.0) 10.0
+        Assert.Equal(Some "black", shape.Style.OutlineColor)
+        Assert.Equal(Some 2.0, shape.Style.OutlineWidth)
+
+    [<Fact>]
+    let ``FilledFactoryで塗りつぶし図形を作成できる`` () =
+        let factory = ShapeFactory.Filled "red"
+        let shape = ShapeFactory.createRectangle factory (0.0, 0.0) 20.0 10.0
+        Assert.Equal(Some "red", shape.Style.FillColor)
+
+    [<Fact>]
+    let ``CustomFactoryでカスタムスタイルを適用できる`` () =
+        let customStyle =
+            ShapeStyle.empty
+            |> ShapeStyle.withOutline "blue" 3.0
+            |> ShapeStyle.withFill "yellow"
+            |> ShapeStyle.withOpacity 0.8
+        let factory = ShapeFactory.Custom customStyle
+        let shape = ShapeFactory.createCircle factory (0.0, 0.0) 10.0
+        Assert.Equal(Some "blue", shape.Style.OutlineColor)
+        Assert.Equal(Some "yellow", shape.Style.FillColor)
+        Assert.Equal(Some 0.8, shape.Style.Opacity)
+
+// ============================================
+// 2. UIFactory テスト
+// ============================================
+
+module UIFactoryTests =
+
+    [<Fact>]
+    let ``Windowsファクトリでボタンを作成できる`` () =
+        let factory = UIFactory.Windows
+        let button = UIFactory.createButton factory "OK"
+        Assert.Equal("OK", button.Label)
+        Assert.Equal("windows", button.Platform)
+        Assert.True(button.Style.ContainsKey "border")
+
+    [<Fact>]
+    let ``MacOSファクトリでボタンを作成できる`` () =
+        let factory = UIFactory.MacOS
+        let button = UIFactory.createButton factory "Submit"
+        Assert.Equal("Submit", button.Label)
+        Assert.Equal("macos", button.Platform)
+        Assert.True(button.Style.ContainsKey "borderRadius")
+
+    [<Fact>]
+    let ``Webファクトリでテキストフィールドを作成できる`` () =
+        let factory = UIFactory.Web
+        let field = UIFactory.createTextField factory "Enter name"
+        Assert.Equal("Enter name", field.Placeholder)
+        Assert.Equal("web", field.Platform)
+
+    [<Fact>]
+    let ``Linuxファクトリでチェックボックスを作成できる`` () =
+        let factory = UIFactory.Linux
+        let checkbox = UIFactory.createCheckbox factory "Accept" true
+        Assert.Equal("Accept", checkbox.Label)
+        Assert.True(checkbox.Checked)
+        Assert.Equal("linux", checkbox.Platform)
+
+// ============================================
+// 3. DatabaseFactory テスト
+// ============================================
+
+module DatabaseFactoryTests =
+
+    [<Fact>]
+    let ``SqlServerファクトリで接続を作成できる`` () =
+        let factory = DatabaseFactory.SqlServer "Server=localhost;Database=test"
+        let conn = DatabaseFactory.createConnection factory
+        Assert.Equal("SqlServer", conn.DatabaseType)
+        Assert.Equal(100, conn.MaxPoolSize)
+
+    [<Fact>]
+    let ``PostgreSQLファクトリで接続を作成できる`` () =
+        let factory = DatabaseFactory.PostgreSQL "Host=localhost;Database=test"
+        let conn = DatabaseFactory.createConnection factory
+        Assert.Equal("PostgreSQL", conn.DatabaseType)
+        Assert.Equal(50, conn.MaxPoolSize)
+
+    [<Fact>]
+    let ``SQLiteファクトリで接続を作成できる`` () =
+        let factory = DatabaseFactory.SQLite "/path/to/db.sqlite"
+        let conn = DatabaseFactory.createConnection factory
+        Assert.Equal("SQLite", conn.DatabaseType)
+        Assert.Equal(1, conn.MaxPoolSize)
+        Assert.Contains("Data Source=", conn.ConnectionString)
+
+    [<Fact>]
+    let ``コマンドを作成できる`` () =
+        let factory = DatabaseFactory.PostgreSQL "Host=localhost"
+        let cmd = DatabaseFactory.createCommand factory "SELECT * FROM users" Map.empty
+        Assert.Equal("SELECT * FROM users", cmd.Query)
+        Assert.Equal("PostgreSQL", cmd.DatabaseType)
+
+// ============================================
+// 4. DocumentFactory テスト
+// ============================================
+
+module DocumentFactoryTests =
+
+    [<Fact>]
+    let ``HTMLファクトリで段落を作成できる`` () =
+        let factory = DocumentFactory.HTML
+        let result = DocumentFactory.createParagraph factory "Hello World"
+        Assert.Equal("<p>Hello World</p>", result)
+
+    [<Fact>]
+    let ``Markdownファクトリで見出しを作成できる`` () =
+        let factory = DocumentFactory.Markdown
+        let result = DocumentFactory.createHeading factory 2 "Title"
+        Assert.StartsWith("## ", result)
+
+    [<Fact>]
+    let ``PlainTextファクトリで見出しを作成できる`` () =
+        let factory = DocumentFactory.PlainText
+        let result = DocumentFactory.createHeading factory 1 "Title"
+        Assert.Contains("TITLE", result)
+        Assert.Contains("=", result)
+
+    [<Fact>]
+    let ``HTMLファクトリで順序付きリストを作成できる`` () =
+        let factory = DocumentFactory.HTML
+        let result = DocumentFactory.createList factory [ "One"; "Two" ] true
+        Assert.Contains("<ol>", result)
+        Assert.Contains("<li>One</li>", result)
+
+    [<Fact>]
+    let ``Markdownファクトリで順序なしリストを作成できる`` () =
+        let factory = DocumentFactory.Markdown
+        let result = DocumentFactory.createList factory [ "Apple"; "Banana" ] false
+        Assert.Contains("- Apple", result)
+        Assert.Contains("- Banana", result)
+
+// ============================================
+// 5. ThemeFactory テスト
+// ============================================
+
+module ThemeFactoryTests =
+
+    [<Fact>]
+    let ``Lightテーマを作成できる`` () =
+        let factory = ThemeFactory.Light
+        let theme = ThemeFactory.createTheme factory
+        Assert.Equal("Light", theme.Name)
+        Assert.Equal("#ffffff", theme.Colors.Background)
+        Assert.Equal("#212529", theme.Colors.Text)
+
+    [<Fact>]
+    let ``Darkテーマを作成できる`` () =
+        let factory = ThemeFactory.Dark
+        let theme = ThemeFactory.createTheme factory
+        Assert.Equal("Dark", theme.Name)
+        Assert.Equal("#212529", theme.Colors.Background)
+        Assert.Equal("#f8f9fa", theme.Colors.Text)
+
+    [<Fact>]
+    let ``HighContrastテーマを作成できる`` () =
+        let factory = ThemeFactory.HighContrast
+        let theme = ThemeFactory.createTheme factory
+        Assert.Equal("HighContrast", theme.Name)
+        Assert.Equal("#000000", theme.Colors.Background)
+        Assert.Equal("#ffffff", theme.Colors.Text)

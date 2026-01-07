@@ -1104,3 +1104,358 @@ module VisitorPattern =
             match tree with
             | Leaf v -> leafFn v
             | Node children -> nodeFn (children |> List.map (fold leafFn nodeFn))
+
+// ============================================
+// 第13章: Abstract Factory パターン
+// ============================================
+
+module AbstractFactoryPattern =
+
+    // ============================================
+    // 1. 図形ファクトリ
+    // ============================================
+
+    /// スタイル情報
+    type ShapeStyle =
+        { OutlineColor: string option
+          OutlineWidth: float option
+          FillColor: string option
+          Opacity: float option }
+
+    module ShapeStyle =
+        let empty =
+            { OutlineColor = None
+              OutlineWidth = None
+              FillColor = None
+              Opacity = None }
+
+        let withOutline color width style =
+            { style with OutlineColor = Some color; OutlineWidth = Some width }
+
+        let withFill color style =
+            { style with FillColor = Some color }
+
+        let withOpacity opacity style =
+            { style with Opacity = Some opacity }
+
+    /// スタイル付き図形
+    type StyledShape =
+        { Shape: VisitorPattern.Shape
+          Style: ShapeStyle }
+
+    /// 図形ファクトリの型
+    [<RequireQualifiedAccess>]
+    type ShapeFactory =
+        | Standard
+        | Outlined of color: string * width: float
+        | Filled of color: string
+        | Custom of style: ShapeStyle
+
+    module ShapeFactory =
+        /// 円を作成
+        let createCircle (factory: ShapeFactory) (center: float * float) (radius: float) : StyledShape =
+            let shape = VisitorPattern.Shape.Circle(center, radius)
+            let style =
+                match factory with
+                | ShapeFactory.Standard -> ShapeStyle.empty
+                | ShapeFactory.Outlined(color, width) -> ShapeStyle.empty |> ShapeStyle.withOutline color width
+                | ShapeFactory.Filled color -> ShapeStyle.empty |> ShapeStyle.withFill color
+                | ShapeFactory.Custom style -> style
+            { Shape = shape; Style = style }
+
+        /// 正方形を作成
+        let createSquare (factory: ShapeFactory) (topLeft: float * float) (side: float) : StyledShape =
+            let shape = VisitorPattern.Shape.Square(topLeft, side)
+            let style =
+                match factory with
+                | ShapeFactory.Standard -> ShapeStyle.empty
+                | ShapeFactory.Outlined(color, width) -> ShapeStyle.empty |> ShapeStyle.withOutline color width
+                | ShapeFactory.Filled color -> ShapeStyle.empty |> ShapeStyle.withFill color
+                | ShapeFactory.Custom style -> style
+            { Shape = shape; Style = style }
+
+        /// 長方形を作成
+        let createRectangle (factory: ShapeFactory) (topLeft: float * float) (width: float) (height: float) : StyledShape =
+            let shape = VisitorPattern.Shape.Rectangle(topLeft, width, height)
+            let style =
+                match factory with
+                | ShapeFactory.Standard -> ShapeStyle.empty
+                | ShapeFactory.Outlined(color, width) -> ShapeStyle.empty |> ShapeStyle.withOutline color width
+                | ShapeFactory.Filled color -> ShapeStyle.empty |> ShapeStyle.withFill color
+                | ShapeFactory.Custom s -> s
+            { Shape = shape; Style = style }
+
+    // ============================================
+    // 2. UI ファクトリ
+    // ============================================
+
+    /// ボタンコンポーネント
+    type Button =
+        { Label: string
+          Platform: string
+          Style: Map<string, string> }
+
+    /// テキストフィールドコンポーネント
+    type TextField =
+        { Placeholder: string
+          Platform: string
+          Style: Map<string, string> }
+
+    /// チェックボックスコンポーネント
+    type Checkbox =
+        { Label: string
+          Checked: bool
+          Platform: string
+          Style: Map<string, string> }
+
+    /// UI ファクトリの型
+    [<RequireQualifiedAccess>]
+    type UIFactory =
+        | Windows
+        | MacOS
+        | Linux
+        | Web
+
+    module UIFactory =
+        let private platformName = function
+            | UIFactory.Windows -> "windows"
+            | UIFactory.MacOS -> "macos"
+            | UIFactory.Linux -> "linux"
+            | UIFactory.Web -> "web"
+
+        let private buttonStyle = function
+            | UIFactory.Windows -> Map.ofList [ ("border", "1px solid gray"); ("padding", "5px 10px") ]
+            | UIFactory.MacOS -> Map.ofList [ ("border", "none"); ("borderRadius", "5px"); ("padding", "8px 16px") ]
+            | UIFactory.Linux -> Map.ofList [ ("border", "2px solid black"); ("padding", "4px 8px") ]
+            | UIFactory.Web -> Map.ofList [ ("border", "1px solid #ccc"); ("borderRadius", "3px"); ("padding", "6px 12px") ]
+
+        let private textFieldStyle = function
+            | UIFactory.Windows -> Map.ofList [ ("border", "1px solid gray"); ("height", "22px") ]
+            | UIFactory.MacOS -> Map.ofList [ ("border", "none"); ("borderRadius", "4px"); ("height", "24px") ]
+            | UIFactory.Linux -> Map.ofList [ ("border", "2px solid black"); ("height", "20px") ]
+            | UIFactory.Web -> Map.ofList [ ("border", "1px solid #ccc"); ("borderRadius", "3px"); ("height", "30px") ]
+
+        /// ボタンを作成
+        let createButton (factory: UIFactory) (label: string) : Button =
+            { Label = label
+              Platform = platformName factory
+              Style = buttonStyle factory }
+
+        /// テキストフィールドを作成
+        let createTextField (factory: UIFactory) (placeholder: string) : TextField =
+            { Placeholder = placeholder
+              Platform = platformName factory
+              Style = textFieldStyle factory }
+
+        /// チェックボックスを作成
+        let createCheckbox (factory: UIFactory) (label: string) (checked': bool) : Checkbox =
+            { Label = label
+              Checked = checked'
+              Platform = platformName factory
+              Style = Map.empty }
+
+    // ============================================
+    // 3. データベース接続ファクトリ
+    // ============================================
+
+    type DatabaseConnection =
+        { ConnectionString: string
+          DatabaseType: string
+          MaxPoolSize: int }
+
+    type DatabaseCommand =
+        { Query: string
+          DatabaseType: string
+          Parameters: Map<string, obj> }
+
+    [<RequireQualifiedAccess>]
+    type DatabaseFactory =
+        | SqlServer of connectionString: string
+        | PostgreSQL of connectionString: string
+        | MySQL of connectionString: string
+        | SQLite of filePath: string
+
+    module DatabaseFactory =
+        /// 接続を作成
+        let createConnection (factory: DatabaseFactory) : DatabaseConnection =
+            match factory with
+            | DatabaseFactory.SqlServer connStr ->
+                { ConnectionString = connStr
+                  DatabaseType = "SqlServer"
+                  MaxPoolSize = 100 }
+            | DatabaseFactory.PostgreSQL connStr ->
+                { ConnectionString = connStr
+                  DatabaseType = "PostgreSQL"
+                  MaxPoolSize = 50 }
+            | DatabaseFactory.MySQL connStr ->
+                { ConnectionString = connStr
+                  DatabaseType = "MySQL"
+                  MaxPoolSize = 50 }
+            | DatabaseFactory.SQLite path ->
+                { ConnectionString = sprintf "Data Source=%s" path
+                  DatabaseType = "SQLite"
+                  MaxPoolSize = 1 }
+
+        /// コマンドを作成
+        let createCommand (factory: DatabaseFactory) (query: string) (parameters: Map<string, obj>) : DatabaseCommand =
+            let dbType =
+                match factory with
+                | DatabaseFactory.SqlServer _ -> "SqlServer"
+                | DatabaseFactory.PostgreSQL _ -> "PostgreSQL"
+                | DatabaseFactory.MySQL _ -> "MySQL"
+                | DatabaseFactory.SQLite _ -> "SQLite"
+            { Query = query
+              DatabaseType = dbType
+              Parameters = parameters }
+
+    // ============================================
+    // 4. ドキュメントファクトリ
+    // ============================================
+
+    type DocumentParagraph = { Text: string; Style: Map<string, string> }
+    type DocumentHeading = { Level: int; Text: string }
+    type DocumentList = { Items: string list; Ordered: bool }
+
+    [<RequireQualifiedAccess>]
+    type DocumentFactory =
+        | HTML
+        | Markdown
+        | PlainText
+
+    module DocumentFactory =
+        /// 段落を作成
+        let createParagraph (factory: DocumentFactory) (text: string) : string =
+            match factory with
+            | DocumentFactory.HTML -> sprintf "<p>%s</p>" text
+            | DocumentFactory.Markdown -> text + "\n"
+            | DocumentFactory.PlainText -> text + "\n"
+
+        /// 見出しを作成
+        let createHeading (factory: DocumentFactory) (level: int) (text: string) : string =
+            match factory with
+            | DocumentFactory.HTML -> sprintf "<h%d>%s</h%d>" level text level
+            | DocumentFactory.Markdown -> String.replicate level "#" + " " + text + "\n"
+            | DocumentFactory.PlainText -> text.ToUpper() + "\n" + String.replicate (String.length text) "=" + "\n"
+
+        /// リストを作成
+        let createList (factory: DocumentFactory) (items: string list) (ordered: bool) : string =
+            match factory with
+            | DocumentFactory.HTML ->
+                let tag = if ordered then "ol" else "ul"
+                let itemsHtml = items |> List.map (sprintf "<li>%s</li>") |> String.concat ""
+                sprintf "<%s>%s</%s>" tag itemsHtml tag
+            | DocumentFactory.Markdown ->
+                items
+                |> List.mapi (fun i item ->
+                    if ordered then sprintf "%d. %s" (i + 1) item
+                    else sprintf "- %s" item)
+                |> String.concat "\n"
+            | DocumentFactory.PlainText ->
+                items
+                |> List.mapi (fun i item ->
+                    if ordered then sprintf "%d. %s" (i + 1) item
+                    else sprintf "* %s" item)
+                |> String.concat "\n"
+
+    // ============================================
+    // 5. テーマファクトリ
+    // ============================================
+
+    type ThemeColors =
+        { Primary: string
+          Secondary: string
+          Background: string
+          Text: string
+          Error: string
+          Success: string }
+
+    type ThemeFonts =
+        { Heading: string
+          Body: string
+          Monospace: string }
+
+    type Theme =
+        { Name: string
+          Colors: ThemeColors
+          Fonts: ThemeFonts }
+
+    [<RequireQualifiedAccess>]
+    type ThemeFactory =
+        | Light
+        | Dark
+        | HighContrast
+
+    module ThemeFactory =
+        /// テーマを作成
+        let createTheme (factory: ThemeFactory) : Theme =
+            match factory with
+            | ThemeFactory.Light ->
+                { Name = "Light"
+                  Colors =
+                    { Primary = "#007bff"
+                      Secondary = "#6c757d"
+                      Background = "#ffffff"
+                      Text = "#212529"
+                      Error = "#dc3545"
+                      Success = "#28a745" }
+                  Fonts =
+                    { Heading = "Arial, sans-serif"
+                      Body = "Helvetica, sans-serif"
+                      Monospace = "Courier New, monospace" } }
+            | ThemeFactory.Dark ->
+                { Name = "Dark"
+                  Colors =
+                    { Primary = "#0d6efd"
+                      Secondary = "#adb5bd"
+                      Background = "#212529"
+                      Text = "#f8f9fa"
+                      Error = "#dc3545"
+                      Success = "#198754" }
+                  Fonts =
+                    { Heading = "Arial, sans-serif"
+                      Body = "Helvetica, sans-serif"
+                      Monospace = "Courier New, monospace" } }
+            | ThemeFactory.HighContrast ->
+                { Name = "HighContrast"
+                  Colors =
+                    { Primary = "#ffff00"
+                      Secondary = "#00ffff"
+                      Background = "#000000"
+                      Text = "#ffffff"
+                      Error = "#ff0000"
+                      Success = "#00ff00" }
+                  Fonts =
+                    { Heading = "Arial Black, sans-serif"
+                      Body = "Arial, sans-serif"
+                      Monospace = "Courier New, monospace" } }
+
+    // ============================================
+    // 6. 汎用ファクトリ関数
+    // ============================================
+
+    module GenericFactory =
+        /// 汎用ファクトリ型
+        type Factory<'TConfig, 'TProduct> = 'TConfig -> 'TProduct
+
+        /// ファクトリを作成
+        let create (config: 'TConfig) (factory: Factory<'TConfig, 'TProduct>) : 'TProduct =
+            factory config
+
+        /// ファクトリを合成
+        let compose
+            (factory1: Factory<'TConfig, 'TIntermediate>)
+            (factory2: Factory<'TIntermediate, 'TProduct>)
+            : Factory<'TConfig, 'TProduct> =
+            fun config -> config |> factory1 |> factory2
+
+        /// 条件付きファクトリ
+        let conditional
+            (predicate: 'TConfig -> bool)
+            (thenFactory: Factory<'TConfig, 'TProduct>)
+            (elseFactory: Factory<'TConfig, 'TProduct>)
+            : Factory<'TConfig, 'TProduct> =
+            fun config ->
+                if predicate config then
+                    thenFactory config
+                else
+                    elseFactory config
