@@ -10,6 +10,12 @@ Clojure を使った関数型プログラミングの実装例です。従来の
 
 - [Clojure 解説](clojure/index.md)
 
+### Scala 版
+
+Scala を使った関数型プログラミングの実装例です。オブジェクト指向と関数型のハイブリッドな特性を活かした実装パターンを学びます。
+
+- [Scala 解説](scala/index.md)
+
 ## 章構成（Clojure）
 
 ### 第1部: 関数型プログラミングの基礎原則
@@ -75,4 +81,6 @@ Clojure を使った関数型プログラミングの実装例です。従来の
 - 「Clean Code」Robert C. Martin
 - 「Clojure Applied」Ben Vandgrift, Alex Miller
 - 「Programming Clojure」Alex Miller, Stuart Halloway, Aaron Bedra
+- 「Functional Programming in Scala」Paul Chiusano, Rúnar Bjarnason
 - [Clojure 公式ドキュメント](https://clojure.org/)
+- [Scala 公式ドキュメント](https://www.scala-lang.org/)

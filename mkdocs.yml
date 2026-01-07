@@ -89,3 +89,9 @@ nav:
           - 20. パターン間の相互作用: clojure/20-pattern-interactions.md
           - 21. ベストプラクティス: clojure/21-best-practices.md
           - 22. OO から FP への移行: clojure/22-oo-to-fp-migration.md
+  - Scala:
+      - 概要: scala/index.md
+      - 第1部 - 基礎原則:
+          - 1. 不変性とデータ変換: scala/01-immutability-and-data-transformation.md
+          - 2. 関数合成と高階関数: scala/02-function-composition.md
+          - 3. 多態性の実現方法: scala/03-polymorphism.md
