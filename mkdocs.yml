@@ -105,3 +105,4 @@ nav:
           - 9. Adapter パターン: scala/09-adapter-pattern.md
       - 第4部 - 振る舞いパターン:
           - 10. Strategy パターン: scala/10-strategy-pattern.md
+          - 11. Command パターン: scala/11-command-pattern.md
