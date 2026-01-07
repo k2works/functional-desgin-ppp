@@ -144,3 +144,6 @@ nav:
           - 15. ゴシップ好きなバスの運転手: fsharp/15-gossiping-bus-drivers.md
           - 16. 給与計算システム: fsharp/16-payroll-system.md
           - 17. ビデオレンタルシステム: fsharp/17-video-rental-system.md
+      - Part 6 - 並行処理:
+          - 18. 並行処理システム: fsharp/18-concurrency-system.md
+          - 19. Wa-Tor シミュレーション: fsharp/19-wator-simulation.md
