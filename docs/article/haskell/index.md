@@ -28,25 +28,25 @@ Haskell は純粋関数型言語として、関数型プログラミングの概
 
 ### 第4部：振る舞いパターン（Chapters 10-14）
 
-10. Strategy パターン - 高階関数による戦略切り替え
-11. Command パターン - データとしてのコマンド
-12. Visitor パターン - Foldable/Traversable
-13. Abstract Factory パターン - 型クラスによる抽象化
-14. Abstract Server パターン - モジュラー設計
+10. [Strategy パターン](10-strategy-pattern.md) - 高階関数による戦略切り替え
+11. [Command パターン](11-command-pattern.md) - データとしてのコマンド
+12. [Visitor パターン](12-visitor-pattern.md) - Foldable/Traversable
+13. [Abstract Factory パターン](13-abstract-factory-pattern.md) - 型クラスによる抽象化
+14. [Abstract Server パターン](14-abstract-server-pattern.md) - モジュラー設計
 
 ### 第5部：実践アプリケーション（Chapters 15-19）
 
-15. ゴシップ好きなバスの運転手 - シミュレーション
-16. 給与計算システム - ビジネスロジック
-17. レンタルビデオシステム - ドメインモデリング
-18. 並行処理システム - STM、async
-19. Wa-Tor シミュレーション - セルオートマトン
+15. [ゴシップ好きなバスの運転手](15-gossiping-bus-drivers.md) - シミュレーション
+16. [給与計算システム](16-payroll-system.md) - ビジネスロジック
+17. [レンタルビデオシステム](17-video-rental-system.md) - ドメインモデリング
+18. [並行処理システム](18-concurrency-system.md) - STM、async
+19. [Wa-Tor シミュレーション](19-wator-simulation.md) - セルオートマトン
 
 ### 第6部：ベストプラクティス（Chapters 20-22）
 
-20. パターン間の相互作用 - パターンの組み合わせ
-21. ベストプラクティス - イディオム、スタイル
-22. OO から FP への移行 - リファクタリング戦略
+20. [パターン間の相互作用](20-pattern-interactions.md) - パターンの組み合わせ
+21. [ベストプラクティス](21-best-practices.md) - イディオム、スタイル
+22. [OO から FP への移行](22-oo-to-fp-migration.md) - リファクタリング戦略
 
 ## Haskell の特徴
 
