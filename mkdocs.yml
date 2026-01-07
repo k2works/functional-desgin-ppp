@@ -101,3 +101,4 @@ nav:
           - 6. TDD と関数型プログラミング: scala/06-tdd-functional.md
       - 第3部 - 構造パターン:
           - 7. Composite パターン: scala/07-composite-pattern.md
+          - 8. Decorator パターン: scala/08-decorator-pattern.md
