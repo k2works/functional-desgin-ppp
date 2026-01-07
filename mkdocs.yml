@@ -99,3 +99,5 @@ nav:
           - 4. データ検証: scala/04-data-validation.md
           - 5. プロパティベーステスト: scala/05-property-based-testing.md
           - 6. TDD と関数型プログラミング: scala/06-tdd-functional.md
+      - 第3部 - 構造パターン:
+          - 7. Composite パターン: scala/07-composite-pattern.md
