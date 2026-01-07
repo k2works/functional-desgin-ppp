@@ -110,3 +110,5 @@ nav:
       - 第5部 - 生成パターン:
           - 13. Abstract Factory パターン: scala/13-abstract-factory-pattern.md
           - 14. Abstract Server パターン: scala/14-abstract-server-pattern.md
+      - 第6部 - ケーススタディ:
+          - 15. ゴシップ好きなバスの運転手: scala/15-gossiping-bus-drivers.md
