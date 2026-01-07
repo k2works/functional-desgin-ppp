@@ -132,3 +132,4 @@ nav:
           - 06. TDD in FP: fsharp/06-tdd-functional.md
       - Part 3 - デザインパターン（構造）:
           - 07. Composite パターン: fsharp/07-composite-pattern.md
+          - 08. Decorator パターン: fsharp/08-decorator-pattern.md

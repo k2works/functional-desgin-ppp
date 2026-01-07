@@ -511,3 +511,345 @@ module CompositePattern =
             match orgMember with
             | OrganizationMember.Employee _ as emp -> [ emp ]
             | OrganizationMember.Department(_, members, _) -> members |> List.collect allEmployees
+
+
+// ============================================
+// 第8章: Decorator パターン
+// ============================================
+
+module DecoratorPattern =
+
+    // ============================================
+    // 1. JournaledShape - 形状デコレータ
+    // ============================================
+
+    /// ジャーナルエントリ（操作の記録）
+    type JournalEntry =
+        | Translate of dx: float * dy: float
+        | Scale of factor: float
+        | Rotate of angle: float
+
+    /// 基本形状（デコレート対象）
+    [<RequireQualifiedAccess>]
+    type Shape =
+        | Circle of centerX: float * centerY: float * radius: float
+        | Square of topLeftX: float * topLeftY: float * side: float
+        | Rectangle of topLeftX: float * topLeftY: float * width: float * height: float
+
+    module Shape =
+        let translate dx dy shape =
+            match shape with
+            | Shape.Circle(cx, cy, r) -> Shape.Circle(cx + dx, cy + dy, r)
+            | Shape.Square(x, y, s) -> Shape.Square(x + dx, y + dy, s)
+            | Shape.Rectangle(x, y, w, h) -> Shape.Rectangle(x + dx, y + dy, w, h)
+
+        let scale factor shape =
+            match shape with
+            | Shape.Circle(cx, cy, r) -> Shape.Circle(cx, cy, r * factor)
+            | Shape.Square(x, y, s) -> Shape.Square(x, y, s * factor)
+            | Shape.Rectangle(x, y, w, h) -> Shape.Rectangle(x, y, w * factor, h * factor)
+
+        let area shape =
+            match shape with
+            | Shape.Circle(_, _, r) -> System.Math.PI * r * r
+            | Shape.Square(_, _, s) -> s * s
+            | Shape.Rectangle(_, _, w, h) -> w * h
+
+    /// ジャーナル付き形状（デコレータ）
+    type JournaledShape =
+        { Shape: Shape
+          Journal: JournalEntry list }
+
+    module JournaledShape =
+        let create shape =
+            { Shape = shape; Journal = [] }
+
+        let translate dx dy js =
+            { Shape = Shape.translate dx dy js.Shape
+              Journal = js.Journal @ [ Translate(dx, dy) ] }
+
+        let scale factor js =
+            { Shape = Shape.scale factor js.Shape
+              Journal = js.Journal @ [ Scale factor ] }
+
+        let area js = Shape.area js.Shape
+
+        let clearJournal js = { js with Journal = [] }
+
+        let getJournal js = js.Journal
+
+        let getShape js = js.Shape
+
+        /// ジャーナルエントリを再生
+        let replay entries js =
+            entries
+            |> List.fold
+                (fun acc entry ->
+                    match entry with
+                    | Translate(dx, dy) -> translate dx dy acc
+                    | Scale factor -> scale factor acc
+                    | Rotate _ -> acc)
+                js
+
+    // ============================================
+    // 2. 関数デコレータ
+    // ============================================
+
+    /// ログコレクター（副作用を追跡）
+    type LogCollector() =
+        let mutable logs: string list = []
+        member _.Add(msg: string) = logs <- logs @ [ msg ]
+        member _.GetLogs() = logs
+        member _.Clear() = logs <- []
+
+    /// ログ付きデコレータ
+    let withLogging (name: string) (collector: LogCollector) (f: 'a -> 'b) : 'a -> 'b =
+        fun a ->
+            collector.Add(sprintf "[%s] called with: %A" name a)
+            let result = f a
+            collector.Add(sprintf "[%s] returned: %A" name result)
+            result
+
+    /// リトライデコレータ
+    let withRetry (maxRetries: int) (f: 'a -> 'b) : 'a -> 'b =
+        fun a ->
+            let rec attempt remaining =
+                try
+                    f a
+                with ex ->
+                    if remaining > 0 then
+                        attempt (remaining - 1)
+                    else
+                        raise ex
+
+            attempt maxRetries
+
+    /// キャッシュデコレータ
+    let withCache () : ('a -> 'b) -> ('a -> 'b) =
+        fun f ->
+            let cache = System.Collections.Generic.Dictionary<'a, 'b>()
+
+            fun a ->
+                if cache.ContainsKey(a) then
+                    cache.[a]
+                else
+                    let result = f a
+                    cache.[a] <- result
+                    result
+
+    /// バリデーションデコレータ
+    let withValidation (validator: 'a -> bool) (errorMsg: string) (f: 'a -> 'b) : 'a -> 'b =
+        fun a ->
+            if validator a then
+                f a
+            else
+                invalidArg "input" (sprintf "%s: %A" errorMsg a)
+
+    /// タイムアウトデコレータ（同期版、簡易実装）
+    let withTimeout (timeoutMs: int) (f: 'a -> 'b) : 'a -> 'b =
+        fun a ->
+            let task =
+                System.Threading.Tasks.Task.Run(fun () -> f a)
+
+            if task.Wait(timeoutMs) then
+                task.Result
+            else
+                raise (System.TimeoutException("Operation timed out"))
+
+    /// 計測デコレータ
+    let withTiming (collector: LogCollector) (name: string) (f: 'a -> 'b) : 'a -> 'b =
+        fun a ->
+            let sw = System.Diagnostics.Stopwatch.StartNew()
+            let result = f a
+            sw.Stop()
+            collector.Add(sprintf "[%s] took %d ms" name sw.ElapsedMilliseconds)
+            result
+
+    /// Option結果デコレータ（例外をOptionに変換）
+    let withOptionResult (f: 'a -> 'b) : 'a -> 'b option =
+        fun a ->
+            try
+                Some(f a)
+            with _ ->
+                None
+
+    /// Either結果デコレータ（例外をResultに変換）
+    let withEitherResult (f: 'a -> 'b) : 'a -> Result<'b, exn> =
+        fun a ->
+            try
+                Ok(f a)
+            with ex ->
+                Error ex
+
+    /// デフォルト値デコレータ
+    let withDefault (defaultValue: 'b) (f: 'a -> 'b) : 'a -> 'b =
+        fun a ->
+            try
+                f a
+            with _ ->
+                defaultValue
+
+    // ============================================
+    // 3. デコレータの合成
+    // ============================================
+
+    /// 複数のデコレータを合成
+    let composeDecorators (decorators: (('a -> 'b) -> ('a -> 'b)) list) (f: 'a -> 'b) : 'a -> 'b =
+        decorators |> List.fold (fun decorated decorator -> decorator decorated) f
+
+    // ============================================
+    // 4. AuditedList - コレクションデコレータ
+    // ============================================
+
+    /// 操作履歴付きリスト
+    type AuditedList<'T> =
+        { Items: 'T list
+          Operations: string list }
+
+    module AuditedList =
+        let empty<'T> : AuditedList<'T> = { Items = []; Operations = [] }
+
+        let add (item: 'T) (list: AuditedList<'T>) =
+            { Items = list.Items @ [ item ]
+              Operations = list.Operations @ [ sprintf "add(%A)" item ] }
+
+        let remove (item: 'T) (list: AuditedList<'T>) =
+            { Items = list.Items |> List.filter ((<>) item)
+              Operations = list.Operations @ [ sprintf "remove(%A)" item ] }
+
+        let map (f: 'T -> 'U) (list: AuditedList<'T>) : AuditedList<'U> =
+            { Items = List.map f list.Items
+              Operations = list.Operations @ [ "map" ] }
+
+        let filter (predicate: 'T -> bool) (list: AuditedList<'T>) =
+            { Items = List.filter predicate list.Items
+              Operations = list.Operations @ [ "filter" ] }
+
+        let items (list: AuditedList<'T>) = list.Items
+        let operations (list: AuditedList<'T>) = list.Operations
+        let clearOperations (list: AuditedList<'T>) = { list with Operations = [] }
+
+    // ============================================
+    // 5. HTTPクライアントデコレータ（型定義）
+    // ============================================
+
+    /// HTTPレスポンス
+    type HttpResponse = { StatusCode: int; Body: string }
+
+    /// HTTPクライアントインターフェース
+    type IHttpClient =
+        abstract member Get: string -> HttpResponse
+
+    /// シンプルなHTTPクライアント
+    type SimpleHttpClient() =
+        interface IHttpClient with
+            member _.Get(url: string) =
+                { StatusCode = 200
+                  Body = sprintf "Response from %s" url }
+
+    /// ログ付きHTTPクライアント（デコレータ）
+    type LoggingHttpClient(client: IHttpClient, collector: LogCollector) =
+        interface IHttpClient with
+            member _.Get(url: string) =
+                collector.Add(sprintf "[HTTP] GET %s" url)
+                let response = client.Get(url)
+                collector.Add(sprintf "[HTTP] Response: %d" response.StatusCode)
+                response
+
+    /// キャッシュ付きHTTPクライアント（デコレータ）
+    type CachingHttpClient(client: IHttpClient) =
+        let cache = System.Collections.Generic.Dictionary<string, HttpResponse>()
+
+        interface IHttpClient with
+            member _.Get(url: string) =
+                if cache.ContainsKey(url) then
+                    cache.[url]
+                else
+                    let response = client.Get(url)
+                    cache.[url] <- response
+                    response
+
+    // ============================================
+    // 6. FunctionBuilder - ビルダースタイル
+    // ============================================
+
+    /// 関数ビルダー
+    type FunctionBuilder<'a, 'b>(f: 'a -> 'b, collector: LogCollector) =
+        let mutable current = f
+
+        member _.WithLogging(name: string) =
+            current <- withLogging name collector current
+            FunctionBuilder(current, collector)
+
+        member _.WithValidation(validator: 'a -> bool, errorMsg: string) =
+            current <- withValidation validator errorMsg current
+            FunctionBuilder(current, collector)
+
+        member _.WithRetry(maxRetries: int) =
+            current <- withRetry maxRetries current
+            FunctionBuilder(current, collector)
+
+        member _.WithTiming(name: string) =
+            current <- withTiming collector name current
+            FunctionBuilder(current, collector)
+
+        member _.Build() = current
+
+    module FunctionBuilder =
+        let create (collector: LogCollector) (f: 'a -> 'b) = FunctionBuilder(f, collector)
+
+    // ============================================
+    // 7. TransactionalOperation - トランザクションデコレータ
+    // ============================================
+
+    /// トランザクション状態
+    type TransactionState =
+        | NotStarted
+        | InProgress
+        | Committed
+        | RolledBack
+
+    /// トランザクション付き操作
+    type TransactionalOperation<'T> =
+        { Operations: ('T -> 'T) list
+          State: TransactionState
+          OriginalValue: 'T option
+          CurrentValue: 'T option }
+
+    module TransactionalOperation =
+        let create () =
+            { Operations = []
+              State = NotStarted
+              OriginalValue = None
+              CurrentValue = None }
+
+        let begin' (value: 'T) (tx: TransactionalOperation<'T>) =
+            { tx with
+                State = InProgress
+                OriginalValue = Some value
+                CurrentValue = Some value }
+
+        let addOperation (op: 'T -> 'T) (tx: TransactionalOperation<'T>) =
+            match tx.State with
+            | InProgress ->
+                let newValue = tx.CurrentValue |> Option.map op
+                { tx with
+                    Operations = tx.Operations @ [ op ]
+                    CurrentValue = newValue }
+            | _ -> tx
+
+        let commit (tx: TransactionalOperation<'T>) =
+            match tx.State with
+            | InProgress -> { tx with State = Committed }
+            | _ -> tx
+
+        let rollback (tx: TransactionalOperation<'T>) =
+            match tx.State with
+            | InProgress ->
+                { tx with
+                    State = RolledBack
+                    CurrentValue = tx.OriginalValue
+                    Operations = [] }
+            | _ -> tx
+
+        let getValue (tx: TransactionalOperation<'T>) = tx.CurrentValue

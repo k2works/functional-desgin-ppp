@@ -684,3 +684,430 @@ module ExpressionPropertyTests =
             match simplified with
             | Expression.Number v -> abs(v - n) < 0.0001
             | _ -> false
+
+
+// ============================================
+// 第8章: Decorator パターン テスト
+// ============================================
+
+open FunctionalDesign.Part3.DecoratorPattern
+
+// ============================================
+// 1. JournaledShape テスト
+// ============================================
+
+module JournaledShapeTests =
+
+    [<Fact>]
+    let ``JournaledShape を作成できる`` () =
+        let circle = Shape.Circle(0.0, 0.0, 5.0)
+        let js = JournaledShape.create circle
+        Assert.Empty(JournaledShape.getJournal js)
+
+    [<Fact>]
+    let ``translate がジャーナルに記録される`` () =
+        let circle = Shape.Circle(0.0, 0.0, 5.0)
+        let js =
+            JournaledShape.create circle
+            |> JournaledShape.translate 2.0 3.0
+        let journal = JournaledShape.getJournal js
+        Assert.Single(journal) |> ignore
+        match journal.[0] with
+        | Translate(dx, dy) ->
+            Assert.Equal(2.0, dx)
+            Assert.Equal(3.0, dy)
+        | _ -> Assert.Fail("Expected Translate")
+
+    [<Fact>]
+    let ``scale がジャーナルに記録される`` () =
+        let circle = Shape.Circle(0.0, 0.0, 5.0)
+        let js =
+            JournaledShape.create circle
+            |> JournaledShape.scale 2.0
+        let journal = JournaledShape.getJournal js
+        Assert.Single(journal) |> ignore
+        match journal.[0] with
+        | Scale factor -> Assert.Equal(2.0, factor)
+        | _ -> Assert.Fail("Expected Scale")
+
+    [<Fact>]
+    let ``複数の操作がジャーナルに記録される`` () =
+        let circle = Shape.Circle(0.0, 0.0, 5.0)
+        let js =
+            JournaledShape.create circle
+            |> JournaledShape.translate 2.0 3.0
+            |> JournaledShape.scale 5.0
+        let journal = JournaledShape.getJournal js
+        Assert.Equal(2, List.length journal)
+
+    [<Fact>]
+    let ``実際の形状が更新される`` () =
+        let circle = Shape.Circle(0.0, 0.0, 5.0)
+        let js =
+            JournaledShape.create circle
+            |> JournaledShape.translate 2.0 3.0
+            |> JournaledShape.scale 2.0
+        match JournaledShape.getShape js with
+        | Shape.Circle(cx, cy, r) ->
+            Assert.Equal(2.0, cx)
+            Assert.Equal(3.0, cy)
+            Assert.Equal(10.0, r)
+        | _ -> Assert.Fail("Expected Circle")
+
+    [<Fact>]
+    let ``clearJournal でジャーナルがクリアされる`` () =
+        let circle = Shape.Circle(0.0, 0.0, 5.0)
+        let js =
+            JournaledShape.create circle
+            |> JournaledShape.translate 2.0 3.0
+            |> JournaledShape.clearJournal
+        Assert.Empty(JournaledShape.getJournal js)
+
+    [<Fact>]
+    let ``replay でジャーナルを再生できる`` () =
+        let circle = Shape.Circle(0.0, 0.0, 5.0)
+        let entries = [ Translate(2.0, 3.0); Scale(2.0) ]
+        let js =
+            JournaledShape.create circle
+            |> JournaledShape.replay entries
+        match JournaledShape.getShape js with
+        | Shape.Circle(cx, cy, r) ->
+            Assert.Equal(2.0, cx)
+            Assert.Equal(3.0, cy)
+            Assert.Equal(10.0, r)
+        | _ -> Assert.Fail("Expected Circle")
+
+    [<Fact>]
+    let ``area がデコレートされた形状の面積を返す`` () =
+        let circle = Shape.Circle(0.0, 0.0, 5.0)
+        let js = JournaledShape.create circle
+        let expected = System.Math.PI * 25.0
+        Assert.Equal(expected, JournaledShape.area js, 5)
+
+// ============================================
+// 2. 関数デコレータテスト
+// ============================================
+
+module FunctionDecoratorsTests =
+
+    [<Fact>]
+    let ``withLogging がログを記録する`` () =
+        let collector = LogCollector()
+        let add10 = fun x -> x + 10
+        let logged = withLogging "add10" collector add10
+        let result = logged 5
+        Assert.Equal(15, result)
+        let logs = collector.GetLogs()
+        Assert.Equal(2, List.length logs)
+        Assert.Contains("called with", logs.[0])
+        Assert.Contains("returned", logs.[1])
+
+    [<Fact>]
+    let ``withRetry が成功するまでリトライする`` () =
+        let mutable attempts = 0
+        let unreliable x =
+            attempts <- attempts + 1
+            if attempts < 3 then failwith "Error"
+            else x * 2
+        let withRetryFn = withRetry 5 unreliable
+        let result = withRetryFn 5
+        Assert.Equal(10, result)
+        Assert.Equal(3, attempts)
+
+    [<Fact>]
+    let ``withRetry がリトライ上限に達すると例外を投げる`` () =
+        let alwaysFails _ = failwith "Always fails"
+        let withRetryFn = withRetry 3 alwaysFails
+        Assert.Throws<System.Exception>(fun () -> withRetryFn 5 |> ignore)
+
+    [<Fact>]
+    let ``withCache がキャッシュする`` () =
+        let mutable callCount = 0
+        let expensive x =
+            callCount <- callCount + 1
+            x * 2
+        let cached = withCache () expensive
+        let _ = cached 5
+        let _ = cached 5
+        let _ = cached 5
+        Assert.Equal(1, callCount)
+
+    [<Fact>]
+    let ``withCache が異なる引数をキャッシュする`` () =
+        let mutable callCount = 0
+        let expensive x =
+            callCount <- callCount + 1
+            x * 2
+        let cached = withCache () expensive
+        let _ = cached 5
+        let _ = cached 6
+        let _ = cached 5
+        Assert.Equal(2, callCount)
+
+    [<Fact>]
+    let ``withValidation が有効な入力を通す`` () =
+        let double' = fun x -> x * 2
+        let validated = withValidation (fun x -> x > 0) "Must be positive" double'
+        Assert.Equal(10, validated 5)
+
+    [<Fact>]
+    let ``withValidation が無効な入力で例外を投げる`` () =
+        let double' = fun x -> x * 2
+        let validated = withValidation (fun x -> x > 0) "Must be positive" double'
+        Assert.Throws<System.ArgumentException>(fun () -> validated -5 |> ignore)
+
+    [<Fact>]
+    let ``withOptionResult が成功時に Some を返す`` () =
+        let double' = fun x -> x * 2
+        let optioned = withOptionResult double'
+        Assert.Equal(Some 10, optioned 5)
+
+    [<Fact>]
+    let ``withOptionResult が失敗時に None を返す`` () =
+        let failing _ = failwith "Error"
+        let optioned = withOptionResult failing
+        Assert.Equal(None, optioned 5)
+
+    [<Fact>]
+    let ``withEitherResult が成功時に Ok を返す`` () =
+        let double' = fun x -> x * 2
+        let eithered = withEitherResult double'
+        match eithered 5 with
+        | Ok v -> Assert.Equal(10, v)
+        | Error _ -> Assert.Fail("Expected Ok")
+
+    [<Fact>]
+    let ``withEitherResult が失敗時に Error を返す`` () =
+        let failing _ = failwith "Error"
+        let eithered = withEitherResult failing
+        match eithered 5 with
+        | Ok _ -> Assert.Fail("Expected Error")
+        | Error _ -> Assert.True(true)
+
+    [<Fact>]
+    let ``withDefault が失敗時にデフォルト値を返す`` () =
+        let failing _ = failwith "Error"
+        let defaulted = withDefault 42 failing
+        Assert.Equal(42, defaulted 5)
+
+    [<Fact>]
+    let ``withTiming が実行時間を記録する`` () =
+        let collector = LogCollector()
+        let slow x =
+            System.Threading.Thread.Sleep(10)
+            x * 2
+        let timed = withTiming collector "slow" slow
+        let _ = timed 5
+        let logs = collector.GetLogs()
+        Assert.Single(logs) |> ignore
+        Assert.Contains("took", logs.[0])
+
+// ============================================
+// 3. デコレータ合成テスト
+// ============================================
+
+module DecoratorCompositionTests =
+
+    [<Fact>]
+    let ``composeDecorators が複数のデコレータを合成する`` () =
+        let collector = LogCollector()
+        let double' = fun x -> x * 2
+        let decorators = [
+            withLogging "double" collector
+            withValidation (fun x -> x > 0) "Must be positive"
+        ]
+        let composed = composeDecorators decorators double'
+        let result = composed 5
+        Assert.Equal(10, result)
+        Assert.Equal(2, collector.GetLogs() |> List.length)
+
+// ============================================
+// 4. AuditedList テスト
+// ============================================
+
+module AuditedListTests =
+
+    [<Fact>]
+    let ``AuditedList.empty が空のリストを作成する`` () =
+        let list = AuditedList.empty<int>
+        Assert.Empty(AuditedList.items list)
+        Assert.Empty(AuditedList.operations list)
+
+    [<Fact>]
+    let ``add が要素を追加して操作を記録する`` () =
+        let list =
+            AuditedList.empty
+            |> AuditedList.add 1
+            |> AuditedList.add 2
+        Assert.Equal<int list>([ 1; 2 ], AuditedList.items list)
+        Assert.Equal(2, AuditedList.operations list |> List.length)
+
+    [<Fact>]
+    let ``remove が要素を削除して操作を記録する`` () =
+        let list =
+            AuditedList.empty
+            |> AuditedList.add 1
+            |> AuditedList.add 2
+            |> AuditedList.remove 1
+        Assert.Equal<int list>([ 2 ], AuditedList.items list)
+        Assert.Equal(3, AuditedList.operations list |> List.length)
+
+    [<Fact>]
+    let ``map が操作を記録する`` () =
+        let list =
+            AuditedList.empty
+            |> AuditedList.add 1
+            |> AuditedList.add 2
+            |> AuditedList.map (fun x -> x * 2)
+        Assert.Equal<int list>([ 2; 4 ], AuditedList.items list)
+        Assert.Contains("map", AuditedList.operations list)
+
+    [<Fact>]
+    let ``filter が操作を記録する`` () =
+        let list =
+            AuditedList.empty
+            |> AuditedList.add 1
+            |> AuditedList.add 2
+            |> AuditedList.add 3
+            |> AuditedList.filter (fun x -> x > 1)
+        Assert.Equal<int list>([ 2; 3 ], AuditedList.items list)
+        Assert.Contains("filter", AuditedList.operations list)
+
+    [<Fact>]
+    let ``clearOperations が操作履歴をクリアする`` () =
+        let list =
+            AuditedList.empty
+            |> AuditedList.add 1
+            |> AuditedList.add 2
+            |> AuditedList.clearOperations
+        Assert.Equal<int list>([ 1; 2 ], AuditedList.items list)
+        Assert.Empty(AuditedList.operations list)
+
+// ============================================
+// 5. HTTPクライアントデコレータテスト
+// ============================================
+
+module HttpClientDecoratorTests =
+
+    [<Fact>]
+    let ``SimpleHttpClient がレスポンスを返す`` () =
+        let client = SimpleHttpClient() :> IHttpClient
+        let response = client.Get("http://example.com")
+        Assert.Equal(200, response.StatusCode)
+        Assert.Contains("example.com", response.Body)
+
+    [<Fact>]
+    let ``LoggingHttpClient がログを記録する`` () =
+        let collector = LogCollector()
+        let inner = SimpleHttpClient() :> IHttpClient
+        let client = LoggingHttpClient(inner, collector) :> IHttpClient
+        let _ = client.Get("http://example.com")
+        let logs = collector.GetLogs()
+        Assert.Equal(2, List.length logs)
+        Assert.Contains("GET", logs.[0])
+        Assert.Contains("Response", logs.[1])
+
+    [<Fact>]
+    let ``CachingHttpClient がキャッシュする`` () =
+        let mutable callCount = 0
+        let inner =
+            { new IHttpClient with
+                member _.Get(url) =
+                    callCount <- callCount + 1
+                    { StatusCode = 200; Body = url } }
+        let client = CachingHttpClient(inner) :> IHttpClient
+        let _ = client.Get("http://example.com")
+        let _ = client.Get("http://example.com")
+        Assert.Equal(1, callCount)
+
+    [<Fact>]
+    let ``デコレータを組み合わせられる`` () =
+        let collector = LogCollector()
+        let inner = SimpleHttpClient() :> IHttpClient
+        let cached = CachingHttpClient(inner) :> IHttpClient
+        let logged = LoggingHttpClient(cached, collector) :> IHttpClient
+        let _ = logged.Get("http://example.com")
+        let _ = logged.Get("http://example.com")
+        // ログは2回の呼び出しで4件（各呼び出しにつき2件）
+        Assert.Equal(4, collector.GetLogs() |> List.length)
+
+// ============================================
+// 6. FunctionBuilder テスト
+// ============================================
+
+module FunctionBuilderTests =
+
+    [<Fact>]
+    let ``FunctionBuilder でデコレータを適用できる`` () =
+        let collector = LogCollector()
+        let double' x = x * 2
+        let fn =
+            FunctionBuilder.create collector double'
+            |> fun b -> b.WithLogging("double")
+            |> fun b -> b.Build()
+        let result = fn 5
+        Assert.Equal(10, result)
+        Assert.Equal(2, collector.GetLogs() |> List.length)
+
+    [<Fact>]
+    let ``FunctionBuilder で複数のデコレータを適用できる`` () =
+        let collector = LogCollector()
+        let double' x = x * 2
+        let fn =
+            FunctionBuilder.create collector double'
+            |> fun b -> b.WithValidation((fun x -> x > 0), "Must be positive")
+            |> fun b -> b.WithLogging("double")
+            |> fun b -> b.Build()
+        let result = fn 5
+        Assert.Equal(10, result)
+
+// ============================================
+// 7. TransactionalOperation テスト
+// ============================================
+
+module TransactionalOperationTests =
+
+    [<Fact>]
+    let ``トランザクションを開始できる`` () =
+        let tx =
+            TransactionalOperation.create ()
+            |> TransactionalOperation.begin' 10
+        Assert.Equal(TransactionState.InProgress, tx.State)
+        Assert.Equal(Some 10, TransactionalOperation.getValue tx)
+
+    [<Fact>]
+    let ``操作を追加できる`` () =
+        let tx =
+            TransactionalOperation.create ()
+            |> TransactionalOperation.begin' 10
+            |> TransactionalOperation.addOperation (fun x -> x + 5)
+        Assert.Equal(Some 15, TransactionalOperation.getValue tx)
+
+    [<Fact>]
+    let ``コミットできる`` () =
+        let tx =
+            TransactionalOperation.create ()
+            |> TransactionalOperation.begin' 10
+            |> TransactionalOperation.addOperation (fun x -> x + 5)
+            |> TransactionalOperation.commit
+        Assert.Equal(TransactionState.Committed, tx.State)
+        Assert.Equal(Some 15, TransactionalOperation.getValue tx)
+
+    [<Fact>]
+    let ``ロールバックで元の値に戻る`` () =
+        let tx =
+            TransactionalOperation.create ()
+            |> TransactionalOperation.begin' 10
+            |> TransactionalOperation.addOperation (fun x -> x + 5)
+            |> TransactionalOperation.addOperation (fun x -> x * 2)
+            |> TransactionalOperation.rollback
+        Assert.Equal(TransactionState.RolledBack, tx.State)
+        Assert.Equal(Some 10, TransactionalOperation.getValue tx)
+
+    [<Fact>]
+    let ``開始前は操作を追加できない`` () =
+        let tx =
+            TransactionalOperation.create ()
+            |> TransactionalOperation.addOperation (fun x -> x + 5)
+        Assert.Equal(TransactionState.NotStarted, tx.State)
+        Assert.Equal(None, TransactionalOperation.getValue tx)
