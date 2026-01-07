@@ -115,3 +115,4 @@ nav:
           - 16. 給与計算システム: scala/16-payroll-system.md
           - 17. レンタルビデオシステム: scala/17-video-rental-system.md
           - 18. 並行処理システム: scala/18-concurrency-system.md
+          - 19. Wa-Tor シミュレーション: scala/19-wator-simulation.md
