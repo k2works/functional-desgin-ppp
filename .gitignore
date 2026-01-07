@@ -155,3 +155,4 @@ pom.xml.asc
 
 /app/scala/*/target/
 /app/scala/*/project/target/
+app/haskell/**/dist-newstyle/

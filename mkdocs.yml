@@ -1,8 +1,8 @@
 site_name: 関数型デザイン - 原則、パターン、実践
 site_description: 関数型プログラミングにおける設計原則とデザインパターンを実践的に学ぶガイド
 site_author: Project Team
-repo_url: https://github.com/k2works/grokkingfp-excersice
-repo_name: grokkingfp-excersice
+repo_url: https://github.com/k2works/functional-desgin-ppp
+repo_name: functional-desgin-ppp
 docs_dir: docs/article
 
 theme:
@@ -151,3 +151,9 @@ nav:
           - 20. パターン間の相互作用: fsharp/20-pattern-interactions.md
           - 21. ベストプラクティス: fsharp/21-best-practices.md
           - 22. OO から FP への移行: fsharp/22-oo-to-fp-migration.md
+  - Haskell:
+      - 概要: haskell/index.md
+      - Part 1 - 基礎原則:
+          - 01. 不変性とデータ変換: haskell/01-immutability-and-data-transformation.md
+          - 02. 関数合成と高階関数: haskell/02-function-composition.md
+          - 03. 多態性とディスパッチ: haskell/03-polymorphism.md
