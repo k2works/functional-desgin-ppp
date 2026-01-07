@@ -134,3 +134,5 @@ nav:
           - 07. Composite パターン: fsharp/07-composite-pattern.md
           - 08. Decorator パターン: fsharp/08-decorator-pattern.md
           - 09. Adapter パターン: fsharp/09-adapter-pattern.md
+      - Part 4 - デザインパターン（振る舞い）:
+          - 10. Strategy パターン: fsharp/10-strategy-pattern.md
