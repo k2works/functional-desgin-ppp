@@ -1,0 +1,44 @@
+cabal-version:      3.0
+name:               functional-design-part3
+version:            0.1.0.0
+synopsis:           Functional Design Part 3 - Structural Patterns
+description:        Haskell implementation of Functional Design patterns - Part 3: Composite, Decorator, and Adapter patterns
+license:            MIT
+author:             k2works
+maintainer:         kakimomokuri@gmail.com
+build-type:         Simple
+extra-doc-files:    CHANGELOG.md
+
+common warnings
+    ghc-options: -Wall
+
+library
+    import:           warnings
+    exposed-modules:  
+        CompositePattern
+        DecoratorPattern
+        AdapterPattern
+    build-depends:    
+        base >=4.14 && <5,
+        containers >=0.6,
+        text >=1.2
+    hs-source-dirs:   src
+    default-language: Haskell2010
+
+test-suite functional-design-part3-test
+    import:           warnings
+    default-language: Haskell2010
+    type:             exitcode-stdio-1.0
+    hs-source-dirs:   test
+    main-is:          Spec.hs
+    other-modules:
+        CompositePatternSpec
+        DecoratorPatternSpec
+        AdapterPatternSpec
+    build-depends:
+        base >=4.14 && <5,
+        containers >=0.6,
+        text >=1.2,
+        hspec >=2.7,
+        QuickCheck >=2.14,
+        functional-design-part3

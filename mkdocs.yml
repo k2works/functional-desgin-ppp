@@ -161,3 +161,7 @@ nav:
           - 04. データバリデーション: haskell/04-data-validation.md
           - 05. プロパティベーステスト: haskell/05-property-based-testing.md
           - 06. TDD と関数型: haskell/06-tdd-functional.md
+      - Part 3 - 構造パターン:
+          - 07. Composite パターン: haskell/07-composite-pattern.md
+          - 08. Decorator パターン: haskell/08-decorator-pattern.md
+          - 09. Adapter パターン: haskell/09-adapter-pattern.md

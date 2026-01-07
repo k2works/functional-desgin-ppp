@@ -16,15 +16,15 @@ Haskell は純粋関数型言語として、関数型プログラミングの概
 
 ### 第2部：仕様とテスト（Chapters 4-6）
 
-4. データ検証 - カスタムバリデータ、Applicative スタイル
-5. プロパティベーステスト - QuickCheck
-6. TDD と関数型 - HSpec によるテスト駆動開発
+4. [データバリデーション](04-data-validation.md) - カスタムバリデータ、Applicative スタイル
+5. [プロパティベーステスト](05-property-based-testing.md) - QuickCheck
+6. [TDD と関数型](06-tdd-functional.md) - HSpec によるテスト駆動開発
 
 ### 第3部：構造パターン（Chapters 7-9）
 
-7. Composite パターン - 再帰的データ構造
-8. Decorator パターン - 関数ラッパー
-9. Adapter パターン - 型変換、newtypes
+7. [Composite パターン](07-composite-pattern.md) - 再帰的データ構造
+8. [Decorator パターン](08-decorator-pattern.md) - 関数ラッパー
+9. [Adapter パターン](09-adapter-pattern.md) - 型変換、newtypes
 
 ### 第4部：振る舞いパターン（Chapters 10-14）
 
