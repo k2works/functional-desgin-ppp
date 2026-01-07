@@ -153,3 +153,5 @@ pom.xml.asc
 .result
 .direnv/
 
+/app/scala/part1/target/
+/app/scala/part1/project/target/

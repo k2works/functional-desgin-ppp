@@ -97,3 +97,4 @@ nav:
           - 3. 多態性の実現方法: scala/03-polymorphism.md
       - 第2部 - 仕様とテスト:
           - 4. データ検証: scala/04-data-validation.md
+          - 5. プロパティベーステスト: scala/05-property-based-testing.md
