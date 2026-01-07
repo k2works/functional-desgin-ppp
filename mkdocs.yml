@@ -109,3 +109,4 @@ nav:
           - 12. Visitor パターン: scala/12-visitor-pattern.md
       - 第5部 - 生成パターン:
           - 13. Abstract Factory パターン: scala/13-abstract-factory-pattern.md
+          - 14. Abstract Server パターン: scala/14-abstract-server-pattern.md
