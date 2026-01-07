@@ -118,3 +118,4 @@ nav:
           - 19. Wa-Tor シミュレーション: scala/19-wator-simulation.md
       - 第7部 - まとめと応用:
           - 20. パターン間の相互作用: scala/20-pattern-interactions.md
+          - 21. ベストプラクティス: scala/21-best-practices.md
