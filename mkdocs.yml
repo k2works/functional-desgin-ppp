@@ -129,3 +129,4 @@ nav:
       - Part 2 - 仕様とテスト:
           - 04. データバリデーション: fsharp/04-data-validation.md
           - 05. プロパティベーステスト: fsharp/05-property-based-testing.md
+          - 06. TDD in FP: fsharp/06-tdd-functional.md

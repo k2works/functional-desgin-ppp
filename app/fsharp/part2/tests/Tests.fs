@@ -682,3 +682,481 @@ module OraclePropertyTests =
         let f x = x * 2
         map f list = List.map f list
 
+
+// ============================================
+// 第6章: TDD in FP テスト
+// ============================================
+
+open FunctionalDesign.Part2.TddFunctional
+
+// ============================================
+// 1. FizzBuzz テスト
+// ============================================
+
+module FizzBuzzTests =
+
+    [<Fact>]
+    let ``fizzbuzz 1は"1"を返す`` () =
+        Assert.Equal("1", fizzbuzz 1)
+
+    [<Fact>]
+    let ``fizzbuzz 2は"2"を返す`` () =
+        Assert.Equal("2", fizzbuzz 2)
+
+    [<Fact>]
+    let ``fizzbuzz 3は"Fizz"を返す`` () =
+        Assert.Equal("Fizz", fizzbuzz 3)
+
+    [<Fact>]
+    let ``fizzbuzz 5は"Buzz"を返す`` () =
+        Assert.Equal("Buzz", fizzbuzz 5)
+
+    [<Fact>]
+    let ``fizzbuzz 15は"FizzBuzz"を返す`` () =
+        Assert.Equal("FizzBuzz", fizzbuzz 15)
+
+    [<Fact>]
+    let ``fizzbuzz 30は"FizzBuzz"を返す`` () =
+        Assert.Equal("FizzBuzz", fizzbuzz 30)
+
+    [<Fact>]
+    let ``fizzbuzzSequence 15は正しい列を返す`` () =
+        let expected = ["1"; "2"; "Fizz"; "4"; "Buzz"; "Fizz"; "7"; "8"; "Fizz"; "Buzz"; "11"; "Fizz"; "13"; "14"; "FizzBuzz"]
+        Assert.Equal<string list>(expected, fizzbuzzSequence 15)
+
+    [<Property>]
+    let ``3の倍数は常にFizzを含む`` (n: FsCheck.PositiveInt) =
+        let num = n.Get * 3
+        let result = fizzbuzz num
+        result.Contains("Fizz")
+
+    [<Property>]
+    let ``5の倍数は常にBuzzを含む`` (n: FsCheck.PositiveInt) =
+        let num = n.Get * 5
+        let result = fizzbuzz num
+        result.Contains("Buzz")
+
+// ============================================
+// 2. ローマ数字変換テスト
+// ============================================
+
+module RomanNumeralsTests =
+
+    [<Fact>]
+    let ``toRoman 1はIを返す`` () =
+        Assert.Equal("I", toRoman 1)
+
+    [<Fact>]
+    let ``toRoman 4はIVを返す`` () =
+        Assert.Equal("IV", toRoman 4)
+
+    [<Fact>]
+    let ``toRoman 5はVを返す`` () =
+        Assert.Equal("V", toRoman 5)
+
+    [<Fact>]
+    let ``toRoman 9はIXを返す`` () =
+        Assert.Equal("IX", toRoman 9)
+
+    [<Fact>]
+    let ``toRoman 10はXを返す`` () =
+        Assert.Equal("X", toRoman 10)
+
+    [<Fact>]
+    let ``toRoman 40はXLを返す`` () =
+        Assert.Equal("XL", toRoman 40)
+
+    [<Fact>]
+    let ``toRoman 50はLを返す`` () =
+        Assert.Equal("L", toRoman 50)
+
+    [<Fact>]
+    let ``toRoman 90はXCを返す`` () =
+        Assert.Equal("XC", toRoman 90)
+
+    [<Fact>]
+    let ``toRoman 100はCを返す`` () =
+        Assert.Equal("C", toRoman 100)
+
+    [<Fact>]
+    let ``toRoman 400はCDを返す`` () =
+        Assert.Equal("CD", toRoman 400)
+
+    [<Fact>]
+    let ``toRoman 500はDを返す`` () =
+        Assert.Equal("D", toRoman 500)
+
+    [<Fact>]
+    let ``toRoman 900はCMを返す`` () =
+        Assert.Equal("CM", toRoman 900)
+
+    [<Fact>]
+    let ``toRoman 1000はMを返す`` () =
+        Assert.Equal("M", toRoman 1000)
+
+    [<Fact>]
+    let ``toRoman 1994はMCMXCIVを返す`` () =
+        Assert.Equal("MCMXCIV", toRoman 1994)
+
+    [<Fact>]
+    let ``toRoman 3999はMMMCMXCIXを返す`` () =
+        Assert.Equal("MMMCMXCIX", toRoman 3999)
+
+    [<Fact>]
+    let ``fromRoman IVは4を返す`` () =
+        Assert.Equal(4, fromRoman "IV")
+
+    [<Fact>]
+    let ``fromRoman MCMXCIVは1994を返す`` () =
+        Assert.Equal(1994, fromRoman "MCMXCIV")
+
+    [<Fact>]
+    let ``toRomanとfromRomanは逆関数（1-100）`` () =
+        for n in 1..100 do
+            Assert.Equal(n, fromRoman (toRoman n))
+
+    [<Fact>]
+    let ``toRomanとfromRomanは逆関数（3900-3999）`` () =
+        for n in 3900..3999 do
+            Assert.Equal(n, fromRoman (toRoman n))
+
+// ============================================
+// 3. ボウリングスコアテスト
+// ============================================
+
+module BowlingTests =
+
+    [<Fact>]
+    let ``ガタースコアは0`` () =
+        Assert.Equal(0, bowlingScore (List.replicate 20 0))
+
+    [<Fact>]
+    let ``すべて1ピンは20点`` () =
+        Assert.Equal(20, bowlingScore (List.replicate 20 1))
+
+    [<Fact>]
+    let ``スペアの後の投球はボーナス`` () =
+        let rolls = [ 5; 5; 3; 0 ] @ List.replicate 16 0
+        Assert.Equal(16, bowlingScore rolls)
+
+    [<Fact>]
+    let ``ストライクの後の2投はボーナス`` () =
+        let rolls = [ 10; 3; 4 ] @ List.replicate 16 0
+        Assert.Equal(24, bowlingScore rolls)
+
+    [<Fact>]
+    let ``パーフェクトゲームは300点`` () =
+        Assert.Equal(300, bowlingScore (List.replicate 12 10))
+
+    [<Fact>]
+    let ``9フレームのストライク後にスペア`` () =
+        // 9ストライク + スペア(5,5) + ボーナス3
+        let rolls = List.replicate 9 10 @ [ 5; 5; 3 ]
+        // 最初の9フレームは各30点=270、10フレームは5+5+3=13
+        // ただし9フレーム目は10+5+5=20、10フレーム目は5+5+3=13
+        Assert.Equal(268, bowlingScore rolls)
+
+// ============================================
+// 4. 素数テスト
+// ============================================
+
+module PrimesTests =
+
+    [<Fact>]
+    let ``0は素数ではない`` () =
+        Assert.False(isPrime 0)
+
+    [<Fact>]
+    let ``1は素数ではない`` () =
+        Assert.False(isPrime 1)
+
+    [<Fact>]
+    let ``2は素数`` () =
+        Assert.True(isPrime 2)
+
+    [<Fact>]
+    let ``3は素数`` () =
+        Assert.True(isPrime 3)
+
+    [<Fact>]
+    let ``4は素数ではない`` () =
+        Assert.False(isPrime 4)
+
+    [<Fact>]
+    let ``97は素数`` () =
+        Assert.True(isPrime 97)
+
+    [<Fact>]
+    let ``primesUpTo 20は正しい素数リストを返す`` () =
+        let expected = [ 2; 3; 5; 7; 11; 13; 17; 19 ]
+        Assert.Equal<int list>(expected, primesUpTo 20)
+
+    [<Fact>]
+    let ``primeFactors 24は2,2,2,3を返す`` () =
+        let expected = [ 2; 2; 2; 3 ]
+        Assert.Equal<int list>(expected, primeFactors 24)
+
+    [<Fact>]
+    let ``primeFactors 100は2,2,5,5を返す`` () =
+        let expected = [ 2; 2; 5; 5 ]
+        Assert.Equal<int list>(expected, primeFactors 100)
+
+    [<Fact>]
+    let ``primeFactorsの積は元の数に等しい（2-100）`` () =
+        for n in 2..100 do
+            let factors = primeFactors n
+            let product = factors |> List.fold (*) 1
+            Assert.Equal(n, product)
+
+// ============================================
+// 5. スタックテスト
+// ============================================
+
+module StackTests =
+
+    [<Fact>]
+    let ``空のスタックはisEmptyがtrue`` () =
+        let stack = Stack.empty<int>
+        Assert.True(Stack.isEmpty stack)
+
+    [<Fact>]
+    let ``pushするとisEmptyがfalse`` () =
+        let stack = Stack.empty |> Stack.push 1
+        Assert.False(Stack.isEmpty stack)
+
+    [<Fact>]
+    let ``LIFO順序で動作する`` () =
+        let stack =
+            Stack.empty
+            |> Stack.push "a"
+            |> Stack.push "b"
+            |> Stack.push "c"
+
+        match Stack.pop stack with
+        | Some (v1, s1) ->
+            Assert.Equal("c", v1)
+            match Stack.pop s1 with
+            | Some (v2, s2) ->
+                Assert.Equal("b", v2)
+                match Stack.pop s2 with
+                | Some (v3, s3) ->
+                    Assert.Equal("a", v3)
+                    Assert.True(Stack.isEmpty s3)
+                | None -> Assert.Fail("Expected value")
+            | None -> Assert.Fail("Expected value")
+        | None -> Assert.Fail("Expected value")
+
+    [<Fact>]
+    let ``peekはスタックを変更しない`` () =
+        let stack = Stack.empty |> Stack.push 1 |> Stack.push 2
+        Assert.Equal(Some 2, Stack.peek stack)
+        Assert.Equal(2, Stack.size stack)
+
+    [<Fact>]
+    let ``空のスタックのpopはNoneを返す`` () =
+        let stack = Stack.empty<int>
+        Assert.Equal(None, Stack.pop stack)
+
+// ============================================
+// 6. キューテスト
+// ============================================
+
+module QueueTests =
+
+    [<Fact>]
+    let ``空のキューはisEmptyがtrue`` () =
+        let queue = Queue.empty<int>
+        Assert.True(Queue.isEmpty queue)
+
+    [<Fact>]
+    let ``enqueueするとisEmptyがfalse`` () =
+        let queue = Queue.empty |> Queue.enqueue 1
+        Assert.False(Queue.isEmpty queue)
+
+    [<Fact>]
+    let ``FIFO順序で動作する`` () =
+        let queue =
+            Queue.empty
+            |> Queue.enqueue "a"
+            |> Queue.enqueue "b"
+            |> Queue.enqueue "c"
+
+        match Queue.dequeue queue with
+        | Some (v1, q1) ->
+            Assert.Equal("a", v1)
+            match Queue.dequeue q1 with
+            | Some (v2, q2) ->
+                Assert.Equal("b", v2)
+                match Queue.dequeue q2 with
+                | Some (v3, q3) ->
+                    Assert.Equal("c", v3)
+                    Assert.True(Queue.isEmpty q3)
+                | None -> Assert.Fail("Expected value")
+            | None -> Assert.Fail("Expected value")
+        | None -> Assert.Fail("Expected value")
+
+    [<Fact>]
+    let ``空のキューのdequeueはNoneを返す`` () =
+        let queue = Queue.empty<int>
+        Assert.Equal(None, Queue.dequeue queue)
+
+// ============================================
+// 7. 文字列電卓テスト
+// ============================================
+
+module StringCalculatorTests =
+
+    [<Fact>]
+    let ``空文字列は0を返す`` () =
+        Assert.Equal(0, StringCalculator.add "")
+
+    [<Fact>]
+    let ``単一の数値はその値を返す`` () =
+        Assert.Equal(5, StringCalculator.add "5")
+
+    [<Fact>]
+    let ``カンマ区切りの数値を合計する`` () =
+        Assert.Equal(6, StringCalculator.add "1,2,3")
+
+    [<Fact>]
+    let ``改行区切りも処理する`` () =
+        Assert.Equal(6, StringCalculator.add "1\n2,3")
+
+    [<Fact>]
+    let ``カスタム区切り文字を使用できる`` () =
+        Assert.Equal(3, StringCalculator.add "//;\n1;2")
+
+    [<Fact>]
+    let ``負の数は例外をスローする`` () =
+        let ex = Assert.Throws<System.ArgumentException>(fun () ->
+            StringCalculator.add "1,-2,3" |> ignore)
+        Assert.Contains("-2", ex.Message)
+
+    [<Fact>]
+    let ``1000より大きい数は無視する`` () =
+        Assert.Equal(2, StringCalculator.add "2,1001")
+
+    [<Fact>]
+    let ``1000は含む`` () =
+        Assert.Equal(1002, StringCalculator.add "2,1000")
+
+// ============================================
+// 8. 税計算テスト
+// ============================================
+
+module TaxCalculatorTests =
+
+    [<Fact>]
+    let ``calculateTotalWithTaxは税込み総額を計算する`` () =
+        let items =
+            [ { Name = "商品A"; Price = 1000m }
+              { Name = "商品B"; Price = 2000m } ]
+        let result = TaxCalculator.calculateTotalWithTax items 0.1m
+
+        Assert.Equal(3000m, result.Subtotal)
+        Assert.Equal(300m, result.Tax)
+        Assert.Equal(3300m, result.Total)
+
+    [<Fact>]
+    let ``空のアイテムリストは0`` () =
+        let result = TaxCalculator.calculateTotalWithTax [] 0.1m
+        Assert.Equal(0m, result.Total)
+
+// ============================================
+// 9. 送料計算テスト
+// ============================================
+
+module ShippingCalculatorTests =
+
+    [<Fact>]
+    let ``10000円以上は送料無料`` () =
+        let order = { Total = 10000m; Weight = 10.0; Region = Local }
+        Assert.Equal(0, ShippingCalculator.calculateShipping order)
+
+    [<Fact>]
+    let ``Local軽量は300円`` () =
+        let order = { Total = 5000m; Weight = 3.0; Region = Local }
+        Assert.Equal(300, ShippingCalculator.calculateShipping order)
+
+    [<Fact>]
+    let ``Local重量は500円`` () =
+        let order = { Total = 5000m; Weight = 6.0; Region = Local }
+        Assert.Equal(500, ShippingCalculator.calculateShipping order)
+
+    [<Fact>]
+    let ``Domestic軽量は500円`` () =
+        let order = { Total = 5000m; Weight = 3.0; Region = Domestic }
+        Assert.Equal(500, ShippingCalculator.calculateShipping order)
+
+    [<Fact>]
+    let ``Domestic重量は800円`` () =
+        let order = { Total = 5000m; Weight = 6.0; Region = Domestic }
+        Assert.Equal(800, ShippingCalculator.calculateShipping order)
+
+    [<Fact>]
+    let ``International軽量は2000円`` () =
+        let order = { Total = 5000m; Weight = 3.0; Region = International }
+        Assert.Equal(2000, ShippingCalculator.calculateShipping order)
+
+    [<Fact>]
+    let ``International重量は3000円`` () =
+        let order = { Total = 5000m; Weight = 6.0; Region = International }
+        Assert.Equal(3000, ShippingCalculator.calculateShipping order)
+
+// ============================================
+// 10. パスワードバリデーターテスト
+// ============================================
+
+module PasswordValidatorTests =
+
+    [<Fact>]
+    let ``有効なパスワードはOkを返す`` () =
+        let result = PasswordValidator.validateWithDefaults "Password1"
+        Assert.True(Result.isOk result)
+
+    [<Fact>]
+    let ``短すぎるパスワードはエラー`` () =
+        let result = PasswordValidator.validateWithDefaults "Pass1"
+        match result with
+        | Error errors ->
+            Assert.Contains("Password must be at least 8 characters", errors)
+        | Ok _ -> Assert.Fail("Expected error")
+
+    [<Fact>]
+    let ``大文字がないパスワードはエラー`` () =
+        let result = PasswordValidator.validateWithDefaults "password1"
+        match result with
+        | Error errors ->
+            Assert.Contains("Password must contain at least one uppercase letter", errors)
+        | Ok _ -> Assert.Fail("Expected error")
+
+    [<Fact>]
+    let ``小文字がないパスワードはエラー`` () =
+        let result = PasswordValidator.validateWithDefaults "PASSWORD1"
+        match result with
+        | Error errors ->
+            Assert.Contains("Password must contain at least one lowercase letter", errors)
+        | Ok _ -> Assert.Fail("Expected error")
+
+    [<Fact>]
+    let ``数字がないパスワードはエラー`` () =
+        let result = PasswordValidator.validateWithDefaults "Password"
+        match result with
+        | Error errors ->
+            Assert.Contains("Password must contain at least one digit", errors)
+        | Ok _ -> Assert.Fail("Expected error")
+
+    [<Fact>]
+    let ``複数のエラーが蓄積される`` () =
+        let result = PasswordValidator.validateWithDefaults "ab"
+        match result with
+        | Error errors ->
+            Assert.True(errors.Length >= 3) // 短い、大文字なし、数字なし
+        | Ok _ -> Assert.Fail("Expected error")
+
+    [<Fact>]
+    let ``カスタムルールで検証できる`` () =
+        let rules = [ PasswordValidator.minLength 4; PasswordValidator.hasDigit ]
+        let result = PasswordValidator.validate "abc1" rules
+        Assert.True(Result.isOk result)
+
