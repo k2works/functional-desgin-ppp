@@ -120,3 +120,5 @@ nav:
           - 20. パターン間の相互作用: scala/20-pattern-interactions.md
           - 21. ベストプラクティス: scala/21-best-practices.md
           - 22. OO から FP への移行: scala/22-oo-to-fp-migration.md
+  - F#:
+      - 概要: fsharp/index.md

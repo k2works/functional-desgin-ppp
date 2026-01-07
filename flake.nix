@@ -17,6 +17,7 @@
           node = import ./environments/node/shell.nix { inherit packages; };
           clojure = import ./environments/clojure/shell.nix { inherit packages; };
           scala = import ./environments/scala/shell.nix { inherit packages; };
+          fsharp = import ./environments/fsharp/shell.nix { inherit packages; };
         };
       }
     );
