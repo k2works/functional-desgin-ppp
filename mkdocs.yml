@@ -172,3 +172,7 @@ nav:
       - Part 5 - 生成パターン:
           - 13. Abstract Factory パターン: haskell/13-abstract-factory-pattern.md
           - 14. Abstract Server パターン: haskell/14-abstract-server-pattern.md
+      - Part 6 - ケーススタディ:
+          - 15. ゴシップ好きなバスの運転手: haskell/15-gossiping-bus-drivers.md
+          - 16. 給与計算システム: haskell/16-payroll-system.md
+          - 17. レンタルビデオシステム: haskell/17-video-rental-system.md
