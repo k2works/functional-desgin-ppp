@@ -116,3 +116,5 @@ nav:
           - 17. レンタルビデオシステム: scala/17-video-rental-system.md
           - 18. 並行処理システム: scala/18-concurrency-system.md
           - 19. Wa-Tor シミュレーション: scala/19-wator-simulation.md
+      - 第7部 - まとめと応用:
+          - 20. パターン間の相互作用: scala/20-pattern-interactions.md
