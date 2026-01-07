@@ -114,3 +114,4 @@ nav:
           - 15. ゴシップ好きなバスの運転手: scala/15-gossiping-bus-drivers.md
           - 16. 給与計算システム: scala/16-payroll-system.md
           - 17. レンタルビデオシステム: scala/17-video-rental-system.md
+          - 18. 並行処理システム: scala/18-concurrency-system.md
