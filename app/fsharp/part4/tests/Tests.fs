@@ -657,3 +657,292 @@ module CalculatorTests =
         let calc = Calculator.execute (CalculatorCommand.Add 10.0m) calc
         let calc = Calculator.execute (CalculatorCommand.Clear) calc
         Assert.Equal(0.0m, calc.Value)
+
+// ============================================
+// Chapter 12: Visitor パターン テスト
+// ============================================
+
+open FunctionalDesign.Part4.VisitorPattern
+
+// ============================================
+// 1. Shape テスト
+// ============================================
+
+module ShapeTests =
+
+    [<Fact>]
+    let ``円を移動できる`` () =
+        let circle = Shape.Circle((10.0, 20.0), 5.0)
+        let moved = Shape.translate 5.0 10.0 circle
+        match moved with
+        | Shape.Circle((x, y), r) ->
+            Assert.Equal(15.0, x)
+            Assert.Equal(30.0, y)
+            Assert.Equal(5.0, r)
+        | _ -> Assert.True(false, "Should be circle")
+
+    [<Fact>]
+    let ``円を拡大できる`` () =
+        let circle = Shape.Circle((10.0, 20.0), 5.0)
+        let scaled = Shape.scale 2.0 circle
+        match scaled with
+        | Shape.Circle(_, r) -> Assert.Equal(10.0, r)
+        | _ -> Assert.True(false, "Should be circle")
+
+    [<Fact>]
+    let ``正方形を移動できる`` () =
+        let square = Shape.Square((0.0, 0.0), 10.0)
+        let moved = Shape.translate 5.0 5.0 square
+        match moved with
+        | Shape.Square((x, y), s) ->
+            Assert.Equal(5.0, x)
+            Assert.Equal(5.0, y)
+            Assert.Equal(10.0, s)
+        | _ -> Assert.True(false, "Should be square")
+
+// ============================================
+// 2. JsonVisitor テスト
+// ============================================
+
+module JsonVisitorTests =
+
+    [<Fact>]
+    let ``円をJSONに変換できる`` () =
+        let circle = Shape.Circle((10.0, 20.0), 5.0)
+        let json = JsonVisitor.toJson circle
+        Assert.Contains("circle", json)
+        Assert.Contains("center", json)
+        Assert.Contains("radius", json)
+
+    [<Fact>]
+    let ``正方形をJSONに変換できる`` () =
+        let square = Shape.Square((0.0, 0.0), 10.0)
+        let json = JsonVisitor.toJson square
+        Assert.Contains("square", json)
+        Assert.Contains("side", json)
+
+    [<Fact>]
+    let ``長方形をJSONに変換できる`` () =
+        let rect = Shape.Rectangle((0.0, 0.0), 20.0, 10.0)
+        let json = JsonVisitor.toJson rect
+        Assert.Contains("rectangle", json)
+        Assert.Contains("width", json)
+        Assert.Contains("height", json)
+
+    [<Fact>]
+    let ``複数の図形をJSON配列に変換できる`` () =
+        let shapes = [
+            Shape.Circle((0.0, 0.0), 5.0)
+            Shape.Square((10.0, 10.0), 5.0)
+        ]
+        let json = JsonVisitor.shapesToJson shapes
+        Assert.StartsWith("[", json)
+        Assert.EndsWith("]", json)
+        Assert.Contains("circle", json)
+        Assert.Contains("square", json)
+
+// ============================================
+// 3. XmlVisitor テスト
+// ============================================
+
+module XmlVisitorTests =
+
+    [<Fact>]
+    let ``円をXMLに変換できる`` () =
+        let circle = Shape.Circle((10.0, 20.0), 5.0)
+        let xml = XmlVisitor.toXml circle
+        Assert.Contains("<circle>", xml)
+        Assert.Contains("<center", xml)
+        Assert.Contains("<radius>", xml)
+
+    [<Fact>]
+    let ``正方形をXMLに変換できる`` () =
+        let square = Shape.Square((0.0, 0.0), 10.0)
+        let xml = XmlVisitor.toXml square
+        Assert.Contains("<square>", xml)
+        Assert.Contains("<side>", xml)
+
+    [<Fact>]
+    let ``複数の図形をXMLに変換できる`` () =
+        let shapes = [
+            Shape.Circle((0.0, 0.0), 5.0)
+            Shape.Square((10.0, 10.0), 5.0)
+        ]
+        let xml = XmlVisitor.shapesToXml shapes
+        Assert.Contains("<shapes>", xml)
+        Assert.Contains("</shapes>", xml)
+
+// ============================================
+// 4. AreaVisitor テスト
+// ============================================
+
+module AreaVisitorTests =
+
+    [<Fact>]
+    let ``円の面積を計算できる`` () =
+        let circle = Shape.Circle((0.0, 0.0), 5.0)
+        let area = AreaVisitor.calculateArea circle
+        Assert.Equal(System.Math.PI * 25.0, area, 5)
+
+    [<Fact>]
+    let ``正方形の面積を計算できる`` () =
+        let square = Shape.Square((0.0, 0.0), 10.0)
+        let area = AreaVisitor.calculateArea square
+        Assert.Equal(100.0, area)
+
+    [<Fact>]
+    let ``長方形の面積を計算できる`` () =
+        let rect = Shape.Rectangle((0.0, 0.0), 20.0, 10.0)
+        let area = AreaVisitor.calculateArea rect
+        Assert.Equal(200.0, area)
+
+    [<Fact>]
+    let ``合計面積を計算できる`` () =
+        let shapes = [
+            Shape.Square((0.0, 0.0), 10.0)  // 100
+            Shape.Rectangle((0.0, 0.0), 20.0, 5.0)  // 100
+        ]
+        let total = AreaVisitor.totalArea shapes
+        Assert.Equal(200.0, total)
+
+// ============================================
+// 5. PerimeterVisitor テスト
+// ============================================
+
+module PerimeterVisitorTests =
+
+    [<Fact>]
+    let ``円の周囲長を計算できる`` () =
+        let circle = Shape.Circle((0.0, 0.0), 5.0)
+        let perimeter = PerimeterVisitor.calculatePerimeter circle
+        Assert.Equal(2.0 * System.Math.PI * 5.0, perimeter, 5)
+
+    [<Fact>]
+    let ``正方形の周囲長を計算できる`` () =
+        let square = Shape.Square((0.0, 0.0), 10.0)
+        let perimeter = PerimeterVisitor.calculatePerimeter square
+        Assert.Equal(40.0, perimeter)
+
+    [<Fact>]
+    let ``長方形の周囲長を計算できる`` () =
+        let rect = Shape.Rectangle((0.0, 0.0), 20.0, 10.0)
+        let perimeter = PerimeterVisitor.calculatePerimeter rect
+        Assert.Equal(60.0, perimeter)
+
+// ============================================
+// 6. BoundingBoxVisitor テスト
+// ============================================
+
+module BoundingBoxVisitorTests =
+
+    [<Fact>]
+    let ``円のバウンディングボックスを計算できる`` () =
+        let circle = Shape.Circle((10.0, 10.0), 5.0)
+        let box = BoundingBoxVisitor.calculateBoundingBox circle
+        Assert.Equal(5.0, box.MinX)
+        Assert.Equal(5.0, box.MinY)
+        Assert.Equal(15.0, box.MaxX)
+        Assert.Equal(15.0, box.MaxY)
+
+    [<Fact>]
+    let ``正方形のバウンディングボックスを計算できる`` () =
+        let square = Shape.Square((5.0, 5.0), 10.0)
+        let box = BoundingBoxVisitor.calculateBoundingBox square
+        Assert.Equal(5.0, box.MinX)
+        Assert.Equal(5.0, box.MinY)
+        Assert.Equal(15.0, box.MaxX)
+        Assert.Equal(15.0, box.MaxY)
+
+    [<Fact>]
+    let ``複数の図形の統合バウンディングボックスを計算できる`` () =
+        let shapes = [
+            Shape.Circle((0.0, 0.0), 5.0)
+            Shape.Square((10.0, 10.0), 10.0)
+        ]
+        let box = BoundingBoxVisitor.combinedBoundingBox shapes
+        Assert.True(box.IsSome)
+        let b = box.Value
+        Assert.Equal(-5.0, b.MinX)
+        Assert.Equal(-5.0, b.MinY)
+        Assert.Equal(20.0, b.MaxX)
+        Assert.Equal(20.0, b.MaxY)
+
+// ============================================
+// 7. ExprVisitor テスト
+// ============================================
+
+module ExprVisitorTests =
+
+    [<Fact>]
+    let ``式を評価できる`` () =
+        let expr = Expr.Add(Expr.Num 3.0, Expr.Mul(Expr.Num 2.0, Expr.Num 4.0))
+        let result = ExprVisitor.evaluate Map.empty expr
+        Assert.Equal(11.0, result)
+
+    [<Fact>]
+    let ``変数を含む式を評価できる`` () =
+        let expr = Expr.Add(Expr.Var "x", Expr.Num 5.0)
+        let env = Map.ofList [ ("x", 10.0) ]
+        let result = ExprVisitor.evaluate env expr
+        Assert.Equal(15.0, result)
+
+    [<Fact>]
+    let ``式を文字列に変換できる`` () =
+        let expr = Expr.Add(Expr.Num 3.0, Expr.Num 4.0)
+        let str = ExprVisitor.toString expr
+        Assert.Contains("3", str)
+        Assert.Contains("+", str)
+        Assert.Contains("4", str)
+
+    [<Fact>]
+    let ``式を簡約できる`` () =
+        let expr = Expr.Add(Expr.Num 0.0, Expr.Var "x")
+        let simplified = ExprVisitor.simplify expr
+        match simplified with
+        | Expr.Var name -> Assert.Equal("x", name)
+        | _ -> Assert.True(false, "Should be simplified to Var")
+
+    [<Fact>]
+    let ``式の変数を抽出できる`` () =
+        let expr = Expr.Add(Expr.Var "x", Expr.Mul(Expr.Var "y", Expr.Var "x"))
+        let vars = ExprVisitor.variables expr
+        Assert.Equal(2, Set.count vars)
+        Assert.True(Set.contains "x" vars)
+        Assert.True(Set.contains "y" vars)
+
+// ============================================
+// 8. TreeVisitor テスト
+// ============================================
+
+module TreeVisitorTests =
+
+    [<Fact>]
+    let ``葉の値を収集できる`` () =
+        let tree = Node [ Leaf 1; Node [ Leaf 2; Leaf 3 ]; Leaf 4 ]
+        let leaves = TreeVisitor.collectLeaves tree
+        Assert.Equal<int list>([ 1; 2; 3; 4 ], leaves)
+
+    [<Fact>]
+    let ``ツリーの深さを計算できる`` () =
+        let tree = Node [ Leaf 1; Node [ Leaf 2; Node [ Leaf 3 ] ] ]
+        let d = TreeVisitor.depth tree
+        Assert.Equal(4, d)
+
+    [<Fact>]
+    let ``ツリーのノード数を計算できる`` () =
+        let tree = Node [ Leaf 1; Leaf 2; Node [ Leaf 3 ] ]
+        let count = TreeVisitor.countNodes tree
+        Assert.Equal(5, count)
+
+    [<Fact>]
+    let ``ツリーを変換できる`` () =
+        let tree = Node [ Leaf 1; Leaf 2 ]
+        let mapped = TreeVisitor.map (fun x -> x * 2) tree
+        let leaves = TreeVisitor.collectLeaves mapped
+        Assert.Equal<int list>([ 2; 4 ], leaves)
+
+    [<Fact>]
+    let ``ツリーをフォールドできる`` () =
+        let tree = Node [ Leaf 1; Leaf 2; Node [ Leaf 3; Leaf 4 ] ]
+        let sum = TreeVisitor.fold id List.sum tree
+        Assert.Equal(10, sum)

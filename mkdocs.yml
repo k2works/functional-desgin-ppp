@@ -137,3 +137,4 @@ nav:
       - Part 4 - デザインパターン（振る舞い）:
           - 10. Strategy パターン: fsharp/10-strategy-pattern.md
           - 11. Command パターン: fsharp/11-command-pattern.md
+          - 12. Visitor パターン: fsharp/12-visitor-pattern.md

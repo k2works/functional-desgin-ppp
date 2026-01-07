@@ -775,3 +775,332 @@ module CommandPattern =
             | [] -> state
             | (_, previousValue) :: rest ->
                 { Value = previousValue; History = rest }
+
+// ============================================
+// 第12章: Visitor パターン
+// ============================================
+
+module VisitorPattern =
+
+    // ============================================
+    // 1. 図形の定義（Element）
+    // ============================================
+
+    /// 図形の判別共用体
+    [<RequireQualifiedAccess>]
+    type Shape =
+        | Circle of center: (float * float) * radius: float
+        | Square of topLeft: (float * float) * side: float
+        | Rectangle of topLeft: (float * float) * width: float * height: float
+        | Triangle of p1: (float * float) * p2: (float * float) * p3: (float * float)
+
+    module Shape =
+        /// 図形を移動
+        let translate (dx: float) (dy: float) (shape: Shape) : Shape =
+            match shape with
+            | Shape.Circle((x, y), r) -> Shape.Circle((x + dx, y + dy), r)
+            | Shape.Square((x, y), s) -> Shape.Square((x + dx, y + dy), s)
+            | Shape.Rectangle((x, y), w, h) -> Shape.Rectangle((x + dx, y + dy), w, h)
+            | Shape.Triangle((x1, y1), (x2, y2), (x3, y3)) ->
+                Shape.Triangle((x1 + dx, y1 + dy), (x2 + dx, y2 + dy), (x3 + dx, y3 + dy))
+
+        /// 図形を拡大/縮小
+        let scale (factor: float) (shape: Shape) : Shape =
+            match shape with
+            | Shape.Circle(c, r) -> Shape.Circle(c, r * factor)
+            | Shape.Square(tl, s) -> Shape.Square(tl, s * factor)
+            | Shape.Rectangle(tl, w, h) -> Shape.Rectangle(tl, w * factor, h * factor)
+            | Shape.Triangle(p1, p2, p3) ->
+                // 重心を基準に拡大
+                let cx = (fst p1 + fst p2 + fst p3) / 3.0
+                let cy = (snd p1 + snd p2 + snd p3) / 3.0
+                let scalePoint (x, y) =
+                    (cx + (x - cx) * factor, cy + (y - cy) * factor)
+                Shape.Triangle(scalePoint p1, scalePoint p2, scalePoint p3)
+
+    // ============================================
+    // 2. Visitor: JSON 変換
+    // ============================================
+
+    module JsonVisitor =
+        /// 図形を JSON 文字列に変換
+        let toJson (shape: Shape) : string =
+            match shape with
+            | Shape.Circle((x, y), r) ->
+                sprintf """{"type":"circle","center":[%g,%g],"radius":%g}""" x y r
+            | Shape.Square((x, y), s) ->
+                sprintf """{"type":"square","topLeft":[%g,%g],"side":%g}""" x y s
+            | Shape.Rectangle((x, y), w, h) ->
+                sprintf """{"type":"rectangle","topLeft":[%g,%g],"width":%g,"height":%g}""" x y w h
+            | Shape.Triangle((x1, y1), (x2, y2), (x3, y3)) ->
+                sprintf """{"type":"triangle","points":[[%g,%g],[%g,%g],[%g,%g]]}""" x1 y1 x2 y2 x3 y3
+
+        /// 複数の図形を JSON 配列に変換
+        let shapesToJson (shapes: Shape list) : string =
+            let jsonShapes = shapes |> List.map toJson |> String.concat ","
+            sprintf "[%s]" jsonShapes
+
+    // ============================================
+    // 3. Visitor: XML 変換
+    // ============================================
+
+    module XmlVisitor =
+        /// 図形を XML 文字列に変換
+        let toXml (shape: Shape) : string =
+            match shape with
+            | Shape.Circle((x, y), r) ->
+                sprintf """<circle><center x="%g" y="%g"/><radius>%g</radius></circle>""" x y r
+            | Shape.Square((x, y), s) ->
+                sprintf """<square><topLeft x="%g" y="%g"/><side>%g</side></square>""" x y s
+            | Shape.Rectangle((x, y), w, h) ->
+                sprintf """<rectangle><topLeft x="%g" y="%g"/><width>%g</width><height>%g</height></rectangle>""" x y w h
+            | Shape.Triangle((x1, y1), (x2, y2), (x3, y3)) ->
+                sprintf """<triangle><p1 x="%g" y="%g"/><p2 x="%g" y="%g"/><p3 x="%g" y="%g"/></triangle>""" x1 y1 x2 y2 x3 y3
+
+        /// 複数の図形を XML に変換
+        let shapesToXml (shapes: Shape list) : string =
+            let xmlShapes = shapes |> List.map toXml |> String.concat ""
+            sprintf "<shapes>%s</shapes>" xmlShapes
+
+    // ============================================
+    // 4. Visitor: 面積計算
+    // ============================================
+
+    module AreaVisitor =
+        /// 図形の面積を計算
+        let calculateArea (shape: Shape) : float =
+            match shape with
+            | Shape.Circle(_, r) -> System.Math.PI * r * r
+            | Shape.Square(_, s) -> s * s
+            | Shape.Rectangle(_, w, h) -> w * h
+            | Shape.Triangle((x1, y1), (x2, y2), (x3, y3)) ->
+                // ヘロンの公式
+                let a = sqrt((x2 - x1) ** 2.0 + (y2 - y1) ** 2.0)
+                let b = sqrt((x3 - x2) ** 2.0 + (y3 - y2) ** 2.0)
+                let c = sqrt((x1 - x3) ** 2.0 + (y1 - y3) ** 2.0)
+                let s = (a + b + c) / 2.0
+                sqrt(s * (s - a) * (s - b) * (s - c))
+
+        /// 複数の図形の合計面積を計算
+        let totalArea (shapes: Shape list) : float =
+            shapes |> List.sumBy calculateArea
+
+    // ============================================
+    // 5. Visitor: 周囲長計算
+    // ============================================
+
+    module PerimeterVisitor =
+        /// 図形の周囲長を計算
+        let calculatePerimeter (shape: Shape) : float =
+            match shape with
+            | Shape.Circle(_, r) -> 2.0 * System.Math.PI * r
+            | Shape.Square(_, s) -> 4.0 * s
+            | Shape.Rectangle(_, w, h) -> 2.0 * (w + h)
+            | Shape.Triangle((x1, y1), (x2, y2), (x3, y3)) ->
+                let a = sqrt((x2 - x1) ** 2.0 + (y2 - y1) ** 2.0)
+                let b = sqrt((x3 - x2) ** 2.0 + (y3 - y2) ** 2.0)
+                let c = sqrt((x1 - x3) ** 2.0 + (y1 - y3) ** 2.0)
+                a + b + c
+
+        /// 複数の図形の合計周囲長を計算
+        let totalPerimeter (shapes: Shape list) : float =
+            shapes |> List.sumBy calculatePerimeter
+
+    // ============================================
+    // 6. Visitor: 描画コマンド生成
+    // ============================================
+
+    type DrawCommand =
+        { Command: string
+          Parameters: Map<string, obj> }
+
+    module DrawingVisitor =
+        /// 図形の描画コマンドを生成
+        let toDrawCommand (shape: Shape) : DrawCommand =
+            match shape with
+            | Shape.Circle((x, y), r) ->
+                { Command = "drawCircle"
+                  Parameters = Map.ofList [ ("cx", box x); ("cy", box y); ("r", box r) ] }
+            | Shape.Square((x, y), s) ->
+                { Command = "drawRect"
+                  Parameters = Map.ofList [ ("x", box x); ("y", box y); ("width", box s); ("height", box s) ] }
+            | Shape.Rectangle((x, y), w, h) ->
+                { Command = "drawRect"
+                  Parameters = Map.ofList [ ("x", box x); ("y", box y); ("width", box w); ("height", box h) ] }
+            | Shape.Triangle((x1, y1), (x2, y2), (x3, y3)) ->
+                { Command = "drawPolygon"
+                  Parameters = Map.ofList [ ("points", box [| (x1, y1); (x2, y2); (x3, y3) |]) ] }
+
+        /// 複数の図形の描画コマンドを生成
+        let toDrawCommands (shapes: Shape list) : DrawCommand list =
+            shapes |> List.map toDrawCommand
+
+    // ============================================
+    // 7. Visitor: バウンディングボックス計算
+    // ============================================
+
+    type BoundingBox =
+        { MinX: float
+          MinY: float
+          MaxX: float
+          MaxY: float }
+
+    module BoundingBoxVisitor =
+        /// 図形のバウンディングボックスを計算
+        let calculateBoundingBox (shape: Shape) : BoundingBox =
+            match shape with
+            | Shape.Circle((x, y), r) ->
+                { MinX = x - r; MinY = y - r; MaxX = x + r; MaxY = y + r }
+            | Shape.Square((x, y), s) ->
+                { MinX = x; MinY = y; MaxX = x + s; MaxY = y + s }
+            | Shape.Rectangle((x, y), w, h) ->
+                { MinX = x; MinY = y; MaxX = x + w; MaxY = y + h }
+            | Shape.Triangle((x1, y1), (x2, y2), (x3, y3)) ->
+                { MinX = min (min x1 x2) x3
+                  MinY = min (min y1 y2) y3
+                  MaxX = max (max x1 x2) x3
+                  MaxY = max (max y1 y2) y3 }
+
+        /// 複数の図形の統合バウンディングボックスを計算
+        let combinedBoundingBox (shapes: Shape list) : BoundingBox option =
+            match shapes with
+            | [] -> None
+            | shapes ->
+                let boxes = shapes |> List.map calculateBoundingBox
+                Some
+                    { MinX = boxes |> List.map (fun b -> b.MinX) |> List.min
+                      MinY = boxes |> List.map (fun b -> b.MinY) |> List.min
+                      MaxX = boxes |> List.map (fun b -> b.MaxX) |> List.max
+                      MaxY = boxes |> List.map (fun b -> b.MaxY) |> List.max }
+
+    // ============================================
+    // 8. 汎用 Visitor 関数
+    // ============================================
+
+    module GenericVisitor =
+        /// 汎用的な visitor 関数
+        let visit
+            (onCircle: (float * float) -> float -> 'T)
+            (onSquare: (float * float) -> float -> 'T)
+            (onRectangle: (float * float) -> float -> float -> 'T)
+            (onTriangle: (float * float) -> (float * float) -> (float * float) -> 'T)
+            (shape: Shape)
+            : 'T =
+            match shape with
+            | Shape.Circle(c, r) -> onCircle c r
+            | Shape.Square(tl, s) -> onSquare tl s
+            | Shape.Rectangle(tl, w, h) -> onRectangle tl w h
+            | Shape.Triangle(p1, p2, p3) -> onTriangle p1 p2 p3
+
+        /// 複数の図形に visitor を適用
+        let visitAll
+            (onCircle: (float * float) -> float -> 'T)
+            (onSquare: (float * float) -> float -> 'T)
+            (onRectangle: (float * float) -> float -> float -> 'T)
+            (onTriangle: (float * float) -> (float * float) -> (float * float) -> 'T)
+            (shapes: Shape list)
+            : 'T list =
+            shapes |> List.map (visit onCircle onSquare onRectangle onTriangle)
+
+    // ============================================
+    // 9. Expression Visitor（式の評価）
+    // ============================================
+
+    [<RequireQualifiedAccess>]
+    type Expr =
+        | Num of float
+        | Add of Expr * Expr
+        | Sub of Expr * Expr
+        | Mul of Expr * Expr
+        | Div of Expr * Expr
+        | Neg of Expr
+        | Var of string
+
+    module ExprVisitor =
+        /// 式を評価
+        let rec evaluate (env: Map<string, float>) (expr: Expr) : float =
+            match expr with
+            | Expr.Num n -> n
+            | Expr.Add(a, b) -> evaluate env a + evaluate env b
+            | Expr.Sub(a, b) -> evaluate env a - evaluate env b
+            | Expr.Mul(a, b) -> evaluate env a * evaluate env b
+            | Expr.Div(a, b) -> evaluate env a / evaluate env b
+            | Expr.Neg e -> -(evaluate env e)
+            | Expr.Var name -> Map.tryFind name env |> Option.defaultValue 0.0
+
+        /// 式を文字列に変換
+        let rec toString (expr: Expr) : string =
+            match expr with
+            | Expr.Num n -> sprintf "%g" n
+            | Expr.Add(a, b) -> sprintf "(%s + %s)" (toString a) (toString b)
+            | Expr.Sub(a, b) -> sprintf "(%s - %s)" (toString a) (toString b)
+            | Expr.Mul(a, b) -> sprintf "(%s * %s)" (toString a) (toString b)
+            | Expr.Div(a, b) -> sprintf "(%s / %s)" (toString a) (toString b)
+            | Expr.Neg e -> sprintf "-%s" (toString e)
+            | Expr.Var name -> name
+
+        /// 式を簡約
+        let rec simplify (expr: Expr) : Expr =
+            match expr with
+            | Expr.Add(Expr.Num 0.0, e) -> simplify e
+            | Expr.Add(e, Expr.Num 0.0) -> simplify e
+            | Expr.Mul(Expr.Num 1.0, e) -> simplify e
+            | Expr.Mul(e, Expr.Num 1.0) -> simplify e
+            | Expr.Mul(Expr.Num 0.0, _) -> Expr.Num 0.0
+            | Expr.Mul(_, Expr.Num 0.0) -> Expr.Num 0.0
+            | Expr.Add(a, b) -> Expr.Add(simplify a, simplify b)
+            | Expr.Sub(a, b) -> Expr.Sub(simplify a, simplify b)
+            | Expr.Mul(a, b) -> Expr.Mul(simplify a, simplify b)
+            | Expr.Div(a, b) -> Expr.Div(simplify a, simplify b)
+            | Expr.Neg(Expr.Neg e) -> simplify e
+            | Expr.Neg e -> Expr.Neg(simplify e)
+            | _ -> expr
+
+        /// 式に含まれる変数を抽出
+        let rec variables (expr: Expr) : string Set =
+            match expr with
+            | Expr.Num _ -> Set.empty
+            | Expr.Var name -> Set.singleton name
+            | Expr.Add(a, b) | Expr.Sub(a, b) | Expr.Mul(a, b) | Expr.Div(a, b) ->
+                Set.union (variables a) (variables b)
+            | Expr.Neg e -> variables e
+
+    // ============================================
+    // 10. Tree Visitor
+    // ============================================
+
+    type Tree<'T> =
+        | Leaf of 'T
+        | Node of Tree<'T> list
+
+    module TreeVisitor =
+        /// ツリーの全ての葉の値を収集
+        let rec collectLeaves (tree: Tree<'T>) : 'T list =
+            match tree with
+            | Leaf v -> [ v ]
+            | Node children -> children |> List.collect collectLeaves
+
+        /// ツリーの深さを計算
+        let rec depth (tree: Tree<'T>) : int =
+            match tree with
+            | Leaf _ -> 1
+            | Node [] -> 1
+            | Node children -> 1 + (children |> List.map depth |> List.max)
+
+        /// ツリーのノード数を計算
+        let rec countNodes (tree: Tree<'T>) : int =
+            match tree with
+            | Leaf _ -> 1
+            | Node children -> 1 + (children |> List.sumBy countNodes)
+
+        /// ツリーを変換
+        let rec map (f: 'T -> 'U) (tree: Tree<'T>) : Tree<'U> =
+            match tree with
+            | Leaf v -> Leaf(f v)
+            | Node children -> Node(children |> List.map (map f))
+
+        /// ツリーをフォールド
+        let rec fold (leafFn: 'T -> 'Acc) (nodeFn: 'Acc list -> 'Acc) (tree: Tree<'T>) : 'Acc =
+            match tree with
+            | Leaf v -> leafFn v
+            | Node children -> nodeFn (children |> List.map (fold leafFn nodeFn))
