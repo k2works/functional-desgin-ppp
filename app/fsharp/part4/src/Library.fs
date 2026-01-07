@@ -422,3 +422,356 @@ module StrategyPattern =
                     log inner level message
                 else
                     None
+
+// ============================================
+// 第11章: Command パターン
+// ============================================
+
+module CommandPattern =
+
+    // ============================================
+    // 1. テキスト操作コマンド
+    // ============================================
+
+    /// テキストコマンド
+    [<RequireQualifiedAccess>]
+    type TextCommand =
+        | Insert of position: int * text: string
+        | Delete of startPos: int * endPos: int * deletedText: string
+        | Replace of startPos: int * oldText: string * newText: string
+
+    module TextCommand =
+        /// コマンドを実行
+        let execute (command: TextCommand) (document: string) : string =
+            match command with
+            | TextCommand.Insert(pos, text) ->
+                let before = document.Substring(0, pos)
+                let after = document.Substring(pos)
+                before + text + after
+            | TextCommand.Delete(startPos, endPos, _) ->
+                let before = document.Substring(0, startPos)
+                let after = document.Substring(endPos)
+                before + after
+            | TextCommand.Replace(startPos, oldText, newText) ->
+                let before = document.Substring(0, startPos)
+                let after = document.Substring(startPos + oldText.Length)
+                before + newText + after
+
+        /// コマンドを取り消し
+        let undo (command: TextCommand) (document: string) : string =
+            match command with
+            | TextCommand.Insert(pos, text) ->
+                let before = document.Substring(0, pos)
+                let after = document.Substring(pos + text.Length)
+                before + after
+            | TextCommand.Delete(startPos, _, deletedText) ->
+                let before = document.Substring(0, startPos)
+                let after = document.Substring(startPos)
+                before + deletedText + after
+            | TextCommand.Replace(startPos, oldText, newText) ->
+                let before = document.Substring(0, startPos)
+                let after = document.Substring(startPos + newText.Length)
+                before + oldText + after
+
+    // ============================================
+    // 2. キャンバス操作コマンド
+    // ============================================
+
+    type Shape =
+        { Id: string
+          ShapeType: string
+          X: int
+          Y: int
+          Width: int
+          Height: int }
+
+    type Canvas = { Shapes: Shape list }
+
+    /// キャンバスコマンド
+    [<RequireQualifiedAccess>]
+    type CanvasCommand =
+        | AddShape of shape: Shape
+        | RemoveShape of shapeId: string * removedShape: Shape option
+        | MoveShape of shapeId: string * dx: int * dy: int
+        | ResizeShape of shapeId: string * oldWidth: int * oldHeight: int * newWidth: int * newHeight: int
+
+    module CanvasCommand =
+        /// コマンドを実行
+        let execute (command: CanvasCommand) (canvas: Canvas) : Canvas =
+            match command with
+            | CanvasCommand.AddShape shape ->
+                { canvas with Shapes = shape :: canvas.Shapes }
+            | CanvasCommand.RemoveShape(shapeId, _) ->
+                { canvas with Shapes = canvas.Shapes |> List.filter (fun s -> s.Id <> shapeId) }
+            | CanvasCommand.MoveShape(shapeId, dx, dy) ->
+                { canvas with
+                    Shapes =
+                        canvas.Shapes
+                        |> List.map (fun s ->
+                            if s.Id = shapeId then
+                                { s with X = s.X + dx; Y = s.Y + dy }
+                            else
+                                s) }
+            | CanvasCommand.ResizeShape(shapeId, _, _, newWidth, newHeight) ->
+                { canvas with
+                    Shapes =
+                        canvas.Shapes
+                        |> List.map (fun s ->
+                            if s.Id = shapeId then
+                                { s with Width = newWidth; Height = newHeight }
+                            else
+                                s) }
+
+        /// コマンドを取り消し
+        let undo (command: CanvasCommand) (canvas: Canvas) : Canvas =
+            match command with
+            | CanvasCommand.AddShape shape ->
+                { canvas with Shapes = canvas.Shapes |> List.filter (fun s -> s.Id <> shape.Id) }
+            | CanvasCommand.RemoveShape(_, removedShape) ->
+                match removedShape with
+                | Some shape -> { canvas with Shapes = shape :: canvas.Shapes }
+                | None -> canvas
+            | CanvasCommand.MoveShape(shapeId, dx, dy) ->
+                { canvas with
+                    Shapes =
+                        canvas.Shapes
+                        |> List.map (fun s ->
+                            if s.Id = shapeId then
+                                { s with X = s.X - dx; Y = s.Y - dy }
+                            else
+                                s) }
+            | CanvasCommand.ResizeShape(shapeId, oldWidth, oldHeight, _, _) ->
+                { canvas with
+                    Shapes =
+                        canvas.Shapes
+                        |> List.map (fun s ->
+                            if s.Id = shapeId then
+                                { s with Width = oldWidth; Height = oldHeight }
+                            else
+                                s) }
+
+    // ============================================
+    // 3. コマンド実行器（汎用）
+    // ============================================
+
+    type CommandExecutor<'TState, 'TCommand> =
+        { State: 'TState
+          UndoStack: 'TCommand list
+          RedoStack: 'TCommand list
+          ExecuteFn: 'TCommand -> 'TState -> 'TState
+          UndoFn: 'TCommand -> 'TState -> 'TState }
+
+    module CommandExecutor =
+        /// 実行器を作成
+        let create
+            (initialState: 'TState)
+            (executeFn: 'TCommand -> 'TState -> 'TState)
+            (undoFn: 'TCommand -> 'TState -> 'TState)
+            : CommandExecutor<'TState, 'TCommand> =
+            { State = initialState
+              UndoStack = []
+              RedoStack = []
+              ExecuteFn = executeFn
+              UndoFn = undoFn }
+
+        /// コマンドを実行
+        let execute (command: 'TCommand) (executor: CommandExecutor<'TState, 'TCommand>) : CommandExecutor<'TState, 'TCommand> =
+            let newState = executor.ExecuteFn command executor.State
+            { executor with
+                State = newState
+                UndoStack = command :: executor.UndoStack
+                RedoStack = [] }
+
+        /// アンドゥ
+        let undo (executor: CommandExecutor<'TState, 'TCommand>) : CommandExecutor<'TState, 'TCommand> =
+            match executor.UndoStack with
+            | [] -> executor
+            | command :: rest ->
+                let newState = executor.UndoFn command executor.State
+                { executor with
+                    State = newState
+                    UndoStack = rest
+                    RedoStack = command :: executor.RedoStack }
+
+        /// リドゥ
+        let redo (executor: CommandExecutor<'TState, 'TCommand>) : CommandExecutor<'TState, 'TCommand> =
+            match executor.RedoStack with
+            | [] -> executor
+            | command :: rest ->
+                let newState = executor.ExecuteFn command executor.State
+                { executor with
+                    State = newState
+                    UndoStack = command :: executor.UndoStack
+                    RedoStack = rest }
+
+        /// アンドゥ可能かどうか
+        let canUndo (executor: CommandExecutor<'TState, 'TCommand>) : bool =
+            not (List.isEmpty executor.UndoStack)
+
+        /// リドゥ可能かどうか
+        let canRedo (executor: CommandExecutor<'TState, 'TCommand>) : bool =
+            not (List.isEmpty executor.RedoStack)
+
+        /// 現在の状態を取得
+        let getState (executor: CommandExecutor<'TState, 'TCommand>) : 'TState =
+            executor.State
+
+    // ============================================
+    // 4. テキストエディタ
+    // ============================================
+
+    module TextEditor =
+        /// テキストエディタを作成
+        let create (initialText: string) : CommandExecutor<string, TextCommand> =
+            CommandExecutor.create initialText TextCommand.execute TextCommand.undo
+
+    // ============================================
+    // 5. キャンバスエディタ
+    // ============================================
+
+    module CanvasEditor =
+        /// キャンバスエディタを作成
+        let create () : CommandExecutor<Canvas, CanvasCommand> =
+            CommandExecutor.create { Shapes = [] } CanvasCommand.execute CanvasCommand.undo
+
+    // ============================================
+    // 6. マクロコマンド
+    // ============================================
+
+    type MacroCommand<'TCommand> = { Commands: 'TCommand list }
+
+    module MacroCommand =
+        /// マクロコマンドを作成
+        let create (commands: 'TCommand list) : MacroCommand<'TCommand> =
+            { Commands = commands }
+
+        /// マクロコマンドを実行
+        let execute (executeFn: 'TCommand -> 'TState -> 'TState) (macro: MacroCommand<'TCommand>) (state: 'TState) : 'TState =
+            List.fold (fun s cmd -> executeFn cmd s) state macro.Commands
+
+        /// マクロコマンドを取り消し
+        let undo (undoFn: 'TCommand -> 'TState -> 'TState) (macro: MacroCommand<'TCommand>) (state: 'TState) : 'TState =
+            List.fold (fun s cmd -> undoFn cmd s) state (List.rev macro.Commands)
+
+    // ============================================
+    // 7. バッチ実行
+    // ============================================
+
+    module BatchExecutor =
+        /// 複数のコマンドをバッチ実行
+        let executeBatch (commands: 'TCommand list) (executor: CommandExecutor<'TState, 'TCommand>) : CommandExecutor<'TState, 'TCommand> =
+            List.fold (fun exec cmd -> CommandExecutor.execute cmd exec) executor commands
+
+        /// すべてのコマンドを取り消し
+        let undoAll (executor: CommandExecutor<'TState, 'TCommand>) : CommandExecutor<'TState, 'TCommand> =
+            let rec loop exec =
+                if CommandExecutor.canUndo exec then
+                    loop (CommandExecutor.undo exec)
+                else
+                    exec
+            loop executor
+
+    // ============================================
+    // 8. コマンドキュー
+    // ============================================
+
+    type CommandQueue<'TCommand> = { Queue: 'TCommand list }
+
+    module CommandQueue =
+        /// 空のキューを作成
+        let empty: CommandQueue<'TCommand> = { Queue = [] }
+
+        /// コマンドをキューに追加
+        let enqueue (command: 'TCommand) (queue: CommandQueue<'TCommand>) : CommandQueue<'TCommand> =
+            { Queue = queue.Queue @ [ command ] }
+
+        /// コマンドをデキュー
+        let dequeue (queue: CommandQueue<'TCommand>) : ('TCommand option * CommandQueue<'TCommand>) =
+            match queue.Queue with
+            | [] -> (None, queue)
+            | head :: tail -> (Some head, { Queue = tail })
+
+        /// キューが空かどうか
+        let isEmpty (queue: CommandQueue<'TCommand>) : bool =
+            List.isEmpty queue.Queue
+
+        /// キューのサイズ
+        let size (queue: CommandQueue<'TCommand>) : int =
+            List.length queue.Queue
+
+        /// すべてのコマンドを実行
+        let executeAll (executor: CommandExecutor<'TState, 'TCommand>) (queue: CommandQueue<'TCommand>) : CommandExecutor<'TState, 'TCommand> =
+            List.fold (fun exec cmd -> CommandExecutor.execute cmd exec) executor queue.Queue
+
+    // ============================================
+    // 9. トランザクションコマンド
+    // ============================================
+
+    type TransactionResult<'TState> =
+        | Committed of 'TState
+        | RolledBack of 'TState * error: string
+
+    module TransactionCommand =
+        /// トランザクションとして実行
+        let executeTransaction
+            (commands: 'TCommand list)
+            (executeFn: 'TCommand -> 'TState -> Result<'TState, string>)
+            (state: 'TState)
+            : TransactionResult<'TState> =
+            let rec loop remaining currentState =
+                match remaining with
+                | [] -> Committed currentState
+                | cmd :: rest ->
+                    match executeFn cmd currentState with
+                    | Ok newState -> loop rest newState
+                    | Error err -> RolledBack(state, err)
+            loop commands state
+
+    // ============================================
+    // 10. 計算機コマンド
+    // ============================================
+
+    [<RequireQualifiedAccess>]
+    type CalculatorCommand =
+        | Add of value: decimal
+        | Subtract of value: decimal
+        | Multiply of value: decimal
+        | Divide of value: decimal
+        | Clear
+
+    module CalculatorCommand =
+        let execute (command: CalculatorCommand) (value: decimal) : decimal =
+            match command with
+            | CalculatorCommand.Add v -> value + v
+            | CalculatorCommand.Subtract v -> value - v
+            | CalculatorCommand.Multiply v -> value * v
+            | CalculatorCommand.Divide v -> if v <> 0.0m then value / v else value
+            | CalculatorCommand.Clear -> 0.0m
+
+        let undo (command: CalculatorCommand) (previousValue: decimal) (currentValue: decimal) : decimal =
+            match command with
+            | CalculatorCommand.Add v -> currentValue - v
+            | CalculatorCommand.Subtract v -> currentValue + v
+            | CalculatorCommand.Multiply v -> if v <> 0.0m then currentValue / v else currentValue
+            | CalculatorCommand.Divide v -> currentValue * v
+            | CalculatorCommand.Clear -> previousValue
+
+    type CalculatorState =
+        { Value: decimal
+          History: (CalculatorCommand * decimal) list }
+
+    module Calculator =
+        let create () : CalculatorState =
+            { Value = 0.0m; History = [] }
+
+        let execute (command: CalculatorCommand) (state: CalculatorState) : CalculatorState =
+            let previousValue = state.Value
+            let newValue = CalculatorCommand.execute command state.Value
+            { Value = newValue
+              History = (command, previousValue) :: state.History }
+
+        let undo (state: CalculatorState) : CalculatorState =
+            match state.History with
+            | [] -> state
+            | (_, previousValue) :: rest ->
+                { Value = previousValue; History = rest }

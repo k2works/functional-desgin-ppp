@@ -379,3 +379,281 @@ module LoggingStrategyTests =
         Assert.True(result1.IsNone)
         // Warning以上なので処理されるが、innerがSilentなのでNone
         Assert.True(result2.IsNone)
+
+// ============================================
+// Chapter 11: Command パターン テスト
+// ============================================
+
+open FunctionalDesign.Part4.CommandPattern
+
+// ============================================
+// 1. TextCommand テスト
+// ============================================
+
+module TextCommandTests =
+
+    [<Fact>]
+    let ``テキストを挿入できる`` () =
+        let cmd = TextCommand.Insert(5, " World")
+        let result = TextCommand.execute cmd "Hello"
+        Assert.Equal("Hello World", result)
+
+    [<Fact>]
+    let ``テキスト挿入を取り消しできる`` () =
+        let cmd = TextCommand.Insert(5, " World")
+        let result = TextCommand.undo cmd "Hello World"
+        Assert.Equal("Hello", result)
+
+    [<Fact>]
+    let ``テキストを削除できる`` () =
+        let cmd = TextCommand.Delete(5, 11, " World")
+        let result = TextCommand.execute cmd "Hello World"
+        Assert.Equal("Hello", result)
+
+    [<Fact>]
+    let ``テキスト削除を取り消しできる`` () =
+        let cmd = TextCommand.Delete(5, 11, " World")
+        let result = TextCommand.undo cmd "Hello"
+        Assert.Equal("Hello World", result)
+
+    [<Fact>]
+    let ``テキストを置換できる`` () =
+        let cmd = TextCommand.Replace(6, "World", "F#")
+        let result = TextCommand.execute cmd "Hello World"
+        Assert.Equal("Hello F#", result)
+
+    [<Fact>]
+    let ``テキスト置換を取り消しできる`` () =
+        let cmd = TextCommand.Replace(6, "World", "F#")
+        let result = TextCommand.undo cmd "Hello F#"
+        Assert.Equal("Hello World", result)
+
+// ============================================
+// 2. CanvasCommand テスト
+// ============================================
+
+module CanvasCommandTests =
+
+    let testShape = { Id = "shape1"; ShapeType = "Rectangle"; X = 10; Y = 20; Width = 100; Height = 50 }
+
+    [<Fact>]
+    let ``図形を追加できる`` () =
+        let canvas = { Shapes = [] }
+        let cmd = CanvasCommand.AddShape testShape
+        let result = CanvasCommand.execute cmd canvas
+        Assert.Equal(1, result.Shapes.Length)
+        Assert.Equal("shape1", result.Shapes.[0].Id)
+
+    [<Fact>]
+    let ``図形追加を取り消しできる`` () =
+        let canvas = { Shapes = [ testShape ] }
+        let cmd = CanvasCommand.AddShape testShape
+        let result = CanvasCommand.undo cmd canvas
+        Assert.Equal(0, result.Shapes.Length)
+
+    [<Fact>]
+    let ``図形を移動できる`` () =
+        let canvas = { Shapes = [ testShape ] }
+        let cmd = CanvasCommand.MoveShape("shape1", 10, 5)
+        let result = CanvasCommand.execute cmd canvas
+        Assert.Equal(20, result.Shapes.[0].X)
+        Assert.Equal(25, result.Shapes.[0].Y)
+
+    [<Fact>]
+    let ``図形移動を取り消しできる`` () =
+        let movedShape = { testShape with X = 20; Y = 25 }
+        let canvas = { Shapes = [ movedShape ] }
+        let cmd = CanvasCommand.MoveShape("shape1", 10, 5)
+        let result = CanvasCommand.undo cmd canvas
+        Assert.Equal(10, result.Shapes.[0].X)
+        Assert.Equal(20, result.Shapes.[0].Y)
+
+    [<Fact>]
+    let ``図形をリサイズできる`` () =
+        let canvas = { Shapes = [ testShape ] }
+        let cmd = CanvasCommand.ResizeShape("shape1", 100, 50, 200, 100)
+        let result = CanvasCommand.execute cmd canvas
+        Assert.Equal(200, result.Shapes.[0].Width)
+        Assert.Equal(100, result.Shapes.[0].Height)
+
+// ============================================
+// 3. CommandExecutor テスト
+// ============================================
+
+module CommandExecutorTests =
+
+    [<Fact>]
+    let ``コマンドを実行できる`` () =
+        let editor = TextEditor.create "Hello"
+        let editor = CommandExecutor.execute (TextCommand.Insert(5, " World")) editor
+        Assert.Equal("Hello World", CommandExecutor.getState editor)
+
+    [<Fact>]
+    let ``アンドゥできる`` () =
+        let editor = TextEditor.create "Hello"
+        let editor = CommandExecutor.execute (TextCommand.Insert(5, " World")) editor
+        let editor = CommandExecutor.undo editor
+        Assert.Equal("Hello", CommandExecutor.getState editor)
+
+    [<Fact>]
+    let ``リドゥできる`` () =
+        let editor = TextEditor.create "Hello"
+        let editor = CommandExecutor.execute (TextCommand.Insert(5, " World")) editor
+        let editor = CommandExecutor.undo editor
+        let editor = CommandExecutor.redo editor
+        Assert.Equal("Hello World", CommandExecutor.getState editor)
+
+    [<Fact>]
+    let ``アンドゥ可能かどうかを確認できる`` () =
+        let editor = TextEditor.create "Hello"
+        Assert.False(CommandExecutor.canUndo editor)
+        let editor = CommandExecutor.execute (TextCommand.Insert(5, " World")) editor
+        Assert.True(CommandExecutor.canUndo editor)
+
+    [<Fact>]
+    let ``リドゥ可能かどうかを確認できる`` () =
+        let editor = TextEditor.create "Hello"
+        let editor = CommandExecutor.execute (TextCommand.Insert(5, " World")) editor
+        Assert.False(CommandExecutor.canRedo editor)
+        let editor = CommandExecutor.undo editor
+        Assert.True(CommandExecutor.canRedo editor)
+
+    [<Fact>]
+    let ``複数のコマンドを実行してアンドゥできる`` () =
+        let editor = TextEditor.create "Hello"
+        let editor = CommandExecutor.execute (TextCommand.Insert(5, " World")) editor
+        let editor = CommandExecutor.execute (TextCommand.Insert(11, "!")) editor
+        Assert.Equal("Hello World!", CommandExecutor.getState editor)
+        let editor = CommandExecutor.undo editor
+        Assert.Equal("Hello World", CommandExecutor.getState editor)
+        let editor = CommandExecutor.undo editor
+        Assert.Equal("Hello", CommandExecutor.getState editor)
+
+// ============================================
+// 4. BatchExecutor テスト
+// ============================================
+
+module BatchExecutorTests =
+
+    [<Fact>]
+    let ``バッチ実行できる`` () =
+        let editor = TextEditor.create "Hello"
+        let commands = [
+            TextCommand.Insert(5, " World")
+            TextCommand.Insert(11, "!")
+        ]
+        let editor = BatchExecutor.executeBatch commands editor
+        Assert.Equal("Hello World!", CommandExecutor.getState editor)
+
+    [<Fact>]
+    let ``すべてを取り消しできる`` () =
+        let editor = TextEditor.create "Hello"
+        let commands = [
+            TextCommand.Insert(5, " World")
+            TextCommand.Insert(11, "!")
+        ]
+        let editor = BatchExecutor.executeBatch commands editor
+        let editor = BatchExecutor.undoAll editor
+        Assert.Equal("Hello", CommandExecutor.getState editor)
+
+// ============================================
+// 5. MacroCommand テスト
+// ============================================
+
+module MacroCommandTests =
+
+    [<Fact>]
+    let ``マクロコマンドを実行できる`` () =
+        let macro = MacroCommand.create [
+            TextCommand.Insert(5, " World")
+            TextCommand.Insert(11, "!")
+        ]
+        let result = MacroCommand.execute TextCommand.execute macro "Hello"
+        Assert.Equal("Hello World!", result)
+
+    [<Fact>]
+    let ``マクロコマンドを取り消しできる`` () =
+        let macro = MacroCommand.create [
+            TextCommand.Insert(5, " World")
+            TextCommand.Insert(11, "!")
+        ]
+        let result = MacroCommand.undo TextCommand.undo macro "Hello World!"
+        Assert.Equal("Hello", result)
+
+// ============================================
+// 6. CommandQueue テスト
+// ============================================
+
+module CommandQueueTests =
+
+    [<Fact>]
+    let ``キューにコマンドを追加できる`` () =
+        let queue = CommandQueue.empty<TextCommand>
+        let queue = CommandQueue.enqueue (TextCommand.Insert(5, " World")) queue
+        Assert.Equal(1, CommandQueue.size queue)
+
+    [<Fact>]
+    let ``キューからコマンドを取り出せる`` () =
+        let queue = CommandQueue.empty<TextCommand>
+        let queue = CommandQueue.enqueue (TextCommand.Insert(5, " World")) queue
+        let (cmd, queue) = CommandQueue.dequeue queue
+        Assert.True(cmd.IsSome)
+        Assert.True(CommandQueue.isEmpty queue)
+
+    [<Fact>]
+    let ``キューのすべてのコマンドを実行できる`` () =
+        let queue = CommandQueue.empty<TextCommand>
+        let queue = CommandQueue.enqueue (TextCommand.Insert(5, " World")) queue
+        let queue = CommandQueue.enqueue (TextCommand.Insert(11, "!")) queue
+        let editor = TextEditor.create "Hello"
+        let editor = CommandQueue.executeAll editor queue
+        Assert.Equal("Hello World!", CommandExecutor.getState editor)
+
+// ============================================
+// 7. Calculator テスト
+// ============================================
+
+module CalculatorTests =
+
+    [<Fact>]
+    let ``加算できる`` () =
+        let calc = Calculator.create ()
+        let calc = Calculator.execute (CalculatorCommand.Add 10.0m) calc
+        Assert.Equal(10.0m, calc.Value)
+
+    [<Fact>]
+    let ``減算できる`` () =
+        let calc = Calculator.create ()
+        let calc = Calculator.execute (CalculatorCommand.Add 10.0m) calc
+        let calc = Calculator.execute (CalculatorCommand.Subtract 3.0m) calc
+        Assert.Equal(7.0m, calc.Value)
+
+    [<Fact>]
+    let ``乗算できる`` () =
+        let calc = Calculator.create ()
+        let calc = Calculator.execute (CalculatorCommand.Add 5.0m) calc
+        let calc = Calculator.execute (CalculatorCommand.Multiply 3.0m) calc
+        Assert.Equal(15.0m, calc.Value)
+
+    [<Fact>]
+    let ``除算できる`` () =
+        let calc = Calculator.create ()
+        let calc = Calculator.execute (CalculatorCommand.Add 12.0m) calc
+        let calc = Calculator.execute (CalculatorCommand.Divide 4.0m) calc
+        Assert.Equal(3.0m, calc.Value)
+
+    [<Fact>]
+    let ``計算をアンドゥできる`` () =
+        let calc = Calculator.create ()
+        let calc = Calculator.execute (CalculatorCommand.Add 10.0m) calc
+        let calc = Calculator.execute (CalculatorCommand.Multiply 2.0m) calc
+        Assert.Equal(20.0m, calc.Value)
+        let calc = Calculator.undo calc
+        Assert.Equal(10.0m, calc.Value)
+
+    [<Fact>]
+    let ``クリアできる`` () =
+        let calc = Calculator.create ()
+        let calc = Calculator.execute (CalculatorCommand.Add 10.0m) calc
+        let calc = Calculator.execute (CalculatorCommand.Clear) calc
+        Assert.Equal(0.0m, calc.Value)
