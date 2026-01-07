@@ -95,3 +95,5 @@ nav:
           - 1. 不変性とデータ変換: scala/01-immutability-and-data-transformation.md
           - 2. 関数合成と高階関数: scala/02-function-composition.md
           - 3. 多態性の実現方法: scala/03-polymorphism.md
+      - 第2部 - 仕様とテスト:
+          - 4. データ検証: scala/04-data-validation.md
