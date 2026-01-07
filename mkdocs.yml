@@ -157,3 +157,7 @@ nav:
           - 01. 不変性とデータ変換: haskell/01-immutability-and-data-transformation.md
           - 02. 関数合成と高階関数: haskell/02-function-composition.md
           - 03. 多態性とディスパッチ: haskell/03-polymorphism.md
+      - Part 2 - 仕様とテスト:
+          - 04. データバリデーション: haskell/04-data-validation.md
+          - 05. プロパティベーステスト: haskell/05-property-based-testing.md
+          - 06. TDD と関数型: haskell/06-tdd-functional.md
