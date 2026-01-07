@@ -179,3 +179,7 @@ nav:
       - Part 7 - 並行処理とシミュレーション:
           - 18. 並行処理システム: haskell/18-concurrency-system.md
           - 19. Wa-Tor シミュレーション: haskell/19-wator-simulation.md
+      - Part 8 - 応用と移行:
+          - 20. パターンの相互作用: haskell/20-pattern-interactions.md
+          - 21. ベストプラクティス: haskell/21-best-practices.md
+          - 22. OO から FP への移行: haskell/22-oo-to-fp-migration.md

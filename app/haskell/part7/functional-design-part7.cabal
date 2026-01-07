@@ -1,0 +1,42 @@
+cabal-version:      3.4
+name:               functional-design-part7
+version:            0.1.0.0
+synopsis:           Functional Design Part 7 - Pattern Interactions and Best Practices
+license:            MIT
+author:             K2works
+maintainer:         k2works@example.com
+category:           Education
+build-type:         Simple
+extra-doc-files:    CHANGELOG.md
+
+common warnings
+    ghc-options: -Wall
+
+library
+    import:           warnings
+    exposed-modules:  PatternInteractions
+                    , BestPractices
+                    , OOtoFPMigration
+    build-depends:    base ^>=4.20.0.0
+                    , containers
+                    , text
+                    , time
+    hs-source-dirs:   src
+    default-language: GHC2024
+
+test-suite functional-design-part7-test
+    import:           warnings
+    default-language: GHC2024
+    type:             exitcode-stdio-1.0
+    hs-source-dirs:   test
+    main-is:          Spec.hs
+    other-modules:    PatternInteractionsSpec
+                    , BestPracticesSpec
+                    , OOtoFPMigrationSpec
+    build-depends:    base ^>=4.20.0.0
+                    , functional-design-part7
+                    , hspec
+                    , QuickCheck
+                    , containers
+                    , text
+                    , time
