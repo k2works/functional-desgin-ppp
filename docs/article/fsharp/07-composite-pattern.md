@@ -14,20 +14,28 @@ Composite パターンは以下の要素で構成されます：
 - **Leaf**: 子要素を持たない末端オブジェクト
 - **Composite**: 子要素を持つコンテナオブジェクト
 
-```
-┌─────────────────────────────────────────────────┐
-│                  Component                      │
-│         +operation(): Result                    │
-└─────────────────────────────────────────────────┘
-                      △
-         ┌────────────┴────────────┐
-         │                         │
-┌────────┴────────┐    ┌───────────┴───────────┐
-│      Leaf       │    │      Composite        │
-│                 │    │  +children: List      │
-│ +operation()    │    │  +add(c: Component)   │
-│                 │    │  +operation()         │
-└─────────────────┘    └───────────────────────┘
+```plantuml
+@startuml
+skinparam classAttributeIconSize 0
+
+abstract class Component {
+  +operation(): Result
+}
+
+class Leaf {
+  +operation()
+}
+
+class Composite {
+  -children: List<Component>
+  +add(c: Component)
+  +operation()
+}
+
+Component <|-- Leaf
+Component <|-- Composite
+Composite o-- Component : children
+@enduml
 ```
 
 ## 2. Shape - 図形の Composite パターン
