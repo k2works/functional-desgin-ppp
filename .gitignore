@@ -149,3 +149,7 @@ pom.xml.asc
 .nrepl-port
 .cpcache/
 
+# Nix
+.result
+.direnv/
+
