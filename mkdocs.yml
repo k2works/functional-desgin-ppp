@@ -140,3 +140,7 @@ nav:
           - 12. Visitor パターン: fsharp/12-visitor-pattern.md
           - 13. Abstract Factory パターン: fsharp/13-abstract-factory-pattern.md
           - 14. Abstract Server パターン: fsharp/14-abstract-server-pattern.md
+      - Part 5 - 実践アプリケーション:
+          - 15. ゴシップ好きなバスの運転手: fsharp/15-gossiping-bus-drivers.md
+          - 16. 給与計算システム: fsharp/16-payroll-system.md
+          - 17. ビデオレンタルシステム: fsharp/17-video-rental-system.md
