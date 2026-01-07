@@ -147,3 +147,7 @@ nav:
       - Part 6 - 並行処理:
           - 18. 並行処理システム: fsharp/18-concurrency-system.md
           - 19. Wa-Tor シミュレーション: fsharp/19-wator-simulation.md
+      - Part 7 - ベストプラクティス:
+          - 20. パターン間の相互作用: fsharp/20-pattern-interactions.md
+          - 21. ベストプラクティス: fsharp/21-best-practices.md
+          - 22. OO から FP への移行: fsharp/22-oo-to-fp-migration.md

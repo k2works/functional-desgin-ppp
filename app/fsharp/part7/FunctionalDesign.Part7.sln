@@ -1,0 +1,28 @@
+
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FunctionalDesign.Part7", "src\FunctionalDesign.Part7.fsproj", "{5C7B2D6B-AC92-45F2-9A73-8065050F9FE2}"
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FunctionalDesign.Part7.Tests", "tests\FunctionalDesign.Part7.Tests.fsproj", "{E9940A6D-D718-470F-B430-47EE5C438A48}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{5C7B2D6B-AC92-45F2-9A73-8065050F9FE2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5C7B2D6B-AC92-45F2-9A73-8065050F9FE2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5C7B2D6B-AC92-45F2-9A73-8065050F9FE2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5C7B2D6B-AC92-45F2-9A73-8065050F9FE2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E9940A6D-D718-470F-B430-47EE5C438A48}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E9940A6D-D718-470F-B430-47EE5C438A48}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E9940A6D-D718-470F-B430-47EE5C438A48}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E9940A6D-D718-470F-B430-47EE5C438A48}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
