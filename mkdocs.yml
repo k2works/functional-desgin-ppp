@@ -124,3 +124,4 @@ nav:
       - 概要: fsharp/index.md
       - Part 1 - 基礎編:
           - 01. 不変性とデータ変換: fsharp/01-immutability-and-data-transformation.md
+          - 02. 関数合成と高階関数: fsharp/02-function-composition.md
