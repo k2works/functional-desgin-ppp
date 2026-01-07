@@ -139,3 +139,4 @@ nav:
           - 11. Command パターン: fsharp/11-command-pattern.md
           - 12. Visitor パターン: fsharp/12-visitor-pattern.md
           - 13. Abstract Factory パターン: fsharp/13-abstract-factory-pattern.md
+          - 14. Abstract Server パターン: fsharp/14-abstract-server-pattern.md

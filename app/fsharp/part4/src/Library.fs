@@ -1459,3 +1459,316 @@ module AbstractFactoryPattern =
                     thenFactory config
                 else
                     elseFactory config
+
+// ============================================
+// 第14章: Abstract Server パターン
+// ============================================
+
+module AbstractServerPattern =
+
+    // ============================================
+    // 1. Switchable インターフェース
+    // ============================================
+
+    /// スイッチ可能なデバイスのインターフェース
+    type ISwitchable =
+        abstract member TurnOn: unit -> ISwitchable
+        abstract member TurnOff: unit -> ISwitchable
+        abstract member IsOn: bool
+
+    // ============================================
+    // 2. Concrete Server: Light
+    // ============================================
+
+    type Light =
+        { State: bool }
+        interface ISwitchable with
+            member this.TurnOn() = { State = true } :> ISwitchable
+            member this.TurnOff() = { State = false } :> ISwitchable
+            member this.IsOn = this.State
+
+    module Light =
+        let create () = { State = false }
+        let createOn () = { State = true }
+
+    // ============================================
+    // 3. Concrete Server: Fan
+    // ============================================
+
+    [<RequireQualifiedAccess>]
+    type FanSpeed = | Low | Medium | High
+
+    type Fan =
+        { State: bool
+          Speed: FanSpeed option }
+        interface ISwitchable with
+            member this.TurnOn() = { State = true; Speed = Some FanSpeed.Low } :> ISwitchable
+            member this.TurnOff() = { State = false; Speed = None } :> ISwitchable
+            member this.IsOn = this.State
+
+    module Fan =
+        let create () = { State = false; Speed = None }
+        let setSpeed (speed: FanSpeed) (fan: Fan) =
+            if fan.State then { fan with Speed = Some speed }
+            else fan
+
+    // ============================================
+    // 4. Concrete Server: Motor
+    // ============================================
+
+    [<RequireQualifiedAccess>]
+    type MotorDirection = | Forward | Reverse
+
+    type Motor =
+        { State: bool
+          Direction: MotorDirection option }
+        interface ISwitchable with
+            member this.TurnOn() = { State = true; Direction = Some MotorDirection.Forward } :> ISwitchable
+            member this.TurnOff() = { State = false; Direction = None } :> ISwitchable
+            member this.IsOn = this.State
+
+    module Motor =
+        let create () = { State = false; Direction = None }
+        let reverse (motor: Motor) =
+            if motor.State then
+                let newDir =
+                    match motor.Direction with
+                    | Some MotorDirection.Forward -> Some MotorDirection.Reverse
+                    | Some MotorDirection.Reverse -> Some MotorDirection.Forward
+                    | None -> Some MotorDirection.Forward
+                { motor with Direction = newDir }
+            else motor
+
+    // ============================================
+    // 5. Client: Switch
+    // ============================================
+
+    module Switch =
+        /// スイッチを入れる
+        let engage (device: ISwitchable) : ISwitchable =
+            device.TurnOn()
+
+        /// スイッチを切る
+        let disengage (device: ISwitchable) : ISwitchable =
+            device.TurnOff()
+
+        /// スイッチを切り替える
+        let toggle (device: ISwitchable) : ISwitchable =
+            if device.IsOn then device.TurnOff()
+            else device.TurnOn()
+
+        /// デバイスの状態を取得
+        let status (device: ISwitchable) : string =
+            if device.IsOn then "ON" else "OFF"
+
+    // ============================================
+    // 6. Repository インターフェース
+    // ============================================
+
+    /// リポジトリインターフェース
+    type IRepository<'TEntity, 'TId> =
+        abstract member FindById: 'TId -> 'TEntity option
+        abstract member FindAll: unit -> 'TEntity list
+        abstract member Save: 'TEntity -> 'TEntity
+        abstract member Delete: 'TId -> bool
+
+    // ============================================
+    // 7. Concrete Server: MemoryRepository
+    // ============================================
+
+    type User =
+        { Id: string
+          Name: string
+          Email: string
+          CreatedAt: System.DateTime }
+
+    type MemoryUserRepository(initialData: Map<string, User>) =
+        let mutable data = initialData
+
+        interface IRepository<User, string> with
+            member _.FindById(id) = Map.tryFind id data
+            member _.FindAll() = data |> Map.toList |> List.map snd
+            member _.Save(user) =
+                let userId = if user.Id = "" then System.Guid.NewGuid().ToString() else user.Id
+                let userWithId = { user with Id = userId }
+                data <- Map.add userId userWithId data
+                userWithId
+            member _.Delete(id) =
+                if Map.containsKey id data then
+                    data <- Map.remove id data
+                    true
+                else false
+
+    module MemoryUserRepository =
+        let create () = MemoryUserRepository(Map.empty)
+
+    // ============================================
+    // 8. Client: UserService
+    // ============================================
+
+    module UserService =
+        /// ユーザーを作成
+        let createUser (repo: IRepository<User, string>) (name: string) (email: string) : User =
+            let user =
+                { Id = ""
+                  Name = name
+                  Email = email
+                  CreatedAt = System.DateTime.UtcNow }
+            repo.Save(user)
+
+        /// ユーザーを取得
+        let getUser (repo: IRepository<User, string>) (id: string) : User option =
+            repo.FindById(id)
+
+        /// 全ユーザーを取得
+        let getAllUsers (repo: IRepository<User, string>) : User list =
+            repo.FindAll()
+
+        /// ユーザーを削除
+        let deleteUser (repo: IRepository<User, string>) (id: string) : bool =
+            repo.Delete(id)
+
+    // ============================================
+    // 9. 関数型アプローチ（レコード＋関数）
+    // ============================================
+
+    /// 関数型リポジトリ
+    type FunctionalRepository<'TEntity, 'TId> =
+        { FindById: 'TId -> 'TEntity option
+          FindAll: unit -> 'TEntity list
+          Save: 'TEntity -> 'TEntity
+          Delete: 'TId -> bool }
+
+    module FunctionalRepository =
+        /// インメモリリポジトリを作成
+        let createInMemory<'TId, 'TEntity when 'TId: comparison>
+            (getId: 'TEntity -> 'TId)
+            (setId: 'TId -> 'TEntity -> 'TEntity)
+            (generateId: unit -> 'TId)
+            : FunctionalRepository<'TEntity, 'TId> =
+            let mutable data: Map<'TId, 'TEntity> = Map.empty
+            { FindById = fun id -> Map.tryFind id data
+              FindAll = fun () -> data |> Map.toList |> List.map snd
+              Save = fun entity ->
+                  let entityId = if getId entity = Unchecked.defaultof<'TId> then generateId() else getId entity
+                  let entityWithId = setId entityId entity
+                  data <- Map.add entityId entityWithId data
+                  entityWithId
+              Delete = fun id ->
+                  if Map.containsKey id data then
+                      data <- Map.remove id data
+                      true
+                  else false }
+
+    // ============================================
+    // 10. Logger インターフェース
+    // ============================================
+
+    [<RequireQualifiedAccess>]
+    type LogLevel = | Debug | Info | Warning | Error
+
+    type ILogger =
+        abstract member Log: LogLevel -> string -> unit
+        abstract member Debug: string -> unit
+        abstract member Info: string -> unit
+        abstract member Warning: string -> unit
+        abstract member Error: string -> unit
+
+    type ConsoleLogger() =
+        interface ILogger with
+            member _.Log level message =
+                printfn "[%A] %s" level message
+            member this.Debug message = (this :> ILogger).Log LogLevel.Debug message
+            member this.Info message = (this :> ILogger).Log LogLevel.Info message
+            member this.Warning message = (this :> ILogger).Log LogLevel.Warning message
+            member this.Error message = (this :> ILogger).Log LogLevel.Error message
+
+    type NullLogger() =
+        interface ILogger with
+            member _.Log _ _ = ()
+            member _.Debug _ = ()
+            member _.Info _ = ()
+            member _.Warning _ = ()
+            member _.Error _ = ()
+
+    type BufferedLogger() =
+        let mutable logs: (LogLevel * string * System.DateTime) list = []
+
+        interface ILogger with
+            member _.Log level message =
+                logs <- (level, message, System.DateTime.UtcNow) :: logs
+            member this.Debug message = (this :> ILogger).Log LogLevel.Debug message
+            member this.Info message = (this :> ILogger).Log LogLevel.Info message
+            member this.Warning message = (this :> ILogger).Log LogLevel.Warning message
+            member this.Error message = (this :> ILogger).Log LogLevel.Error message
+
+        member _.GetLogs() = List.rev logs
+        member _.Clear() = logs <- []
+
+    // ============================================
+    // 11. Cache インターフェース
+    // ============================================
+
+    type ICache<'TKey, 'TValue> =
+        abstract member Get: 'TKey -> 'TValue option
+        abstract member Set: 'TKey -> 'TValue -> unit
+        abstract member Remove: 'TKey -> bool
+        abstract member Clear: unit -> unit
+
+    type MemoryCache<'TKey, 'TValue when 'TKey: comparison>() =
+        let mutable data: Map<'TKey, 'TValue> = Map.empty
+
+        interface ICache<'TKey, 'TValue> with
+            member _.Get key = Map.tryFind key data
+            member _.Set key value = data <- Map.add key value data
+            member _.Remove key =
+                if Map.containsKey key data then
+                    data <- Map.remove key data
+                    true
+                else false
+            member _.Clear() = data <- Map.empty
+
+    // ============================================
+    // 12. MessageQueue インターフェース
+    // ============================================
+
+    type IMessageQueue<'TMessage> =
+        abstract member Enqueue: 'TMessage -> unit
+        abstract member Dequeue: unit -> 'TMessage option
+        abstract member Peek: unit -> 'TMessage option
+        abstract member Count: int
+
+    type InMemoryQueue<'TMessage>() =
+        let mutable queue: 'TMessage list = []
+
+        interface IMessageQueue<'TMessage> with
+            member _.Enqueue message = queue <- queue @ [ message ]
+            member _.Dequeue() =
+                match queue with
+                | [] -> None
+                | head :: tail ->
+                    queue <- tail
+                    Some head
+            member _.Peek() = List.tryHead queue
+            member _.Count = List.length queue
+
+    // ============================================
+    // 13. 依存性注入コンテナ（シンプル版）
+    // ============================================
+
+    type ServiceContainer() =
+        let mutable services: Map<string, obj> = Map.empty
+
+        member _.Register<'T>(key: string) (service: 'T) =
+            services <- Map.add key (box service) services
+
+        member _.Resolve<'T>(key: string) : 'T option =
+            Map.tryFind key services |> Option.map (fun s -> s :?> 'T)
+
+        member _.RegisterSingleton<'T>(service: 'T) =
+            let key = typeof<'T>.FullName
+            services <- Map.add key (box service) services
+
+        member _.ResolveSingleton<'T>() : 'T option =
+            let key = typeof<'T>.FullName
+            Map.tryFind key services |> Option.map (fun s -> s :?> 'T)

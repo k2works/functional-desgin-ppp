@@ -1138,3 +1138,444 @@ module ThemeFactoryTests =
         Assert.Equal("HighContrast", theme.Name)
         Assert.Equal("#000000", theme.Colors.Background)
         Assert.Equal("#ffffff", theme.Colors.Text)
+
+// ============================================
+// 第14章: Abstract Server パターンテスト
+// ============================================
+
+open FunctionalDesign.Part4.AbstractServerPattern
+
+// ============================================
+// 1. Switchable インターフェーステスト
+// ============================================
+
+module SwitchableTests =
+
+    [<Fact>]
+    let ``Lightを作成すると初期状態はOFF`` () =
+        let light = Light.create ()
+        Assert.False((light :> ISwitchable).IsOn)
+
+    [<Fact>]
+    let ``LightをONにできる`` () =
+        let light = Light.create ()
+        let lightOn = (light :> ISwitchable).TurnOn()
+        Assert.True(lightOn.IsOn)
+
+    [<Fact>]
+    let ``LightをOFFにできる`` () =
+        let light = Light.createOn ()
+        let lightOff = (light :> ISwitchable).TurnOff()
+        Assert.False(lightOff.IsOn)
+
+    [<Fact>]
+    let ``Fanを作成すると初期状態はOFF`` () =
+        let fan = Fan.create ()
+        Assert.False((fan :> ISwitchable).IsOn)
+        Assert.Equal(None, fan.Speed)
+
+    [<Fact>]
+    let ``FanをONにするとLowスピードになる`` () =
+        let fan = Fan.create ()
+        let fanOn = (fan :> ISwitchable).TurnOn() :?> Fan
+        Assert.True((fanOn :> ISwitchable).IsOn)
+        Assert.Equal(Some FanSpeed.Low, fanOn.Speed)
+
+    [<Fact>]
+    let ``FanのスピードをHighに変更できる`` () =
+        let fan = { State = true; Speed = Some FanSpeed.Low }
+        let fanHigh = Fan.setSpeed FanSpeed.High fan
+        Assert.Equal(Some FanSpeed.High, fanHigh.Speed)
+
+    [<Fact>]
+    let ``OFFのFanはスピード変更できない`` () =
+        let fan = Fan.create ()
+        let result = Fan.setSpeed FanSpeed.High fan
+        Assert.Equal(None, result.Speed)
+
+    [<Fact>]
+    let ``Motorを作成すると初期状態はOFF`` () =
+        let motor = Motor.create ()
+        Assert.False((motor :> ISwitchable).IsOn)
+        Assert.Equal(None, motor.Direction)
+
+    [<Fact>]
+    let ``MotorをONにするとForward方向になる`` () =
+        let motor = Motor.create ()
+        let motorOn = (motor :> ISwitchable).TurnOn() :?> Motor
+        Assert.True((motorOn :> ISwitchable).IsOn)
+        Assert.Equal(Some MotorDirection.Forward, motorOn.Direction)
+
+    [<Fact>]
+    let ``Motorの方向を反転できる`` () =
+        let motor = { State = true; Direction = Some MotorDirection.Forward }
+        let reversed = Motor.reverse motor
+        Assert.Equal(Some MotorDirection.Reverse, reversed.Direction)
+
+    [<Fact>]
+    let ``OFFのMotorは反転できない`` () =
+        let motor = Motor.create ()
+        let result = Motor.reverse motor
+        Assert.Equal(None, result.Direction)
+
+// ============================================
+// 2. Switch クライアントテスト
+// ============================================
+
+module SwitchClientTests =
+
+    [<Fact>]
+    let ``Switchでデバイスをengageできる`` () =
+        let light = Light.create ()
+        let lightOn = Switch.engage (light :> ISwitchable)
+        Assert.True(lightOn.IsOn)
+
+    [<Fact>]
+    let ``Switchでデバイスをdisengageできる`` () =
+        let light = Light.createOn ()
+        let lightOff = Switch.disengage (light :> ISwitchable)
+        Assert.False(lightOff.IsOn)
+
+    [<Fact>]
+    let ``SwitchでOFFデバイスをtoggleするとONになる`` () =
+        let light = Light.create ()
+        let toggled = Switch.toggle (light :> ISwitchable)
+        Assert.True(toggled.IsOn)
+
+    [<Fact>]
+    let ``SwitchでONデバイスをtoggleするとOFFになる`` () =
+        let light = Light.createOn ()
+        let toggled = Switch.toggle (light :> ISwitchable)
+        Assert.False(toggled.IsOn)
+
+    [<Fact>]
+    let ``Switchでデバイスのステータスを取得できる`` () =
+        let lightOn = Light.createOn ()
+        let lightOff = Light.create ()
+        Assert.Equal("ON", Switch.status (lightOn :> ISwitchable))
+        Assert.Equal("OFF", Switch.status (lightOff :> ISwitchable))
+
+    [<Fact>]
+    let ``異なるデバイスをSwitchで操作できる`` () =
+        let light = Light.create ()
+        let fan = Fan.create ()
+        let motor = Motor.create ()
+
+        let lightOn = Switch.engage (light :> ISwitchable)
+        let fanOn = Switch.engage (fan :> ISwitchable)
+        let motorOn = Switch.engage (motor :> ISwitchable)
+
+        Assert.True(lightOn.IsOn)
+        Assert.True(fanOn.IsOn)
+        Assert.True(motorOn.IsOn)
+
+// ============================================
+// 3. Repository インターフェーステスト
+// ============================================
+
+module RepositoryTests =
+
+    [<Fact>]
+    let ``MemoryRepositoryでユーザーを保存・取得できる`` () =
+        let repo = MemoryUserRepository.create ()
+        let user = { Id = ""; Name = "Alice"; Email = "alice@example.com"; CreatedAt = DateTime.UtcNow }
+        let saved = (repo :> IRepository<User, string>).Save(user)
+
+        Assert.NotEqual<string>("", saved.Id)
+        let found = (repo :> IRepository<User, string>).FindById(saved.Id)
+        Assert.True(found.IsSome)
+        Assert.Equal("Alice", found.Value.Name)
+
+    [<Fact>]
+    let ``MemoryRepositoryで全ユーザーを取得できる`` () =
+        let repo = MemoryUserRepository.create ()
+        let user1 = { Id = ""; Name = "Alice"; Email = "alice@example.com"; CreatedAt = DateTime.UtcNow }
+        let user2 = { Id = ""; Name = "Bob"; Email = "bob@example.com"; CreatedAt = DateTime.UtcNow }
+        (repo :> IRepository<User, string>).Save(user1) |> ignore
+        (repo :> IRepository<User, string>).Save(user2) |> ignore
+
+        let all = (repo :> IRepository<User, string>).FindAll()
+        Assert.Equal(2, List.length all)
+
+    [<Fact>]
+    let ``MemoryRepositoryでユーザーを削除できる`` () =
+        let repo = MemoryUserRepository.create ()
+        let user = { Id = ""; Name = "Alice"; Email = "alice@example.com"; CreatedAt = DateTime.UtcNow }
+        let saved = (repo :> IRepository<User, string>).Save(user)
+
+        let deleted = (repo :> IRepository<User, string>).Delete(saved.Id)
+        Assert.True(deleted)
+
+        let found = (repo :> IRepository<User, string>).FindById(saved.Id)
+        Assert.True(found.IsNone)
+
+    [<Fact>]
+    let ``存在しないユーザーの削除はfalseを返す`` () =
+        let repo = MemoryUserRepository.create ()
+        let deleted = (repo :> IRepository<User, string>).Delete("nonexistent")
+        Assert.False(deleted)
+
+// ============================================
+// 4. UserService クライアントテスト
+// ============================================
+
+module UserServiceTests =
+
+    [<Fact>]
+    let ``UserServiceでユーザーを作成できる`` () =
+        let repo = MemoryUserRepository.create () :> IRepository<User, string>
+        let user = UserService.createUser repo "Alice" "alice@example.com"
+
+        Assert.NotEqual<string>("", user.Id)
+        Assert.Equal("Alice", user.Name)
+        Assert.Equal("alice@example.com", user.Email)
+
+    [<Fact>]
+    let ``UserServiceでユーザーを取得できる`` () =
+        let repo = MemoryUserRepository.create () :> IRepository<User, string>
+        let created = UserService.createUser repo "Bob" "bob@example.com"
+        let found = UserService.getUser repo created.Id
+
+        Assert.True(found.IsSome)
+        Assert.Equal("Bob", found.Value.Name)
+
+    [<Fact>]
+    let ``UserServiceで全ユーザーを取得できる`` () =
+        let repo = MemoryUserRepository.create () :> IRepository<User, string>
+        UserService.createUser repo "Alice" "alice@example.com" |> ignore
+        UserService.createUser repo "Bob" "bob@example.com" |> ignore
+
+        let all = UserService.getAllUsers repo
+        Assert.Equal(2, List.length all)
+
+    [<Fact>]
+    let ``UserServiceでユーザーを削除できる`` () =
+        let repo = MemoryUserRepository.create () :> IRepository<User, string>
+        let created = UserService.createUser repo "Alice" "alice@example.com"
+        let deleted = UserService.deleteUser repo created.Id
+
+        Assert.True(deleted)
+        Assert.True((UserService.getUser repo created.Id).IsNone)
+
+// ============================================
+// 5. Logger インターフェーステスト
+// ============================================
+
+module LoggerTests =
+
+    [<Fact>]
+    let ``BufferedLoggerでログを記録できる`` () =
+        let logger = BufferedLogger()
+        (logger :> ILogger).Info "Test message"
+        (logger :> ILogger).Warning "Warning message"
+        (logger :> ILogger).Error "Error message"
+
+        let logs = logger.GetLogs()
+        Assert.Equal(3, List.length logs)
+
+    [<Fact>]
+    let ``BufferedLoggerでログレベルが正しく記録される`` () =
+        let logger = BufferedLogger()
+        (logger :> ILogger).Debug "Debug"
+        (logger :> ILogger).Info "Info"
+
+        let logs = logger.GetLogs()
+        let (level1, msg1, _) = logs.[0]
+        let (level2, msg2, _) = logs.[1]
+
+        Assert.Equal(LogLevel.Debug, level1)
+        Assert.Equal("Debug", msg1)
+        Assert.Equal(LogLevel.Info, level2)
+        Assert.Equal("Info", msg2)
+
+    [<Fact>]
+    let ``BufferedLoggerをクリアできる`` () =
+        let logger = BufferedLogger()
+        (logger :> ILogger).Info "Test"
+        logger.Clear()
+
+        Assert.Equal<(LogLevel * string * DateTime) list>([], logger.GetLogs())
+
+    [<Fact>]
+    let ``NullLoggerは何も記録しない`` () =
+        let logger = NullLogger()
+        (logger :> ILogger).Info "Test"
+        (logger :> ILogger).Error "Error"
+        // NullLoggerは何もしないことを確認（エラーが発生しないこと）
+        Assert.True(true)
+
+// ============================================
+// 6. Cache インターフェーステスト
+// ============================================
+
+module CacheTests =
+
+    [<Fact>]
+    let ``MemoryCacheで値を保存・取得できる`` () =
+        let cache = MemoryCache<string, int>()
+        (cache :> ICache<string, int>).Set "key1" 100
+
+        let result = (cache :> ICache<string, int>).Get "key1"
+        Assert.Equal(Some 100, result)
+
+    [<Fact>]
+    let ``MemoryCacheで存在しないキーはNoneを返す`` () =
+        let cache = MemoryCache<string, int>()
+        let result = (cache :> ICache<string, int>).Get "nonexistent"
+        Assert.Equal(None, result)
+
+    [<Fact>]
+    let ``MemoryCacheで値を削除できる`` () =
+        let cache = MemoryCache<string, int>()
+        (cache :> ICache<string, int>).Set "key1" 100
+        let removed = (cache :> ICache<string, int>).Remove "key1"
+
+        Assert.True(removed)
+        Assert.Equal(None, (cache :> ICache<string, int>).Get "key1")
+
+    [<Fact>]
+    let ``MemoryCacheをクリアできる`` () =
+        let cache = MemoryCache<string, int>()
+        (cache :> ICache<string, int>).Set "key1" 100
+        (cache :> ICache<string, int>).Set "key2" 200
+        (cache :> ICache<string, int>).Clear()
+
+        Assert.Equal(None, (cache :> ICache<string, int>).Get "key1")
+        Assert.Equal(None, (cache :> ICache<string, int>).Get "key2")
+
+// ============================================
+// 7. MessageQueue インターフェーステスト
+// ============================================
+
+module MessageQueueTests =
+
+    [<Fact>]
+    let ``InMemoryQueueでメッセージをエンキュー・デキューできる`` () =
+        let queue = InMemoryQueue<string>()
+        (queue :> IMessageQueue<string>).Enqueue "Message 1"
+        (queue :> IMessageQueue<string>).Enqueue "Message 2"
+
+        let msg1 = (queue :> IMessageQueue<string>).Dequeue()
+        let msg2 = (queue :> IMessageQueue<string>).Dequeue()
+
+        Assert.Equal(Some "Message 1", msg1)
+        Assert.Equal(Some "Message 2", msg2)
+
+    [<Fact>]
+    let ``InMemoryQueueでPeekすると先頭を覗ける`` () =
+        let queue = InMemoryQueue<string>()
+        (queue :> IMessageQueue<string>).Enqueue "First"
+        (queue :> IMessageQueue<string>).Enqueue "Second"
+
+        let peeked = (queue :> IMessageQueue<string>).Peek()
+        Assert.Equal(Some "First", peeked)
+        Assert.Equal(2, (queue :> IMessageQueue<string>).Count)
+
+    [<Fact>]
+    let ``空のキューからDequeueするとNoneを返す`` () =
+        let queue = InMemoryQueue<string>()
+        let result = (queue :> IMessageQueue<string>).Dequeue()
+        Assert.Equal(None, result)
+
+    [<Fact>]
+    let ``InMemoryQueueでCountが正しく計算される`` () =
+        let queue = InMemoryQueue<int>()
+        Assert.Equal(0, (queue :> IMessageQueue<int>).Count)
+
+        (queue :> IMessageQueue<int>).Enqueue 1
+        (queue :> IMessageQueue<int>).Enqueue 2
+        Assert.Equal(2, (queue :> IMessageQueue<int>).Count)
+
+        (queue :> IMessageQueue<int>).Dequeue() |> ignore
+        Assert.Equal(1, (queue :> IMessageQueue<int>).Count)
+
+// ============================================
+// 8. ServiceContainer テスト
+// ============================================
+
+module ServiceContainerTests =
+
+    [<Fact>]
+    let ``ServiceContainerでサービスを登録・解決できる`` () =
+        let container = ServiceContainer()
+        let logger = BufferedLogger()
+        container.Register<ILogger> "logger" (logger :> ILogger)
+
+        let resolved = container.Resolve<ILogger> "logger"
+        Assert.True(resolved.IsSome)
+
+    [<Fact>]
+    let ``ServiceContainerで未登録のサービスはNoneを返す`` () =
+        let container = ServiceContainer()
+        let resolved = container.Resolve<ILogger> "nonexistent"
+        Assert.True(resolved.IsNone)
+
+    [<Fact>]
+    let ``ServiceContainerでシングルトンを登録・解決できる`` () =
+        let container = ServiceContainer()
+        let cache = MemoryCache<string, int>()
+        container.RegisterSingleton<ICache<string, int>>(cache :> ICache<string, int>)
+
+        let resolved = container.ResolveSingleton<ICache<string, int>>()
+        Assert.True(resolved.IsSome)
+
+// ============================================
+// 9. FunctionalRepository テスト
+// ============================================
+
+module FunctionalRepositoryTests =
+
+    type SimpleUser = { Id: int; Name: string }
+
+    [<Fact>]
+    let ``FunctionalRepositoryでエンティティを保存・取得できる`` () =
+        let mutable nextId = 1
+        let repo = FunctionalRepository.createInMemory<int, SimpleUser>
+                       (fun u -> u.Id)
+                       (fun id u -> { u with Id = id })
+                       (fun () ->
+                           let id = nextId
+                           nextId <- nextId + 1
+                           id)
+
+        let user = { Id = 0; Name = "Alice" }
+        let saved = repo.Save user
+
+        Assert.True(saved.Id > 0)
+        let found = repo.FindById saved.Id
+        Assert.True(found.IsSome)
+        Assert.Equal("Alice", found.Value.Name)
+
+    [<Fact>]
+    let ``FunctionalRepositoryで全エンティティを取得できる`` () =
+        let mutable nextId = 1
+        let repo = FunctionalRepository.createInMemory<int, SimpleUser>
+                       (fun u -> u.Id)
+                       (fun id u -> { u with Id = id })
+                       (fun () ->
+                           let id = nextId
+                           nextId <- nextId + 1
+                           id)
+
+        repo.Save { Id = 0; Name = "Alice" } |> ignore
+        repo.Save { Id = 0; Name = "Bob" } |> ignore
+
+        let all = repo.FindAll()
+        Assert.Equal(2, List.length all)
+
+    [<Fact>]
+    let ``FunctionalRepositoryでエンティティを削除できる`` () =
+        let mutable nextId = 1
+        let repo = FunctionalRepository.createInMemory<int, SimpleUser>
+                       (fun u -> u.Id)
+                       (fun id u -> { u with Id = id })
+                       (fun () ->
+                           let id = nextId
+                           nextId <- nextId + 1
+                           id)
+
+        let saved = repo.Save { Id = 0; Name = "Alice" }
+        let deleted = repo.Delete saved.Id
+
+        Assert.True(deleted)
+        Assert.True((repo.FindById saved.Id).IsNone)
