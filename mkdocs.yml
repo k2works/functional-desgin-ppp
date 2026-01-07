@@ -106,3 +106,4 @@ nav:
       - 第4部 - 振る舞いパターン:
           - 10. Strategy パターン: scala/10-strategy-pattern.md
           - 11. Command パターン: scala/11-command-pattern.md
+          - 12. Visitor パターン: scala/12-visitor-pattern.md
