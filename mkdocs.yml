@@ -98,3 +98,4 @@ nav:
       - 第2部 - 仕様とテスト:
           - 4. データ検証: scala/04-data-validation.md
           - 5. プロパティベーステスト: scala/05-property-based-testing.md
+          - 6. TDD と関数型プログラミング: scala/06-tdd-functional.md
