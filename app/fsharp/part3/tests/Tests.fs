@@ -1111,3 +1111,312 @@ module TransactionalOperationTests =
             |> TransactionalOperation.addOperation (fun x -> x + 5)
         Assert.Equal(TransactionState.NotStarted, tx.State)
         Assert.Equal(None, TransactionalOperation.getValue tx)
+
+
+// ============================================
+// 第9章: Adapter パターン テスト
+// ============================================
+
+open FunctionalDesign.Part3.AdapterPattern
+
+// ============================================
+// 1. VariableLightAdapter テスト
+// ============================================
+
+module VariableLightAdapterTests =
+
+    [<Fact>]
+    let ``VariableLight を作成できる`` () =
+        let light = VariableLight.Create(50)
+        Assert.Equal(50, light.Intensity)
+
+    [<Fact>]
+    let ``VariableLight の強度を設定できる`` () =
+        let light = VariableLight.Create(50)
+        let updated = light.SetIntensity(80)
+        Assert.Equal(80, updated.Intensity)
+
+    [<Fact>]
+    let ``VariableLight の強度は0-100にクランプされる`` () =
+        let light = VariableLight.Create(50)
+        Assert.Equal(0, light.SetIntensity(-10).Intensity)
+        Assert.Equal(100, light.SetIntensity(150).Intensity)
+
+    [<Fact>]
+    let ``VariableLightAdapter を作成できる`` () =
+        let light = VariableLight.Create(0)
+        let adapter = VariableLightAdapter.create light
+        Assert.Equal(0, VariableLightAdapter.getIntensity adapter)
+
+    [<Fact>]
+    let ``VariableLightAdapter.turnOn で最大強度になる`` () =
+        let light = VariableLight.Create(0)
+        let adapter = VariableLightAdapter.create light :> ISwitchable
+        let on = adapter.TurnOn() :?> VariableLightAdapter
+        Assert.True(adapter.TurnOn().IsOn)
+        Assert.Equal(100, VariableLightAdapter.getIntensity on)
+
+    [<Fact>]
+    let ``VariableLightAdapter.turnOff で最小強度になる`` () =
+        let light = VariableLight.Create(100)
+        let adapter = VariableLightAdapter.create light :> ISwitchable
+        let off = adapter.TurnOff() :?> VariableLightAdapter
+        Assert.False(adapter.TurnOff().IsOn)
+        Assert.Equal(0, VariableLightAdapter.getIntensity off)
+
+// ============================================
+// 2. UserFormatAdapter テスト
+// ============================================
+
+module UserFormatAdapterTests =
+
+    [<Fact>]
+    let ``旧フォーマットを新フォーマットに変換できる`` () =
+        let old = { FirstName = "太郎"; LastName = "山田"; EmailAddress = "taro@example.com"; PhoneNumber = "090-1234-5678" }
+        let newUser = UserFormatAdapter.adaptOldToNew old
+        Assert.Equal("山田 太郎", newUser.Name)
+        Assert.Equal("taro@example.com", newUser.Email)
+        Assert.Equal("090-1234-5678", newUser.Phone)
+        Assert.True(newUser.Metadata.ContainsKey("migrated"))
+
+    [<Fact>]
+    let ``新フォーマットを旧フォーマットに変換できる`` () =
+        let newUser = { Name = "山田 太郎"; Email = "taro@example.com"; Phone = "090-1234-5678"; Metadata = Map.empty }
+        let old = UserFormatAdapter.adaptNewToOld newUser
+        Assert.Equal("太郎", old.FirstName)
+        Assert.Equal("山田", old.LastName)
+        Assert.Equal("taro@example.com", old.EmailAddress)
+
+    [<Fact>]
+    let ``往復変換で元のデータに戻る`` () =
+        let original = { FirstName = "太郎"; LastName = "山田"; EmailAddress = "taro@example.com"; PhoneNumber = "090-1234-5678" }
+        let roundTrip = original |> UserFormatAdapter.adaptOldToNew |> UserFormatAdapter.adaptNewToOld
+        Assert.Equal(original.FirstName, roundTrip.FirstName)
+        Assert.Equal(original.LastName, roundTrip.LastName)
+        Assert.Equal(original.EmailAddress, roundTrip.EmailAddress)
+
+// ============================================
+// 3. TemperatureAdapter テスト
+// ============================================
+
+module TemperatureAdapterTests =
+
+    [<Fact>]
+    let ``摂氏0度は華氏32度`` () =
+        let (Fahrenheit f) = TemperatureAdapter.celsiusToFahrenheit (Celsius 0.0)
+        Assert.Equal(32.0, f, 2)
+
+    [<Fact>]
+    let ``摂氏100度は華氏212度`` () =
+        let (Fahrenheit f) = TemperatureAdapter.celsiusToFahrenheit (Celsius 100.0)
+        Assert.Equal(212.0, f, 2)
+
+    [<Fact>]
+    let ``華氏32度は摂氏0度`` () =
+        let (Celsius c) = TemperatureAdapter.fahrenheitToCelsius (Fahrenheit 32.0)
+        Assert.Equal(0.0, c, 2)
+
+    [<Fact>]
+    let ``摂氏0度はケルビン273.15`` () =
+        let (Kelvin k) = TemperatureAdapter.celsiusToKelvin (Celsius 0.0)
+        Assert.Equal(273.15, k, 2)
+
+    [<Fact>]
+    let ``ケルビン273.15は摂氏0度`` () =
+        let (Celsius c) = TemperatureAdapter.kelvinToCelsius (Kelvin 273.15)
+        Assert.Equal(0.0, c, 2)
+
+    [<Fact>]
+    let ``往復変換で元の値に戻る`` () =
+        let original = Celsius 25.0
+        let (Celsius result) =
+            original
+            |> TemperatureAdapter.celsiusToFahrenheit
+            |> TemperatureAdapter.fahrenheitToCelsius
+        Assert.Equal(25.0, result, 2)
+
+// ============================================
+// 4. DateTimeAdapter テスト
+// ============================================
+
+module DateTimeAdapterTests =
+
+    [<Fact>]
+    let ``UnixタイムスタンプをDateTimeに変換できる`` () =
+        let dt = DateTimeAdapter.fromUnixTimestamp 0L
+        Assert.Equal(1970, dt.Year)
+        Assert.Equal(1, dt.Month)
+        Assert.Equal(1, dt.Day)
+
+    [<Fact>]
+    let ``DateTimeをUnixタイムスタンプに変換できる`` () =
+        let dt = System.DateTime(1970, 1, 1, 0, 0, 0, System.DateTimeKind.Utc)
+        let timestamp = DateTimeAdapter.toUnixTimestamp dt
+        Assert.Equal(0L, timestamp)
+
+    [<Fact>]
+    let ``ISO 8601文字列をパースできる`` () =
+        let result = DateTimeAdapter.fromIso8601 "2023-06-15T10:30:00Z"
+        Assert.True(result.IsSome)
+        Assert.Equal(2023, result.Value.Year)
+        Assert.Equal(6, result.Value.Month)
+        Assert.Equal(15, result.Value.Day)
+
+    [<Fact>]
+    let ``無効な文字列はNoneを返す`` () =
+        let result = DateTimeAdapter.fromIso8601 "invalid"
+        Assert.True(result.IsNone)
+
+    [<Fact>]
+    let ``カスタムフォーマットでパースできる`` () =
+        let result = DateTimeAdapter.fromCustomFormat "yyyy/MM/dd" "2023/06/15"
+        Assert.True(result.IsSome)
+        Assert.Equal(2023, result.Value.Year)
+
+// ============================================
+// 5. CurrencyAdapter テスト
+// ============================================
+
+module CurrencyAdapterTests =
+
+    [<Fact>]
+    let ``USDはそのままUSD`` () =
+        let (USD result) = CurrencyAdapter.toUSD (USD 100m)
+        Assert.Equal(100m, result)
+
+    [<Fact>]
+    let ``EURをUSDに変換できる`` () =
+        let (USD result) = CurrencyAdapter.toUSD (EUR 85m)
+        Assert.Equal(100m, result)
+
+    [<Fact>]
+    let ``USDからEURに変換できる`` () =
+        let (EUR result) = CurrencyAdapter.fromUSD (USD 100m) "EUR"
+        Assert.Equal(85m, result)
+
+    [<Fact>]
+    let ``金額を取得できる`` () =
+        Assert.Equal(100m, CurrencyAdapter.getAmount (USD 100m))
+        Assert.Equal(85m, CurrencyAdapter.getAmount (EUR 85m))
+        Assert.Equal(110m, CurrencyAdapter.getAmount (JPY 110m))
+
+// ============================================
+// 6. FilePathAdapter テスト
+// ============================================
+
+module FilePathAdapterTests =
+
+    [<Fact>]
+    let ``WindowsパスをUnixパスに変換できる`` () =
+        let result = FilePathAdapter.windowsToUnix @"C:\Users\test\file.txt"
+        Assert.Equal("C:/Users/test/file.txt", result)
+
+    [<Fact>]
+    let ``UnixパスをWindowsパスに変換できる`` () =
+        let result = FilePathAdapter.unixToWindows "/home/test/file.txt"
+        Assert.Equal(@"\home\test\file.txt", result)
+
+    [<Fact>]
+    let ``パスコンポーネントを取得できる`` () =
+        let components = FilePathAdapter.getComponents "/home/test/file.txt"
+        Assert.Equal<string list>([ "home"; "test"; "file.txt" ], components)
+
+    [<Fact>]
+    let ``コンポーネントからパスを構築できる`` () =
+        let path = FilePathAdapter.fromComponents '/' [ "home"; "test"; "file.txt" ]
+        Assert.Equal("home/test/file.txt", path)
+
+// ============================================
+// 7. LogLevelAdapter テスト
+// ============================================
+
+module LogLevelAdapterTests =
+
+    [<Fact>]
+    let ``アプリログレベルを外部に変換できる`` () =
+        Assert.Equal(ExternalLogLevel.Verbose, LogLevelAdapter.appToExternal AppLogLevel.Trace)
+        Assert.Equal(ExternalLogLevel.Debug, LogLevelAdapter.appToExternal AppLogLevel.Debug)
+        Assert.Equal(ExternalLogLevel.Information, LogLevelAdapter.appToExternal AppLogLevel.Info)
+        Assert.Equal(ExternalLogLevel.Warning, LogLevelAdapter.appToExternal AppLogLevel.Warning)
+        Assert.Equal(ExternalLogLevel.Error, LogLevelAdapter.appToExternal AppLogLevel.Error)
+        Assert.Equal(ExternalLogLevel.Critical, LogLevelAdapter.appToExternal AppLogLevel.Fatal)
+
+    [<Fact>]
+    let ``外部ログレベルをアプリに変換できる`` () =
+        Assert.Equal(AppLogLevel.Trace, LogLevelAdapter.externalToApp ExternalLogLevel.Verbose)
+        Assert.Equal(AppLogLevel.Debug, LogLevelAdapter.externalToApp ExternalLogLevel.Debug)
+        Assert.Equal(AppLogLevel.Info, LogLevelAdapter.externalToApp ExternalLogLevel.Information)
+
+// ============================================
+// 8. CollectionAdapter テスト
+// ============================================
+
+module CollectionAdapterTests =
+
+    [<Fact>]
+    let ``ArrayをListに変換できる`` () =
+        let arr = [| 1; 2; 3 |]
+        let list = CollectionAdapter.arrayToList arr
+        Assert.Equal<int list>([ 1; 2; 3 ], list)
+
+    [<Fact>]
+    let ``ListをArrayに変換できる`` () =
+        let list = [ 1; 2; 3 ]
+        let arr = CollectionAdapter.listToArray list
+        Assert.Equal<int array>([| 1; 2; 3 |], arr)
+
+    [<Fact>]
+    let ``MapをDictionaryに変換できる`` () =
+        let map = Map.ofList [ ("a", 1); ("b", 2) ]
+        let dict = CollectionAdapter.mapToDict map
+        Assert.Equal(1, dict.["a"])
+        Assert.Equal(2, dict.["b"])
+
+    [<Fact>]
+    let ``DictionaryをMapに変換できる`` () =
+        let dict = System.Collections.Generic.Dictionary<string, int>()
+        dict.["a"] <- 1
+        dict.["b"] <- 2
+        let map = CollectionAdapter.dictToMap dict
+        Assert.Equal(Some 1, Map.tryFind "a" map)
+        Assert.Equal(Some 2, Map.tryFind "b" map)
+
+// ============================================
+// 9. ResultAdapter テスト
+// ============================================
+
+module ResultAdapterTests =
+
+    [<Fact>]
+    let ``Some を Ok に変換できる`` () =
+        let result = ResultAdapter.optionToResult "error" (Some 42)
+        Assert.Equal(Ok 42, result)
+
+    [<Fact>]
+    let ``None を Error に変換できる`` () =
+        let result = ResultAdapter.optionToResult "error" None
+        Assert.Equal(Error "error", result)
+
+    [<Fact>]
+    let ``Ok を Some に変換できる`` () =
+        let option = ResultAdapter.resultToOption (Ok 42)
+        Assert.Equal(Some 42, option)
+
+    [<Fact>]
+    let ``Error を None に変換できる`` () =
+        let option = ResultAdapter.resultToOption (Error "error")
+        Assert.Equal(None, option)
+
+    [<Fact>]
+    let ``tryToResult が成功時に Ok を返す`` () =
+        let result = ResultAdapter.tryToResult (fun () -> 42)
+        match result with
+        | Ok v -> Assert.Equal(42, v)
+        | Error _ -> Assert.Fail("Expected Ok")
+
+    [<Fact>]
+    let ``tryToResult が失敗時に Error を返す`` () =
+        let result = ResultAdapter.tryToResult (fun () -> failwith "error")
+        match result with
+        | Ok _ -> Assert.Fail("Expected Error")
+        | Error _ -> Assert.True(true)

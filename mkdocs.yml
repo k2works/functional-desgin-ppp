@@ -133,3 +133,4 @@ nav:
       - Part 3 - デザインパターン（構造）:
           - 07. Composite パターン: fsharp/07-composite-pattern.md
           - 08. Decorator パターン: fsharp/08-decorator-pattern.md
+          - 09. Adapter パターン: fsharp/09-adapter-pattern.md

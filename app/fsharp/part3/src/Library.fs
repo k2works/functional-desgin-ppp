@@ -853,3 +853,389 @@ module DecoratorPattern =
             | _ -> tx
 
         let getValue (tx: TransactionalOperation<'T>) = tx.CurrentValue
+
+
+// ============================================
+// 第9章: Adapter パターン
+// ============================================
+
+module AdapterPattern =
+
+    // ============================================
+    // 1. VariableLightAdapter - インターフェースアダプター
+    // ============================================
+
+    /// スイッチの共通インターフェース
+    type ISwitchable =
+        abstract member TurnOn: unit -> ISwitchable
+        abstract member TurnOff: unit -> ISwitchable
+        abstract member IsOn: bool
+
+    /// 可変強度ライト（既存クラス - アダプティー）
+    type VariableLight =
+        { Intensity: int }
+
+        static member Create(intensity: int) =
+            { Intensity = max 0 (min 100 intensity) }
+
+        member this.SetIntensity(value: int) =
+            { Intensity = max 0 (min 100 value) }
+
+        member this.Brighten(amount: int) =
+            this.SetIntensity(this.Intensity + amount)
+
+        member this.Dim(amount: int) =
+            this.SetIntensity(this.Intensity - amount)
+
+    /// VariableLight を ISwitchable に適応させるアダプター
+    type VariableLightAdapter(light: VariableLight, minIntensity: int, maxIntensity: int) =
+        member _.Light = light
+        member _.MinIntensity = minIntensity
+        member _.MaxIntensity = maxIntensity
+
+        interface ISwitchable with
+            member this.TurnOn() =
+                VariableLightAdapter(light.SetIntensity(maxIntensity), minIntensity, maxIntensity)
+
+            member this.TurnOff() =
+                VariableLightAdapter(light.SetIntensity(minIntensity), minIntensity, maxIntensity)
+
+            member this.IsOn = light.Intensity > minIntensity
+
+    module VariableLightAdapter =
+        let create light =
+            VariableLightAdapter(light, 0, 100)
+
+        let createWithRange minI maxI light =
+            VariableLightAdapter(light, minI, maxI)
+
+        let getIntensity (adapter: VariableLightAdapter) =
+            adapter.Light.Intensity
+
+    // ============================================
+    // 2. UserFormatAdapter - データフォーマット変換
+    // ============================================
+
+    /// 旧ユーザーフォーマット
+    type OldUserFormat =
+        { FirstName: string
+          LastName: string
+          EmailAddress: string
+          PhoneNumber: string }
+
+    /// 新ユーザーフォーマット
+    type NewUserFormat =
+        { Name: string
+          Email: string
+          Phone: string
+          Metadata: Map<string, obj> }
+
+    module UserFormatAdapter =
+        /// 旧フォーマット → 新フォーマット
+        let adaptOldToNew (old: OldUserFormat) : NewUserFormat =
+            { Name = sprintf "%s %s" old.LastName old.FirstName
+              Email = old.EmailAddress
+              Phone = old.PhoneNumber
+              Metadata =
+                Map.ofList
+                    [ ("migrated", box true)
+                      ("originalFormat", box "old") ] }
+
+        /// 新フォーマット → 旧フォーマット
+        let adaptNewToOld (newUser: NewUserFormat) : OldUserFormat =
+            let nameParts = newUser.Name.Split(' ') |> Array.toList
+
+            let (lastName, firstName) =
+                match nameParts with
+                | [ ln; fn ] -> (ln, fn)
+                | [ ln ] -> (ln, "")
+                | ln :: rest -> (ln, String.concat " " rest)
+                | [] -> ("", "")
+
+            { FirstName = firstName
+              LastName = lastName
+              EmailAddress = newUser.Email
+              PhoneNumber = newUser.Phone }
+
+    // ============================================
+    // 3. TemperatureAdapter - 単位変換
+    // ============================================
+
+    /// 摂氏
+    type Celsius = Celsius of float
+
+    /// 華氏
+    type Fahrenheit = Fahrenheit of float
+
+    /// ケルビン
+    type Kelvin = Kelvin of float
+
+    module TemperatureAdapter =
+        let celsiusToFahrenheit (Celsius c) =
+            Fahrenheit(c * 9.0 / 5.0 + 32.0)
+
+        let fahrenheitToCelsius (Fahrenheit f) =
+            Celsius((f - 32.0) * 5.0 / 9.0)
+
+        let celsiusToKelvin (Celsius c) = Kelvin(c + 273.15)
+
+        let kelvinToCelsius (Kelvin k) = Celsius(k - 273.15)
+
+        let fahrenheitToKelvin f =
+            f |> fahrenheitToCelsius |> celsiusToKelvin
+
+        let kelvinToFahrenheit k =
+            k |> kelvinToCelsius |> celsiusToFahrenheit
+
+    // ============================================
+    // 4. DateTimeAdapter - 日時フォーマット変換
+    // ============================================
+
+    module DateTimeAdapter =
+        /// Unix タイムスタンプ → DateTime
+        let fromUnixTimestamp (timestamp: int64) =
+            System.DateTimeOffset.FromUnixTimeSeconds(timestamp).DateTime
+
+        /// DateTime → Unix タイムスタンプ
+        let toUnixTimestamp (dt: System.DateTime) =
+            System.DateTimeOffset(dt).ToUnixTimeSeconds()
+
+        /// ISO 8601 文字列 → DateTime
+        let fromIso8601 (str: string) =
+            try
+                Some(System.DateTime.Parse(str, null, System.Globalization.DateTimeStyles.RoundtripKind))
+            with _ ->
+                None
+
+        /// DateTime → ISO 8601 文字列
+        let toIso8601 (dt: System.DateTime) =
+            dt.ToString("o")
+
+        /// カスタムフォーマット文字列 → DateTime
+        let fromCustomFormat (format: string) (str: string) =
+            try
+                Some(System.DateTime.ParseExact(str, format, System.Globalization.CultureInfo.InvariantCulture))
+            with _ ->
+                None
+
+        /// DateTime → カスタムフォーマット文字列
+        let toCustomFormat (format: string) (dt: System.DateTime) =
+            dt.ToString(format, System.Globalization.CultureInfo.InvariantCulture)
+
+    // ============================================
+    // 5. CurrencyAdapter - 通貨変換
+    // ============================================
+
+    /// 通貨型
+    type Currency =
+        | USD of decimal
+        | EUR of decimal
+        | JPY of decimal
+        | GBP of decimal
+
+    module CurrencyAdapter =
+        /// 為替レート（USD基準）
+        let private exchangeRates =
+            Map.ofList
+                [ ("USD", 1.0m)
+                  ("EUR", 0.85m)
+                  ("JPY", 110.0m)
+                  ("GBP", 0.73m) ]
+
+        /// USDに変換
+        let toUSD currency =
+            match currency with
+            | USD amount -> USD amount
+            | EUR amount -> USD(amount / exchangeRates.["EUR"])
+            | JPY amount -> USD(amount / exchangeRates.["JPY"])
+            | GBP amount -> USD(amount / exchangeRates.["GBP"])
+
+        /// USDから変換
+        let fromUSD (USD amount) targetCurrency =
+            match targetCurrency with
+            | "EUR" -> EUR(amount * exchangeRates.["EUR"])
+            | "JPY" -> JPY(amount * exchangeRates.["JPY"])
+            | "GBP" -> GBP(amount * exchangeRates.["GBP"])
+            | _ -> USD amount
+
+        /// 通貨間変換
+        let convert source (target: string) =
+            let (USD amount) = toUSD source
+            fromUSD (USD amount) target
+
+        /// 金額を取得
+        let getAmount currency =
+            match currency with
+            | USD a -> a
+            | EUR a -> a
+            | JPY a -> a
+            | GBP a -> a
+
+    // ============================================
+    // 6. FilePathAdapter - パス形式変換
+    // ============================================
+
+    module FilePathAdapter =
+        /// Windows パス → Unix パス
+        let windowsToUnix (path: string) =
+            path.Replace("\\", "/")
+
+        /// Unix パス → Windows パス
+        let unixToWindows (path: string) =
+            path.Replace("/", "\\")
+
+        /// 相対パス → 絶対パス
+        let toAbsolute (basePath: string) (relativePath: string) =
+            System.IO.Path.GetFullPath(System.IO.Path.Combine(basePath, relativePath))
+
+        /// パスコンポーネントを取得
+        let getComponents (path: string) =
+            path.Split([| '/'; '\\' |], System.StringSplitOptions.RemoveEmptyEntries)
+            |> Array.toList
+
+        /// コンポーネントからパスを構築
+        let fromComponents (separator: char) (components: string list) =
+            String.concat (string separator) components
+
+    // ============================================
+    // 7. LogLevelAdapter - ログレベル変換
+    // ============================================
+
+    /// アプリケーションのログレベル
+    [<RequireQualifiedAccess>]
+    type AppLogLevel =
+        | Trace
+        | Debug
+        | Info
+        | Warning
+        | Error
+        | Fatal
+
+    /// 外部ライブラリのログレベル
+    type ExternalLogLevel =
+        | Verbose = 0
+        | Debug = 1
+        | Information = 2
+        | Warning = 3
+        | Error = 4
+        | Critical = 5
+
+    module LogLevelAdapter =
+        let appToExternal level =
+            match level with
+            | AppLogLevel.Trace -> ExternalLogLevel.Verbose
+            | AppLogLevel.Debug -> ExternalLogLevel.Debug
+            | AppLogLevel.Info -> ExternalLogLevel.Information
+            | AppLogLevel.Warning -> ExternalLogLevel.Warning
+            | AppLogLevel.Error -> ExternalLogLevel.Error
+            | AppLogLevel.Fatal -> ExternalLogLevel.Critical
+
+        let externalToApp level =
+            match level with
+            | ExternalLogLevel.Verbose -> AppLogLevel.Trace
+            | ExternalLogLevel.Debug -> AppLogLevel.Debug
+            | ExternalLogLevel.Information -> AppLogLevel.Info
+            | ExternalLogLevel.Warning -> AppLogLevel.Warning
+            | ExternalLogLevel.Error -> AppLogLevel.Error
+            | ExternalLogLevel.Critical -> AppLogLevel.Fatal
+            | _ -> AppLogLevel.Info
+
+    // ============================================
+    // 8. JsonAdapter - JSON データ変換
+    // ============================================
+
+    /// 内部データ形式
+    type InternalData =
+        { Id: string
+          Name: string
+          Value: decimal
+          Tags: string list }
+
+    /// 外部JSON形式（シンプルなMap）
+    type ExternalJsonData = Map<string, obj>
+
+    module JsonAdapter =
+        /// Map → InternalData
+        let fromExternalJson (json: ExternalJsonData) : InternalData option =
+            try
+                let id = json.["id"] :?> string
+                let name = json.["name"] :?> string
+                let value = json.["value"] :?> decimal
+
+                let tags =
+                    match json.TryFind "tags" with
+                    | Some t -> (t :?> obj list) |> List.map string
+                    | None -> []
+
+                Some
+                    { Id = id
+                      Name = name
+                      Value = value
+                      Tags = tags }
+            with _ ->
+                None
+
+        /// InternalData → Map
+        let toExternalJson (data: InternalData) : ExternalJsonData =
+            Map.ofList
+                [ ("id", box data.Id)
+                  ("name", box data.Name)
+                  ("value", box data.Value)
+                  ("tags", box data.Tags) ]
+
+    // ============================================
+    // 9. CollectionAdapter - コレクション変換
+    // ============================================
+
+    module CollectionAdapter =
+        /// Array → List
+        let arrayToList (arr: 'T array) = Array.toList arr
+
+        /// List → Array
+        let listToArray (lst: 'T list) = List.toArray lst
+
+        /// Seq → List
+        let seqToList (seq: 'T seq) = Seq.toList seq
+
+        /// List → Seq
+        let listToSeq (lst: 'T list) = List.toSeq lst
+
+        /// Dictionary → Map
+        let dictToMap (dict: System.Collections.Generic.Dictionary<'K, 'V>) =
+            dict |> Seq.map (fun kvp -> (kvp.Key, kvp.Value)) |> Map.ofSeq
+
+        /// Map → Dictionary
+        let mapToDict (map: Map<'K, 'V>) =
+            let dict = System.Collections.Generic.Dictionary<'K, 'V>()
+            map |> Map.iter (fun k v -> dict.[k] <- v)
+            dict
+
+    // ============================================
+    // 10. ResultAdapter - 結果型変換
+    // ============================================
+
+    module ResultAdapter =
+        /// Option → Result
+        let optionToResult (error: 'E) (opt: 'T option) : Result<'T, 'E> =
+            match opt with
+            | Some v -> Ok v
+            | None -> Error error
+
+        /// Result → Option
+        let resultToOption (result: Result<'T, 'E>) : 'T option =
+            match result with
+            | Ok v -> Some v
+            | Error _ -> None
+
+        /// Exception ベース → Result
+        let tryToResult (f: unit -> 'T) : Result<'T, exn> =
+            try
+                Ok(f ())
+            with ex ->
+                Error ex
+
+        /// Result → Exception ベース（例外をスロー）
+        let resultToTry (result: Result<'T, exn>) : 'T =
+            match result with
+            | Ok v -> v
+            | Error ex -> raise ex
