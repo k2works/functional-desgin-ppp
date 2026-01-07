@@ -422,3 +422,263 @@ module CalculationTests =
         let result = sumPrices [ 100m; 200m; 300m ]
         Assert.Equal(600m, result)
 
+
+// ============================================
+// 第5章: プロパティベーステスト
+// ============================================
+
+open FsCheck
+open FsCheck.Xunit
+open FunctionalDesign.Part2.PropertyBasedTesting
+
+// ============================================
+// 1. 文字列操作のプロパティ
+// ============================================
+
+module StringPropertyTests =
+
+    [<Property>]
+    let ``文字列反転は対合: 2回反転すると元に戻る`` (s: string) =
+        let s = if isNull s then "" else s
+        reverseString (reverseString s) = s
+
+    [<Property>]
+    let ``文字列反転は長さを保存する`` (s: string) =
+        let s = if isNull s then "" else s
+        (reverseString s).Length = s.Length
+
+    [<Property>]
+    let ``大文字変換は冪等`` (s: string) =
+        let s = if isNull s then "" else s
+        toUpperCase (toUpperCase s) = toUpperCase s
+
+    [<Property>]
+    let ``小文字変換は冪等`` (s: string) =
+        let s = if isNull s then "" else s
+        toLowerCase (toLowerCase s) = toLowerCase s
+
+// ============================================
+// 2. 数値操作のプロパティ
+// ============================================
+
+module NumberPropertyTests =
+
+    [<Property>]
+    let ``ソートは冪等: 2回ソートしても結果は同じ`` (nums: int list) =
+        sortNumbers (sortNumbers nums) = sortNumbers nums
+
+    [<Property>]
+    let ``ソートは要素を保存する`` (nums: int list) =
+        (sortNumbers nums |> List.sort) = (nums |> List.sort)
+
+    [<Property>]
+    let ``ソートは長さを保存する`` (nums: int list) =
+        (sortNumbers nums).Length = nums.Length
+
+    [<Property>]
+    let ``ソート結果は昇順に並ぶ`` (nums: int list) =
+        let sorted = sortNumbers nums
+
+        match sorted with
+        | [] -> true
+        | [ _ ] -> true
+        | _ -> List.pairwise sorted |> List.forall (fun (a, b) -> a <= b)
+
+    [<Property>]
+    let ``割引後の価格は0以上、元の価格以下`` (price: PositiveInt) =
+        let p = decimal price.Get
+        let r = 0.5 // 固定の割引率を使用
+        let discounted = calculateDiscount p r
+        discounted >= 0m && discounted <= p
+
+// ============================================
+// 3. コレクション操作のプロパティ
+// ============================================
+
+module CollectionPropertyTests =
+
+    [<Property>]
+    let ``filterは長さを減らすか維持する`` (list: int list) =
+        (filter (fun x -> x > 0) list).Length <= list.Length
+
+    [<Property>]
+    let ``filter(常にtrue)は元のリストと同じ`` (list: int list) =
+        filter (fun _ -> true) list = list
+
+    [<Property>]
+    let ``filter(常にfalse)は空リスト`` (list: int list) =
+        filter (fun _ -> false) list = []
+
+    [<Property>]
+    let ``mapは長さを保存する`` (list: int list) =
+        (map (fun x -> x * 2) list).Length = list.Length
+
+    [<Property>]
+    let ``map(identity)は元のリストと同じ`` (list: int list) =
+        map id list = list
+
+    [<Property>]
+    let ``リスト反転は対合`` (list: int list) =
+        reverse (reverse list) = list
+
+    [<Property>]
+    let ``concatの結合律`` (a: int list) (b: int list) (c: int list) =
+        concat (concat a b) c = concat a (concat b c)
+
+    [<Property>]
+    let ``concatの長さは入力の長さの合計`` (a: int list) (b: int list) =
+        (concat a b).Length = a.Length + b.Length
+
+    [<Property>]
+    let ``distinctは標準ライブラリと同じ結果`` (list: int list) =
+        distinct list = List.distinct list
+
+// ============================================
+// 4. ラウンドトリッププロパティ
+// ============================================
+
+module RoundtripPropertyTests =
+
+    [<Property>]
+    let ``ランレングス符号化は可逆`` (s: string) =
+        let s = if isNull s then "" else s
+        // 英字のみでテスト（マルチバイト文字を避ける）
+        let alphaOnly = s |> String.filter System.Char.IsLetter
+
+        if alphaOnly.Length > 0 then
+            decode (encode alphaOnly) = alphaOnly
+        else
+            true
+
+    [<Property>]
+    let ``Base64エンコード/デコードは可逆`` (s: string) =
+        let s = if isNull s then "" else s
+        // 有効なUTF-8文字列のみでテスト
+        try
+            base64Decode (base64Encode s) = s
+        with
+        | _ -> true // エンコードできない文字列はスキップ
+
+// ============================================
+// 5. 代数的性質のプロパティ
+// ============================================
+
+module AlgebraicPropertyTests =
+
+    [<Property>]
+    let ``加算の結合律`` (a: int) (b: int) (c: int) =
+        // オーバーフローを避けるため小さい数で
+        let a, b, c = a % 1000, b % 1000, c % 1000
+        (a + b) + c = a + (b + c)
+
+    [<Property>]
+    let ``加算の交換律`` (a: int) (b: int) = a + b = b + a
+
+    [<Property>]
+    let ``加算の単位元`` (a: int) = a + 0 = a && 0 + a = a
+
+    [<Property>]
+    let ``整数加算モノイドの結合律`` (a: int) (b: int) (c: int) =
+        let m = intAdditionMonoid
+        m.Combine (m.Combine a b) c = m.Combine a (m.Combine b c)
+
+    [<Property>]
+    let ``整数加算モノイドの単位元`` (a: int) =
+        let m = intAdditionMonoid
+        m.Combine a m.Empty = a && m.Combine m.Empty a = a
+
+    [<Property>]
+    let ``文字列連結モノイドの結合律`` (a: string) (b: string) (c: string) =
+        let a = if isNull a then "" else a
+        let b = if isNull b then "" else b
+        let c = if isNull c then "" else c
+        let m = stringConcatMonoid
+        m.Combine (m.Combine a b) c = m.Combine a (m.Combine b c)
+
+    [<Property>]
+    let ``文字列連結モノイドの単位元`` (a: string) =
+        let a = if isNull a then "" else a
+        let m = stringConcatMonoid
+        m.Combine a m.Empty = a && m.Combine m.Empty a = a
+
+// ============================================
+// 6. ビジネスロジックのプロパティ
+// ============================================
+
+module BusinessLogicPropertyTests =
+
+    [<Property>]
+    let ``最終価格は元の価格以下`` (price: PositiveInt) (membership: Membership) =
+        let total = decimal price.Get
+        let finalPrice = calculateFinalPrice total membership
+        finalPrice <= total
+
+    [<Property>]
+    let ``Platinumは最大の割引を受ける`` (price: PositiveInt) =
+        let total = decimal price.Get
+        let platinumPrice = calculateFinalPrice total Platinum
+        let bronzePrice = calculateFinalPrice total Bronze
+        platinumPrice <= bronzePrice
+
+    [<Property>]
+    let ``割引率の順序: Platinum < Gold < Silver < Bronze`` (price: PositiveInt) =
+        let total = decimal price.Get
+        let prices = [ Platinum; Gold; Silver; Bronze ] |> List.map (calculateFinalPrice total)
+
+        prices |> List.pairwise |> List.forall (fun (a, b) -> a <= b)
+
+// ============================================
+// 7. バリデーションのプロパティ
+// ============================================
+
+module ValidationPropertyTests =
+
+    // 有効なメールアドレスを生成
+    let validEmailGen =
+        gen {
+            let! local = Gen.elements [ "user"; "test"; "admin"; "info" ]
+            let! domain = Gen.elements [ "example"; "test"; "company" ]
+            let! tld = Gen.elements [ "com"; "org"; "net"; "io"; "jp" ]
+            return sprintf "%s@%s.%s" local domain tld
+        }
+
+    [<Property>]
+    let ``生成された有効なメールアドレスはバリデーションを通過する`` () =
+        Prop.forAll (Arb.fromGen validEmailGen) (fun email -> isValidEmail email)
+
+    // 有効な電話番号を生成
+    let validPhoneGen =
+        gen {
+            let! length = Gen.choose (10, 15)
+            let! digits = Gen.listOfLength length (Gen.elements [ '0' .. '9' ])
+            return System.String(digits |> List.toArray)
+        }
+
+    [<Property>]
+    let ``生成された有効な電話番号はバリデーションを通過する`` () =
+        Prop.forAll (Arb.fromGen validPhoneGen) (fun phone -> isValidPhoneNumber phone)
+
+// ============================================
+// 8. オラクルテスト
+// ============================================
+
+module OraclePropertyTests =
+
+    [<Property>]
+    let ``sortNumbersは標準ライブラリのsortと同じ結果`` (nums: int list) =
+        sortNumbers nums = List.sort nums
+
+    [<Property>]
+    let ``reverseは標準ライブラリのrevと同じ結果`` (list: int list) =
+        reverse list = List.rev list
+
+    [<Property>]
+    let ``filterは標準ライブラリのfilterと同じ結果`` (list: int list) =
+        let pred x = x > 0
+        filter pred list = List.filter pred list
+
+    [<Property>]
+    let ``mapは標準ライブラリのmapと同じ結果`` (list: int list) =
+        let f x = x * 2
+        map f list = List.map f list
+

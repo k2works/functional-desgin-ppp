@@ -445,3 +445,170 @@ module Validation =
 
     /// 複数の価格を合計
     let sumPrices (prices: decimal list) : decimal = prices |> List.sum
+
+
+// ============================================
+// 第5章: プロパティベーステスト
+// ============================================
+
+module PropertyBasedTesting =
+
+    // ============================================
+    // 1. 文字列操作
+    // ============================================
+
+    /// 文字列を反転
+    let reverseString (s: string) =
+        s |> Seq.rev |> System.String.Concat
+
+    /// 大文字に変換
+    let toUpperCase (s: string) = s.ToUpperInvariant()
+
+    /// 小文字に変換
+    let toLowerCase (s: string) = s.ToLowerInvariant()
+
+    // ============================================
+    // 2. 数値操作
+    // ============================================
+
+    /// 数値リストをソート
+    let sortNumbers (nums: int list) = List.sort nums
+
+    /// 割引を計算
+    let calculateDiscount (price: decimal) (rate: float) =
+        if rate < 0.0 || rate > 1.0 then
+            price
+        else
+            price * (1m - decimal rate)
+
+    /// 絶対値
+    let abs (n: int) = if n < 0 then -n else n
+
+    // ============================================
+    // 3. コレクション操作
+    // ============================================
+
+    /// フィルタ
+    let filter (predicate: 'a -> bool) (list: 'a list) = List.filter predicate list
+
+    /// マップ
+    let map (f: 'a -> 'b) (list: 'a list) = List.map f list
+
+    /// 反転
+    let reverse (list: 'a list) = List.rev list
+
+    /// 連結
+    let concat (list1: 'a list) (list2: 'a list) = list1 @ list2
+
+    /// 重複除去
+    let distinct (list: 'a list) = List.distinct list
+
+    // ============================================
+    // 4. ランレングス符号化
+    // ============================================
+
+    /// ランレングス符号化
+    let encode (s: string) : (char * int) list =
+        if System.String.IsNullOrEmpty(s) then
+            []
+        else
+            s
+            |> Seq.fold
+                (fun acc c ->
+                    match acc with
+                    | [] -> [ (c, 1) ]
+                    | (lastChar, count) :: rest when lastChar = c -> (lastChar, count + 1) :: rest
+                    | _ -> (c, 1) :: acc)
+                []
+            |> List.rev
+
+    /// ランレングス復号化
+    let decode (encoded: (char * int) list) : string =
+        encoded
+        |> List.map (fun (c, count) -> System.String(c, count))
+        |> System.String.Concat
+
+    // ============================================
+    // 5. Base64 エンコード/デコード
+    // ============================================
+
+    /// Base64 エンコード
+    let base64Encode (s: string) =
+        s
+        |> System.Text.Encoding.UTF8.GetBytes
+        |> System.Convert.ToBase64String
+
+    /// Base64 デコード
+    let base64Decode (s: string) =
+        s
+        |> System.Convert.FromBase64String
+        |> System.Text.Encoding.UTF8.GetString
+
+    // ============================================
+    // 6. モノイド
+    // ============================================
+
+    /// モノイドインターフェース
+    type IMonoid<'T> =
+        abstract member Empty: 'T
+        abstract member Combine: 'T -> 'T -> 'T
+
+    /// 整数加算モノイド
+    let intAdditionMonoid =
+        { new IMonoid<int> with
+            member _.Empty = 0
+            member _.Combine x y = x + y }
+
+    /// 文字列連結モノイド
+    let stringConcatMonoid =
+        { new IMonoid<string> with
+            member _.Empty = ""
+            member _.Combine x y = x + y }
+
+    /// リスト連結モノイド
+    let listConcatMonoid<'T> () =
+        { new IMonoid<'T list> with
+            member _.Empty = []
+            member _.Combine x y = x @ y }
+
+    // ============================================
+    // 7. ビジネスロジック
+    // ============================================
+
+    /// 会員種別
+    type Membership =
+        | Bronze
+        | Silver
+        | Gold
+        | Platinum
+
+    /// 会員割引率を取得
+    let getMembershipDiscount =
+        function
+        | Bronze -> 0.02
+        | Silver -> 0.05
+        | Gold -> 0.10
+        | Platinum -> 0.15
+
+    /// 最終価格を計算
+    let calculateFinalPrice (total: decimal) (membership: Membership) =
+        let discount = getMembershipDiscount membership
+        total * (1m - decimal discount)
+
+    // ============================================
+    // 8. バリデーション関数
+    // ============================================
+
+    /// 有効なメールかどうか
+    let isValidEmail (email: string) =
+        not (System.String.IsNullOrEmpty(email))
+        && email.Contains("@")
+        && email.Contains(".")
+
+    /// 有効な電話番号かどうか（数字のみ、10〜15桁）
+    let isValidPhoneNumber (phone: string) =
+        not (System.String.IsNullOrEmpty(phone))
+        && phone.Length >= 10
+        && phone.Length <= 15
+        && phone |> Seq.forall System.Char.IsDigit
+

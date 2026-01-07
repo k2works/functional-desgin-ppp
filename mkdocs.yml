@@ -128,3 +128,4 @@ nav:
           - 03. 多態性とディスパッチ: fsharp/03-polymorphism.md
       - Part 2 - 仕様とテスト:
           - 04. データバリデーション: fsharp/04-data-validation.md
+          - 05. プロパティベーステスト: fsharp/05-property-based-testing.md
