@@ -122,3 +122,5 @@ nav:
           - 22. OO から FP への移行: scala/22-oo-to-fp-migration.md
   - F#:
       - 概要: fsharp/index.md
+      - Part 1 - 基礎編:
+          - 01. 不変性とデータ変換: fsharp/01-immutability-and-data-transformation.md
