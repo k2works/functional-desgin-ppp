@@ -15,6 +15,7 @@
         devShells = {
           default = import ./shells/shell.nix { inherit packages; };
           node = import ./environments/node/shell.nix { inherit packages; };
+          clojure = import ./environments/clojure/shell.nix { inherit packages; };
         };
       }
     );

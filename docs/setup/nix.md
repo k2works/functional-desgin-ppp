@@ -48,14 +48,25 @@ nix develop .#node
 
 Node.js 22とpnpmが利用可能な環境に入ります。
 
+### Clojure環境
+
+```bash
+nix develop .#clojure
+```
+
+Clojure、Leiningen、clojure-lspが利用可能な環境に入ります。
+
 ### 環境の確認
 
 ```bash
 # Node.js環境で
 node --version  # v22.21.1
 pnpm --version  # 10.26.1
-git --version
-```
+
+# Clojure環境で
+clojure --version  # Clojure CLI version 1.12.3.1577
+lein version       # Leiningen 2.11.2
+
 
 ### 環境から抜ける
 
@@ -72,8 +83,10 @@ exit
 ├── shells/
 │   └── shell.nix             # 共通開発環境（Git、Docker）
 └── environments/
-    └── node/
-        └── shell.nix         # Node.js開発環境
+    ├── node/
+    │   └── shell.nix         # Node.js開発環境
+    └── clojure/
+        └── shell.nix         # Clojure開発環境
 ```
 
 ## 依存関係の更新
