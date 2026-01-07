@@ -1,0 +1,686 @@
+module Tests
+
+open Xunit
+open FsCheck.Xunit
+open FunctionalDesign.Part3.CompositePattern
+
+// ============================================
+// 1. Point と BoundingBox テスト
+// ============================================
+
+module PointTests =
+
+    [<Fact>]
+    let ``Point.create で座標を作成できる`` () =
+        let p = Point.create 10.0 20.0
+        Assert.Equal(10.0, p.X)
+        Assert.Equal(20.0, p.Y)
+
+    [<Fact>]
+    let ``Point の加算が正しく動作する`` () =
+        let p1 = Point.create 10.0 20.0
+        let p2 = Point.create 5.0 3.0
+        let result = p1 + p2
+        Assert.Equal(15.0, result.X)
+        Assert.Equal(23.0, result.Y)
+
+    [<Fact>]
+    let ``Point のスカラー乗算が正しく動作する`` () =
+        let p = Point.create 10.0 20.0
+        let result = p * 2.0
+        Assert.Equal(20.0, result.X)
+        Assert.Equal(40.0, result.Y)
+
+module BoundingBoxTests =
+
+    [<Fact>]
+    let ``BoundingBox.union で2つのボックスを結合できる`` () =
+        let bb1 = BoundingBox.create (Point.create 0.0 0.0) (Point.create 10.0 10.0)
+        let bb2 = BoundingBox.create (Point.create 5.0 5.0) (Point.create 20.0 15.0)
+        let result = BoundingBox.union bb1 bb2
+        Assert.Equal(0.0, result.Min.X)
+        Assert.Equal(0.0, result.Min.Y)
+        Assert.Equal(20.0, result.Max.X)
+        Assert.Equal(15.0, result.Max.Y)
+
+    [<Fact>]
+    let ``BoundingBox.width と height が正しく計算される`` () =
+        let bb = BoundingBox.create (Point.create 5.0 10.0) (Point.create 15.0 30.0)
+        Assert.Equal(10.0, BoundingBox.width bb)
+        Assert.Equal(20.0, BoundingBox.height bb)
+
+// ============================================
+// 2. Shape テスト
+// ============================================
+
+module ShapeTests =
+
+    [<Fact>]
+    let ``Circle を作成できる`` () =
+        let circle = Shape.Circle(Point.create 10.0 10.0, 5.0)
+        match circle with
+        | Shape.Circle(center, radius) ->
+            Assert.Equal(10.0, center.X)
+            Assert.Equal(5.0, radius)
+        | _ -> Assert.Fail("Expected Circle")
+
+    [<Fact>]
+    let ``Circle を移動できる`` () =
+        let circle = Shape.Circle(Point.create 10.0 10.0, 5.0)
+        let moved = Shape.translate 5.0 3.0 circle
+        match moved with
+        | Shape.Circle(center, _) ->
+            Assert.Equal(15.0, center.X)
+            Assert.Equal(13.0, center.Y)
+        | _ -> Assert.Fail("Expected Circle")
+
+    [<Fact>]
+    let ``Circle を拡大できる`` () =
+        let circle = Shape.Circle(Point.create 10.0 10.0, 5.0)
+        let scaled = Shape.scale 2.0 circle
+        match scaled with
+        | Shape.Circle(_, radius) -> Assert.Equal(10.0, radius)
+        | _ -> Assert.Fail("Expected Circle")
+
+    [<Fact>]
+    let ``Circle の面積が正しく計算される`` () =
+        let circle = Shape.Circle(Point.create 0.0 0.0, 5.0)
+        let expected = System.Math.PI * 25.0
+        Assert.Equal(expected, Shape.area circle, 5)
+
+    [<Fact>]
+    let ``Square を作成できる`` () =
+        let square = Shape.Square(Point.create 0.0 0.0, 10.0)
+        match square with
+        | Shape.Square(topLeft, side) ->
+            Assert.Equal(0.0, topLeft.X)
+            Assert.Equal(10.0, side)
+        | _ -> Assert.Fail("Expected Square")
+
+    [<Fact>]
+    let ``Square の面積が正しく計算される`` () =
+        let square = Shape.Square(Point.create 0.0 0.0, 10.0)
+        Assert.Equal(100.0, Shape.area square)
+
+    [<Fact>]
+    let ``Rectangle の面積が正しく計算される`` () =
+        let rect = Shape.Rectangle(Point.create 0.0 0.0, 10.0, 5.0)
+        Assert.Equal(50.0, Shape.area rect)
+
+    [<Fact>]
+    let ``CompositeShape を作成して図形を追加できる`` () =
+        let circle = Shape.Circle(Point.create 10.0 10.0, 5.0)
+        let square = Shape.Square(Point.create 0.0 0.0, 10.0)
+        let composite =
+            Shape.emptyComposite
+            |> Shape.add circle
+            |> Shape.add square
+        Assert.Equal(2, Shape.count composite)
+
+    [<Fact>]
+    let ``CompositeShape を移動すると全ての子要素が移動する`` () =
+        let circle = Shape.Circle(Point.create 10.0 10.0, 5.0)
+        let square = Shape.Square(Point.create 0.0 0.0, 10.0)
+        let composite =
+            Shape.emptyComposite
+            |> Shape.add circle
+            |> Shape.add square
+        let moved = Shape.translate 5.0 5.0 composite
+        match moved with
+        | Shape.Composite shapes ->
+            match shapes.[0] with
+            | Shape.Circle(center, _) ->
+                Assert.Equal(15.0, center.X)
+                Assert.Equal(15.0, center.Y)
+            | _ -> Assert.Fail("Expected Circle")
+            match shapes.[1] with
+            | Shape.Square(topLeft, _) ->
+                Assert.Equal(5.0, topLeft.X)
+                Assert.Equal(5.0, topLeft.Y)
+            | _ -> Assert.Fail("Expected Square")
+        | _ -> Assert.Fail("Expected Composite")
+
+    [<Fact>]
+    let ``CompositeShape の面積は子要素の合計`` () =
+        let circle = Shape.Circle(Point.create 0.0 0.0, 5.0)
+        let square = Shape.Square(Point.create 0.0 0.0, 10.0)
+        let composite =
+            Shape.emptyComposite
+            |> Shape.add circle
+            |> Shape.add square
+        let expected = System.Math.PI * 25.0 + 100.0
+        Assert.Equal(expected, Shape.area composite, 5)
+
+    [<Fact>]
+    let ``Shape.flatten でネストした Composite を平坦化できる`` () =
+        let c1 = Shape.Circle(Point.create 0.0 0.0, 5.0)
+        let c2 = Shape.Circle(Point.create 10.0 10.0, 3.0)
+        let inner = Shape.emptyComposite |> Shape.add c1
+        let outer = Shape.emptyComposite |> Shape.add inner |> Shape.add c2
+        let flattened = Shape.flatten outer
+        Assert.Equal(2, List.length flattened)
+
+    [<Fact>]
+    let ``Circle の boundingBox が正しい`` () =
+        let circle = Shape.Circle(Point.create 10.0 10.0, 5.0)
+        let bb = Shape.boundingBox circle
+        Assert.Equal(5.0, bb.Min.X)
+        Assert.Equal(5.0, bb.Min.Y)
+        Assert.Equal(15.0, bb.Max.X)
+        Assert.Equal(15.0, bb.Max.Y)
+
+    [<Fact>]
+    let ``CompositeShape の boundingBox は全ての子を含む`` () =
+        let circle = Shape.Circle(Point.create 10.0 10.0, 5.0)
+        let square = Shape.Square(Point.create 0.0 0.0, 3.0)
+        let composite =
+            Shape.emptyComposite
+            |> Shape.add circle
+            |> Shape.add square
+        let bb = Shape.boundingBox composite
+        Assert.Equal(0.0, bb.Min.X)
+        Assert.Equal(0.0, bb.Min.Y)
+        Assert.Equal(15.0, bb.Max.X)
+        Assert.Equal(15.0, bb.Max.Y)
+
+// ============================================
+// 3. Switchable テスト
+// ============================================
+
+module SwitchableTests =
+
+    [<Fact>]
+    let ``Light を作成できる`` () =
+        let light = Switchable.Light(false, "Ceiling")
+        Assert.Equal("Ceiling", Switchable.getName light)
+        Assert.False(Switchable.isOn light)
+
+    [<Fact>]
+    let ``Light を turnOn できる`` () =
+        let light = Switchable.Light(false, "Ceiling")
+        let onLight = Switchable.turnOn light
+        Assert.True(Switchable.isOn onLight)
+
+    [<Fact>]
+    let ``Light を turnOff できる`` () =
+        let light = Switchable.Light(true, "Ceiling")
+        let offLight = Switchable.turnOff light
+        Assert.False(Switchable.isOn offLight)
+
+    [<Fact>]
+    let ``DimmableLight を作成できる`` () =
+        let light = Switchable.DimmableLight(0, "Bedside")
+        Assert.False(Switchable.isOn light)
+
+    [<Fact>]
+    let ``DimmableLight を turnOn すると intensity が 100 になる`` () =
+        let light = Switchable.DimmableLight(0, "Bedside")
+        let onLight = Switchable.turnOn light
+        match onLight with
+        | Switchable.DimmableLight(intensity, _) -> Assert.Equal(100, intensity)
+        | _ -> Assert.Fail("Expected DimmableLight")
+
+    [<Fact>]
+    let ``DimmableLight の intensity を設定できる`` () =
+        let light = Switchable.DimmableLight(0, "Bedside")
+        let dimmed = Switchable.setIntensity 50 light
+        match dimmed with
+        | Switchable.DimmableLight(intensity, _) -> Assert.Equal(50, intensity)
+        | _ -> Assert.Fail("Expected DimmableLight")
+
+    [<Fact>]
+    let ``Fan を作成できる`` () =
+        let fan = Switchable.Fan(false, 0, "Ceiling Fan")
+        Assert.False(Switchable.isOn fan)
+
+    [<Fact>]
+    let ``Fan の speed を設定できる`` () =
+        let fan = Switchable.Fan(true, 1, "Ceiling Fan")
+        let highSpeed = Switchable.setSpeed 3 fan
+        match highSpeed with
+        | Switchable.Fan(_, speed, _) -> Assert.Equal(3, speed)
+        | _ -> Assert.Fail("Expected Fan")
+
+    [<Fact>]
+    let ``CompositeSwitchable を作成してスイッチを追加できる`` () =
+        let light = Switchable.Light(false, "Light")
+        let fan = Switchable.Fan(false, 0, "Fan")
+        let room =
+            Switchable.emptyComposite "Room"
+            |> Switchable.add light
+            |> Switchable.add fan
+        match room with
+        | Switchable.Composite(switchables, _) -> Assert.Equal(2, List.length switchables)
+        | _ -> Assert.Fail("Expected Composite")
+
+    [<Fact>]
+    let ``CompositeSwitchable を turnOn すると全ての子がオンになる`` () =
+        let light = Switchable.Light(false, "Light")
+        let dimLight = Switchable.DimmableLight(0, "DimLight")
+        let room =
+            Switchable.emptyComposite "Room"
+            |> Switchable.add light
+            |> Switchable.add dimLight
+        let onRoom = Switchable.turnOn room
+        Assert.True(Switchable.allOn onRoom)
+
+    [<Fact>]
+    let ``CompositeSwitchable の isOn は子の1つでもオンなら true`` () =
+        let light = Switchable.Light(true, "Light")
+        let offLight = Switchable.Light(false, "OffLight")
+        let room =
+            Switchable.emptyComposite "Room"
+            |> Switchable.add light
+            |> Switchable.add offLight
+        Assert.True(Switchable.isOn room)
+        Assert.False(Switchable.allOn room)
+
+    [<Fact>]
+    let ``ネストした CompositeSwitchable で turnOn が全てに適用される`` () =
+        let light1 = Switchable.Light(false, "Light1")
+        let light2 = Switchable.Light(false, "Light2")
+        let bedroom =
+            Switchable.emptyComposite "Bedroom"
+            |> Switchable.add light1
+        let house =
+            Switchable.emptyComposite "House"
+            |> Switchable.add bedroom
+            |> Switchable.add light2
+        let onHouse = Switchable.turnOn house
+        Assert.True(Switchable.allOn onHouse)
+
+// ============================================
+// 4. FileSystemEntry テスト
+// ============================================
+
+module FileSystemTests =
+
+    [<Fact>]
+    let ``File を作成できる`` () =
+        let file = FileSystemEntry.File("readme.txt", 1024L, ".txt")
+        Assert.Equal("readme.txt", FileSystemEntry.name file)
+        Assert.Equal(1024L, FileSystemEntry.size file)
+
+    [<Fact>]
+    let ``Directory を作成できる`` () =
+        let dir = FileSystemEntry.Directory("docs", [])
+        Assert.Equal("docs", FileSystemEntry.name dir)
+        Assert.Equal(0L, FileSystemEntry.size dir)
+
+    [<Fact>]
+    let ``Directory にファイルを追加できる`` () =
+        let file = FileSystemEntry.File("readme.txt", 1024L, ".txt")
+        let dir = FileSystemEntry.Directory("docs", [])
+        let updated = FileSystemEntry.add file dir
+        match updated with
+        | FileSystemEntry.Directory(_, children) -> Assert.Equal(1, List.length children)
+        | _ -> Assert.Fail("Expected Directory")
+
+    [<Fact>]
+    let ``Directory のサイズは含まれるファイルの合計`` () =
+        let file1 = FileSystemEntry.File("a.txt", 1000L, ".txt")
+        let file2 = FileSystemEntry.File("b.txt", 2000L, ".txt")
+        let dir = FileSystemEntry.Directory("docs", [ file1; file2 ])
+        Assert.Equal(3000L, FileSystemEntry.size dir)
+
+    [<Fact>]
+    let ``ネストしたディレクトリのサイズが正しく計算される`` () =
+        let file1 = FileSystemEntry.File("a.txt", 1000L, ".txt")
+        let file2 = FileSystemEntry.File("b.txt", 2000L, ".txt")
+        let subDir = FileSystemEntry.Directory("sub", [ file2 ])
+        let rootDir = FileSystemEntry.Directory("root", [ file1; subDir ])
+        Assert.Equal(3000L, FileSystemEntry.size rootDir)
+
+    [<Fact>]
+    let ``fileCount でファイル数を取得できる`` () =
+        let file1 = FileSystemEntry.File("a.txt", 1000L, ".txt")
+        let file2 = FileSystemEntry.File("b.txt", 2000L, ".txt")
+        let subDir = FileSystemEntry.Directory("sub", [ file2 ])
+        let rootDir = FileSystemEntry.Directory("root", [ file1; subDir ])
+        Assert.Equal(2, FileSystemEntry.fileCount rootDir)
+
+    [<Fact>]
+    let ``directoryCount でディレクトリ数を取得できる`` () =
+        let file1 = FileSystemEntry.File("a.txt", 1000L, ".txt")
+        let subDir = FileSystemEntry.Directory("sub", [ file1 ])
+        let rootDir = FileSystemEntry.Directory("root", [ subDir ])
+        Assert.Equal(2, FileSystemEntry.directoryCount rootDir)
+
+    [<Fact>]
+    let ``findByExtension で拡張子でファイルを検索できる`` () =
+        let txtFile = FileSystemEntry.File("readme.txt", 1000L, ".txt")
+        let mdFile = FileSystemEntry.File("docs.md", 2000L, ".md")
+        let dir = FileSystemEntry.Directory("root", [ txtFile; mdFile ])
+        let results = FileSystemEntry.findByExtension ".txt" dir
+        Assert.Equal(1, List.length results)
+
+    [<Fact>]
+    let ``allFiles で全てのファイルを取得できる`` () =
+        let file1 = FileSystemEntry.File("a.txt", 1000L, ".txt")
+        let file2 = FileSystemEntry.File("b.txt", 2000L, ".txt")
+        let subDir = FileSystemEntry.Directory("sub", [ file2 ])
+        let rootDir = FileSystemEntry.Directory("root", [ file1; subDir ])
+        let files = FileSystemEntry.allFiles rootDir
+        Assert.Equal(2, List.length files)
+
+// ============================================
+// 5. MenuItem テスト
+// ============================================
+
+module MenuItemTests =
+
+    [<Fact>]
+    let ``Item を作成できる`` () =
+        let item = MenuItem.Item("Hamburger", 500m, "Main")
+        Assert.Equal("Hamburger", MenuItem.name item)
+        Assert.Equal(500m, MenuItem.price item)
+
+    [<Fact>]
+    let ``SetMenu を作成できる`` () =
+        let burger = MenuItem.Item("Hamburger", 500m, "Main")
+        let fries = MenuItem.Item("Fries", 200m, "Side")
+        let drink = MenuItem.Item("Cola", 150m, "Drink")
+        let setMenu = MenuItem.SetMenu("Lunch Set", [ burger; fries; drink ], 0.1)
+        Assert.Equal("Lunch Set", MenuItem.name setMenu)
+
+    [<Fact>]
+    let ``SetMenu の価格は割引が適用される`` () =
+        let burger = MenuItem.Item("Hamburger", 500m, "Main")
+        let fries = MenuItem.Item("Fries", 200m, "Side")
+        let drink = MenuItem.Item("Cola", 150m, "Drink")
+        let setMenu = MenuItem.SetMenu("Lunch Set", [ burger; fries; drink ], 0.1)
+        // 850 * 0.9 = 765
+        Assert.Equal(765m, MenuItem.price setMenu)
+
+    [<Fact>]
+    let ``SetMenu に項目を追加できる`` () =
+        let burger = MenuItem.Item("Hamburger", 500m, "Main")
+        let setMenu = MenuItem.SetMenu("Set", [ burger ], 0.1)
+        let fries = MenuItem.Item("Fries", 200m, "Side")
+        let updated = MenuItem.addToSet fries setMenu
+        Assert.Equal(2, MenuItem.itemCount updated)
+
+    [<Fact>]
+    let ``itemCount でアイテム数を取得できる`` () =
+        let burger = MenuItem.Item("Hamburger", 500m, "Main")
+        let fries = MenuItem.Item("Fries", 200m, "Side")
+        let setMenu = MenuItem.SetMenu("Lunch Set", [ burger; fries ], 0.1)
+        Assert.Equal(2, MenuItem.itemCount setMenu)
+
+    [<Fact>]
+    let ``allItems でセットを展開して全アイテムを取得できる`` () =
+        let burger = MenuItem.Item("Hamburger", 500m, "Main")
+        let fries = MenuItem.Item("Fries", 200m, "Side")
+        let innerSet = MenuItem.SetMenu("Inner", [ burger ], 0.0)
+        let outerSet = MenuItem.SetMenu("Outer", [ innerSet; fries ], 0.1)
+        let items = MenuItem.allItems outerSet
+        Assert.Equal(2, List.length items)
+
+    [<Fact>]
+    let ``ネストしたSetMenuの価格が正しく計算される`` () =
+        let burger = MenuItem.Item("Hamburger", 500m, "Main")
+        let innerSet = MenuItem.SetMenu("Inner", [ burger ], 0.1)  // 500 * 0.9 = 450
+        let fries = MenuItem.Item("Fries", 200m, "Side")
+        let outerSet = MenuItem.SetMenu("Outer", [ innerSet; fries ], 0.1)  // (450 + 200) * 0.9 = 585
+        Assert.Equal(585m, MenuItem.price outerSet)
+
+// ============================================
+// 6. Expression テスト
+// ============================================
+
+module ExpressionTests =
+
+    [<Fact>]
+    let ``Number を評価できる`` () =
+        let expr = Expression.Number 42.0
+        Assert.Equal(42.0, Expression.evaluate expr)
+
+    [<Fact>]
+    let ``Variable に値があれば評価できる`` () =
+        let expr = Expression.Variable("x", Some 10.0)
+        Assert.Equal(10.0, Expression.evaluate expr)
+
+    [<Fact>]
+    let ``Variable に値がなければ例外が発生する`` () =
+        let expr = Expression.Variable("x", None)
+        Assert.Throws<System.Exception>(fun () -> Expression.evaluate expr |> ignore)
+
+    [<Fact>]
+    let ``Add を評価できる`` () =
+        let expr = Expression.Add(Expression.Number 2.0, Expression.Number 3.0)
+        Assert.Equal(5.0, Expression.evaluate expr)
+
+    [<Fact>]
+    let ``Subtract を評価できる`` () =
+        let expr = Expression.Subtract(Expression.Number 5.0, Expression.Number 3.0)
+        Assert.Equal(2.0, Expression.evaluate expr)
+
+    [<Fact>]
+    let ``Multiply を評価できる`` () =
+        let expr = Expression.Multiply(Expression.Number 4.0, Expression.Number 3.0)
+        Assert.Equal(12.0, Expression.evaluate expr)
+
+    [<Fact>]
+    let ``Divide を評価できる`` () =
+        let expr = Expression.Divide(Expression.Number 10.0, Expression.Number 2.0)
+        Assert.Equal(5.0, Expression.evaluate expr)
+
+    [<Fact>]
+    let ``0で割ると例外が発生する`` () =
+        let expr = Expression.Divide(Expression.Number 10.0, Expression.Number 0.0)
+        Assert.Throws<System.Exception>(fun () -> Expression.evaluate expr |> ignore)
+
+    [<Fact>]
+    let ``Negate を評価できる`` () =
+        let expr = Expression.Negate(Expression.Number 5.0)
+        Assert.Equal(-5.0, Expression.evaluate expr)
+
+    [<Fact>]
+    let ``複合式 (2 + 3) * 4 を評価できる`` () =
+        let expr =
+            Expression.Multiply(
+                Expression.Add(Expression.Number 2.0, Expression.Number 3.0),
+                Expression.Number 4.0
+            )
+        Assert.Equal(20.0, Expression.evaluate expr)
+
+    [<Fact>]
+    let ``simplify で 0 + x が x になる`` () =
+        let expr = Expression.Add(Expression.Number 0.0, Expression.Variable("x", None))
+        let simplified = Expression.simplify expr
+        match simplified with
+        | Expression.Variable(name, _) -> Assert.Equal("x", name)
+        | _ -> Assert.Fail("Expected Variable")
+
+    [<Fact>]
+    let ``simplify で x + 0 が x になる`` () =
+        let expr = Expression.Add(Expression.Variable("x", None), Expression.Number 0.0)
+        let simplified = Expression.simplify expr
+        match simplified with
+        | Expression.Variable(name, _) -> Assert.Equal("x", name)
+        | _ -> Assert.Fail("Expected Variable")
+
+    [<Fact>]
+    let ``simplify で x * 1 が x になる`` () =
+        let expr = Expression.Multiply(Expression.Variable("x", None), Expression.Number 1.0)
+        let simplified = Expression.simplify expr
+        match simplified with
+        | Expression.Variable(name, _) -> Assert.Equal("x", name)
+        | _ -> Assert.Fail("Expected Variable")
+
+    [<Fact>]
+    let ``simplify で x * 0 が 0 になる`` () =
+        let expr = Expression.Multiply(Expression.Variable("x", None), Expression.Number 0.0)
+        let simplified = Expression.simplify expr
+        match simplified with
+        | Expression.Number n -> Assert.Equal(0.0, n)
+        | _ -> Assert.Fail("Expected Number 0")
+
+    [<Fact>]
+    let ``simplify で数値同士の計算が実行される`` () =
+        let expr = Expression.Add(Expression.Number 2.0, Expression.Number 3.0)
+        let simplified = Expression.simplify expr
+        match simplified with
+        | Expression.Number n -> Assert.Equal(5.0, n)
+        | _ -> Assert.Fail("Expected Number")
+
+    [<Fact>]
+    let ``variables で変数を取得できる`` () =
+        let expr =
+            Expression.Add(
+                Expression.Variable("x", None),
+                Expression.Multiply(Expression.Variable("y", None), Expression.Number 2.0)
+            )
+        let vars = Expression.variables expr
+        Assert.True(Set.contains "x" vars)
+        Assert.True(Set.contains "y" vars)
+        Assert.Equal(2, Set.count vars)
+
+    [<Fact>]
+    let ``bind で変数に値をバインドできる`` () =
+        let expr = Expression.Add(Expression.Variable("x", None), Expression.Variable("y", None))
+        let bindings = Map.ofList [ ("x", 10.0); ("y", 20.0) ]
+        let bound = Expression.bind bindings expr
+        Assert.Equal(30.0, Expression.evaluate bound)
+
+    [<Fact>]
+    let ``toString で式を文字列に変換できる`` () =
+        let expr = Expression.Add(Expression.Number 2.0, Expression.Number 3.0)
+        let str = Expression.toString expr
+        Assert.Equal("(2 + 3)", str)
+
+    [<Fact>]
+    let ``二重否定は元の値になる（simplify）`` () =
+        let expr = Expression.Negate(Expression.Negate(Expression.Variable("x", None)))
+        let simplified = Expression.simplify expr
+        match simplified with
+        | Expression.Variable(name, _) -> Assert.Equal("x", name)
+        | _ -> Assert.Fail("Expected Variable")
+
+// ============================================
+// 7. OrganizationMember テスト
+// ============================================
+
+module OrganizationMemberTests =
+
+    [<Fact>]
+    let ``Employee を作成できる`` () =
+        let emp = OrganizationMember.Employee("Alice", 50000m, "Developer")
+        Assert.Equal("Alice", OrganizationMember.name emp)
+        Assert.Equal(50000m, OrganizationMember.totalSalary emp)
+
+    [<Fact>]
+    let ``Department を作成できる`` () =
+        let dept = OrganizationMember.Department("Engineering", [], Some "Bob")
+        Assert.Equal("Engineering", OrganizationMember.name dept)
+
+    [<Fact>]
+    let ``Department にメンバーを追加できる`` () =
+        let emp = OrganizationMember.Employee("Alice", 50000m, "Developer")
+        let dept = OrganizationMember.Department("Engineering", [], Some "Bob")
+        let updated = OrganizationMember.addMember emp dept
+        Assert.Equal(1, OrganizationMember.employeeCount updated)
+
+    [<Fact>]
+    let ``Department の総給与は所属員の合計`` () =
+        let emp1 = OrganizationMember.Employee("Alice", 50000m, "Developer")
+        let emp2 = OrganizationMember.Employee("Bob", 60000m, "Developer")
+        let dept = OrganizationMember.Department("Engineering", [ emp1; emp2 ], None)
+        Assert.Equal(110000m, OrganizationMember.totalSalary dept)
+
+    [<Fact>]
+    let ``ネストした Department の総給与が正しく計算される`` () =
+        let emp1 = OrganizationMember.Employee("Alice", 50000m, "Developer")
+        let emp2 = OrganizationMember.Employee("Bob", 60000m, "Manager")
+        let subDept = OrganizationMember.Department("Team A", [ emp1 ], None)
+        let dept = OrganizationMember.Department("Engineering", [ subDept; emp2 ], None)
+        Assert.Equal(110000m, OrganizationMember.totalSalary dept)
+
+    [<Fact>]
+    let ``employeeCount で従業員数を取得できる`` () =
+        let emp1 = OrganizationMember.Employee("Alice", 50000m, "Developer")
+        let emp2 = OrganizationMember.Employee("Bob", 60000m, "Developer")
+        let subDept = OrganizationMember.Department("Team A", [ emp1 ], None)
+        let dept = OrganizationMember.Department("Engineering", [ subDept; emp2 ], None)
+        Assert.Equal(2, OrganizationMember.employeeCount dept)
+
+    [<Fact>]
+    let ``departmentCount で部門数を取得できる`` () =
+        let emp1 = OrganizationMember.Employee("Alice", 50000m, "Developer")
+        let subDept = OrganizationMember.Department("Team A", [ emp1 ], None)
+        let dept = OrganizationMember.Department("Engineering", [ subDept ], None)
+        Assert.Equal(1, OrganizationMember.departmentCount dept)
+
+    [<Fact>]
+    let ``findByRole で役職で従業員を検索できる`` () =
+        let dev1 = OrganizationMember.Employee("Alice", 50000m, "Developer")
+        let dev2 = OrganizationMember.Employee("Bob", 55000m, "Developer")
+        let mgr = OrganizationMember.Employee("Carol", 70000m, "Manager")
+        let dept = OrganizationMember.Department("Engineering", [ dev1; dev2; mgr ], None)
+        let developers = OrganizationMember.findByRole "Developer" dept
+        Assert.Equal(2, List.length developers)
+
+    [<Fact>]
+    let ``allEmployees で全ての従業員を取得できる`` () =
+        let emp1 = OrganizationMember.Employee("Alice", 50000m, "Developer")
+        let emp2 = OrganizationMember.Employee("Bob", 60000m, "Manager")
+        let subDept = OrganizationMember.Department("Team A", [ emp1 ], None)
+        let dept = OrganizationMember.Department("Engineering", [ subDept; emp2 ], None)
+        let employees = OrganizationMember.allEmployees dept
+        Assert.Equal(2, List.length employees)
+
+// ============================================
+// 8. プロパティベーステスト
+// ============================================
+
+module ShapePropertyTests =
+
+    [<Property>]
+    let ``translate して -translate すると元に戻る`` () =
+        let circle = Shape.Circle(Point.create 10.0 10.0, 5.0)
+        let moved = circle |> Shape.translate 5.0 3.0 |> Shape.translate -5.0 -3.0
+        match moved with
+        | Shape.Circle(center, _) ->
+            abs(center.X - 10.0) < 0.0001 && abs(center.Y - 10.0) < 0.0001
+        | _ -> false
+
+    [<Property>]
+    let ``scale 2.0 して scale 0.5 すると元に戻る`` () =
+        let circle = Shape.Circle(Point.create 10.0 10.0, 5.0)
+        let scaled = circle |> Shape.scale 2.0 |> Shape.scale 0.5
+        match scaled with
+        | Shape.Circle(_, radius) -> abs(radius - 5.0) < 0.0001
+        | _ -> false
+
+    [<Property>]
+    let ``CompositeShape の面積は常に子要素の面積の合計`` () =
+        let c1 = Shape.Circle(Point.create 0.0 0.0, 3.0)
+        let c2 = Shape.Circle(Point.create 10.0 10.0, 2.0)
+        let composite = Shape.emptyComposite |> Shape.add c1 |> Shape.add c2
+        let compositeArea = Shape.area composite
+        let sumArea = Shape.area c1 + Shape.area c2
+        abs(compositeArea - sumArea) < 0.0001
+
+module ExpressionPropertyTests =
+
+    [<Property>]
+    let ``数値式の simplify は元の値を維持`` (n: float) =
+        if System.Double.IsNaN(n) || System.Double.IsInfinity(n) then
+            true
+        else
+            let expr = Expression.Number n
+            let simplified = Expression.simplify expr
+            match simplified with
+            | Expression.Number v -> abs(v - n) < 0.0001
+            | _ -> false
+
+    [<Property>]
+    let ``0 + n = n`` (n: float) =
+        if System.Double.IsNaN(n) || System.Double.IsInfinity(n) then
+            true
+        else
+            let expr = Expression.Add(Expression.Number 0.0, Expression.Number n)
+            let simplified = Expression.simplify expr
+            match simplified with
+            | Expression.Number v -> abs(v - n) < 0.0001
+            | _ -> false
