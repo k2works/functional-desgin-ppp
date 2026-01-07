@@ -1,0 +1,4542 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="関数型プログラミングにおける設計原則とデザインパターンを実践的に学ぶガイド">
+      
+      
+        <meta name="author" content="Project Team">
+      
+      
+      
+        <link rel="prev" href="../08-decorator-pattern/">
+      
+      
+        <link rel="next" href="../10-strategy-pattern/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.1">
+    
+    
+      
+        <title>09. Adapter パターン - 関数型デザイン - 原則、パターン、実践</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../docs/mkdocs/assets/css/extra.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#9-adapter" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="関数型デザイン - 原則、パターン、実践" class="md-header__button md-logo" aria-label="関数型デザイン - 原則、パターン、実践" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            関数型デザイン - 原則、パターン、実践
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              09. Adapter パターン
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/k2works/grokkingfp-excersice" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    grokkingfp-excersice
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../clojure/" class="md-tabs__link">
+          
+  
+  
+  Clojure
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../scala/" class="md-tabs__link">
+          
+  
+  
+  Scala
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../" class="md-tabs__link">
+          
+  
+  
+  F#
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+  
+
+<nav class="md-nav md-nav--primary md-nav--lifted md-nav--integrated" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="関数型デザイン - 原則、パターン、実践" class="md-nav__button md-logo" aria-label="関数型デザイン - 原則、パターン、実践" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    関数型デザイン - 原則、パターン、実践
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/k2works/grokkingfp-excersice" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    grokkingfp-excersice
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Clojure
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Clojure
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../clojure/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    概要
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_2" id="__nav_2_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第1部 - 基礎原則
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    第1部 - 基礎原則
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../clojure/01-immutability-and-data-transformation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    1. 不変性とデータ変換
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../clojure/02-function-composition/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2. 関数合成と高階関数
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../clojure/03-polymorphism/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3. 多態性の実現方法
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_3" id="__nav_2_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第2部 - 仕様とテスト
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    第2部 - 仕様とテスト
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../clojure/04-clojure-spec/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4. Clojure Spec
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../clojure/05-property-based-testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    5. プロパティベーステスト
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../clojure/06-tdd-in-functional/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    6. TDD と関数型
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_4" id="__nav_2_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第3部 - 構造パターン
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    第3部 - 構造パターン
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../clojure/07-composite-pattern/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    7. Composite
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../clojure/08-decorator-pattern/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    8. Decorator
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../clojure/09-adapter-pattern/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    9. Adapter
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_5" id="__nav_2_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第4部 - 振る舞いパターン
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    第4部 - 振る舞いパターン
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../clojure/10-strategy-pattern/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    10. Strategy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../clojure/11-command-pattern/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    11. Command
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../clojure/12-visitor-pattern/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    12. Visitor
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_6" id="__nav_2_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第5部 - 生成パターン
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    第5部 - 生成パターン
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../clojure/13-abstract-factory-pattern/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    13. Abstract Factory
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../clojure/14-abstract-server-pattern/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    14. Abstract Server
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_7" id="__nav_2_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第6部 - ケーススタディ
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    第6部 - ケーススタディ
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../clojure/15-gossiping-bus-drivers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    15. ゴシップバス運転手
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../clojure/16-payroll-system/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    16. 給与計算システム
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../clojure/17-video-rental-system/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    17. レンタルビデオ
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../clojure/18-concurrency-system/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    18. 並行処理
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../clojure/19-wator-simulation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    19. Wa-Tor シミュレーション
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_8" id="__nav_2_8_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第7部 - まとめと応用
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    第7部 - まとめと応用
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../clojure/20-pattern-interactions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    20. パターン間の相互作用
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../clojure/21-best-practices/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    21. ベストプラクティス
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../clojure/22-oo-to-fp-migration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    22. OO から FP への移行
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Scala
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Scala
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../scala/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    概要
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_2" id="__nav_3_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第1部 - 基礎原則
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    第1部 - 基礎原則
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../scala/01-immutability-and-data-transformation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    1. 不変性とデータ変換
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../scala/02-function-composition/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2. 関数合成と高階関数
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../scala/03-polymorphism/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3. 多態性の実現方法
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_3" id="__nav_3_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第2部 - 仕様とテスト
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    第2部 - 仕様とテスト
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../scala/04-data-validation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4. データ検証
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../scala/05-property-based-testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    5. プロパティベーステスト
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../scala/06-tdd-functional/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    6. TDD と関数型プログラミング
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_4" id="__nav_3_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第3部 - 構造パターン
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    第3部 - 構造パターン
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../scala/07-composite-pattern/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    7. Composite パターン
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../scala/08-decorator-pattern/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    8. Decorator パターン
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../scala/09-adapter-pattern/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    9. Adapter パターン
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_5" id="__nav_3_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第4部 - 振る舞いパターン
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    第4部 - 振る舞いパターン
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../scala/10-strategy-pattern/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    10. Strategy パターン
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../scala/11-command-pattern/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    11. Command パターン
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../scala/12-visitor-pattern/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    12. Visitor パターン
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_6" id="__nav_3_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第5部 - 生成パターン
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    第5部 - 生成パターン
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../scala/13-abstract-factory-pattern/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    13. Abstract Factory パターン
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../scala/14-abstract-server-pattern/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    14. Abstract Server パターン
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_7" id="__nav_3_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第6部 - ケーススタディ
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    第6部 - ケーススタディ
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../scala/15-gossiping-bus-drivers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    15. ゴシップ好きなバスの運転手
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../scala/16-payroll-system/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    16. 給与計算システム
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../scala/17-video-rental-system/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    17. レンタルビデオシステム
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../scala/18-concurrency-system/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    18. 並行処理システム
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../scala/19-wator-simulation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    19. Wa-Tor シミュレーション
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_8" id="__nav_3_8_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第7部 - まとめと応用
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    第7部 - まとめと応用
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../scala/20-pattern-interactions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    20. パターン間の相互作用
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../scala/21-best-practices/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    21. ベストプラクティス
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../scala/22-oo-to-fp-migration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    22. OO から FP への移行
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    F#
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    F#
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    概要
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_2" id="__nav_4_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part 1 - 基礎編
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Part 1 - 基礎編
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../01-immutability-and-data-transformation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    01. 不変性とデータ変換
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02-function-composition/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    02. 関数合成と高階関数
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03-polymorphism/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    03. 多態性とディスパッチ
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_3" id="__nav_4_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part 2 - 仕様とテスト
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Part 2 - 仕様とテスト
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04-data-validation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    04. データバリデーション
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05-property-based-testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    05. プロパティベーステスト
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../06-tdd-functional/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    06. TDD in FP
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_4" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_4_4" id="__nav_4_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part 3 - デザインパターン（構造）
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Part 3 - デザインパターン（構造）
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../07-composite-pattern/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    07. Composite パターン
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../08-decorator-pattern/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    08. Decorator パターン
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    09. Adapter パターン
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    09. Adapter パターン
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        はじめに
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. パターンの構造
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-variablelight" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. VariableLight の例
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. VariableLight の例">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#switchable-target" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Switchable インターフェース (Target)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#variablelight-adaptee" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        VariableLight (Adaptee)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#variablelightadapter-adapter" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        VariableLightAdapter (Adapter)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        関数型アダプター
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        使用例
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. データフォーマットアダプター
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. データフォーマットアダプター">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ユーザーフォーマット変換
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        使用例
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. 温度変換アダプター
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. 日付・時刻変換アダプター
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. 通貨変換アダプター
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. ファイルパス変換アダプター
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. ログレベル変換アダプター
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. コレクション変換アダプター
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-result" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. Result 型変換アダプター
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="10. Result 型変換アダプター">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        使用例
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#11" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11. パターンの利点
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#12" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        12. 関数型プログラミングでの特徴
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        まとめ
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        参考コード
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_9" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        次章予告
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_5" id="__nav_4_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part 4 - デザインパターン（振る舞い）
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Part 4 - デザインパターン（振る舞い）
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../10-strategy-pattern/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    10. Strategy パターン
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../11-command-pattern/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    11. Command パターン
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../12-visitor-pattern/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    12. Visitor パターン
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../13-abstract-factory-pattern/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    13. Abstract Factory パターン
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../14-abstract-server-pattern/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    14. Abstract Server パターン
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_6" id="__nav_4_6_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part 5 - 実践アプリケーション
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Part 5 - 実践アプリケーション
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../15-gossiping-bus-drivers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    15. ゴシップ好きなバスの運転手
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../16-payroll-system/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    16. 給与計算システム
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../17-video-rental-system/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    17. ビデオレンタルシステム
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_7" id="__nav_4_7_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part 6 - 並行処理
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Part 6 - 並行処理
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../18-concurrency-system/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    18. 並行処理システム
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../19-wator-simulation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    19. Wa-Tor シミュレーション
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_8" id="__nav_4_8_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part 7 - ベストプラクティス
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Part 7 - ベストプラクティス
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../20-pattern-interactions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    20. パターン間の相互作用
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../21-best-practices/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    21. ベストプラクティス
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../22-oo-to-fp-migration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    22. OO から FP への移行
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="9-adapter">第9章: Adapter パターン<a class="headerlink" href="#9-adapter" title="Permanent link">&para;</a></h1>
+<h2 id="_1">はじめに<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
+<p>Adapter パターンは、既存のクラスのインターフェースを、クライアントが期待する別のインターフェースに変換するパターンです。このパターンを使用すると、互換性のないインターフェースを持つクラス同士を連携させることができます。</p>
+<p>本章では、可変強度ライトのアダプターとデータフォーマット変換について学びます。</p>
+<h2 id="1">1. パターンの構造<a class="headerlink" href="#1" title="Permanent link">&para;</a></h2>
+<p>Adapter パターンは以下の要素で構成されます：</p>
+<ul>
+<li><strong>Target</strong>: クライアントが期待するインターフェース</li>
+<li><strong>Adaptee</strong>: 既存のクラス（適応される側）</li>
+<li><strong>Adapter</strong>: Target インターフェースを実装し、Adaptee を使用</li>
+</ul>
+<p><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiBjb250ZW50U3R5bGVUeXBlPSJ0ZXh0L2NzcyIgZGF0YS1kaWFncmFtLXR5cGU9IkNMQVNTIiBoZWlnaHQ9IjIzNXB4IiBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJub25lIiBzdHlsZT0id2lkdGg6NzY3cHg7aGVpZ2h0OjIzNXB4O2JhY2tncm91bmQ6I0ZGRkZGRjsiIHZlcnNpb249IjEuMSIgdmlld0JveD0iMCAwIDc2NyAyMzUiIHdpZHRoPSI3NjdweCIgem9vbUFuZFBhbj0ibWFnbmlmeSI+PGRlZnMvPjxnPjwhLS1jbGFzcyB0YXJnZXQtLT48ZyBjbGFzcz0iZW50aXR5IiBkYXRhLWVudGl0eT0idGFyZ2V0IiBkYXRhLXNvdXJjZS1saW5lPSIzIiBkYXRhLXVpZD0iZW50MDAwMiIgaWQ9ImVudGl0eV90YXJnZXQiPjxyZWN0IGZpbGw9IiNGMUYxRjEiIGhlaWdodD0iNjQuMjk2OSIgcng9IjIuNSIgcnk9IjIuNSIgc3R5bGU9InN0cm9rZTojMTgxODE4O3N0cm9rZS13aWR0aDowLjU7IiB3aWR0aD0iODguMTc5NyIgeD0iNDQ3LjUxIiB5PSIxNjQuNTkiLz48ZWxsaXBzZSBjeD0iNDY3LjE0NjciIGN5PSIxODAuNTkiIGZpbGw9IiNCNEE3RTUiIHJ4PSIxMSIgcnk9IjExIiBzdHlsZT0ic3Ryb2tlOiMxODE4MTg7c3Ryb2tlLXdpZHRoOjE7Ii8+PHBhdGggZD0iTTQ2My4wNjg1LDE3Ni4zNTU2IEw0NjMuMDY4NSwxNzQuMTk5NCBMNDcwLjQ1OTIsMTc0LjE5OTQgTDQ3MC40NTkyLDE3Ni4zNTU2IEw0NjcuOTkwNCwxNzYuMzU1NiBMNDY3Ljk5MDQsMTg0LjQzMzcgTDQ3MC40NTkyLDE4NC40MzM3IEw0NzAuNDU5MiwxODYuNTkgTDQ2My4wNjg1LDE4Ni41OSBMNDYzLjA2ODUsMTg0LjQzMzcgTDQ2NS41MzczLDE4NC40MzM3IEw0NjUuNTM3MywxNzYuMzU1NiBMNDYzLjA2ODUsMTc2LjM1NTYgWiAiIGZpbGw9IiMwMDAwMDAiLz48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZm9udC1zdHlsZT0iaXRhbGljIiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjQ1Ljg3NiIgeD0iNDgyLjE3NyIgeT0iMTg1LjQzNjciPlRhcmdldDwvdGV4dD48bGluZSBzdHlsZT0ic3Ryb2tlOiMxODE4MTg7c3Ryb2tlLXdpZHRoOjAuNTsiIHgxPSI0NDguNTEiIHgyPSI1MzQuNjg5NyIgeTE9IjE5Ni41OSIgeTI9IjE5Ni41OSIvPjxsaW5lIHN0eWxlPSJzdHJva2U6IzE4MTgxODtzdHJva2Utd2lkdGg6MC41OyIgeDE9IjQ0OC41MSIgeDI9IjUzNC42ODk3IiB5MT0iMjA0LjU5IiB5Mj0iMjA0LjU5Ii8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTQiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iNzYuMTc5NyIgeD0iNDUzLjUxIiB5PSIyMjEuNTg1MSI+K3JlcXVlc3QoKTwvdGV4dD48L2c+PCEtLWNsYXNzIGFkYXB0ZWUtLT48ZyBjbGFzcz0iZW50aXR5IiBkYXRhLWVudGl0eT0iYWRhcHRlZSIgZGF0YS1zb3VyY2UtbGluZT0iNyIgZGF0YS11aWQ9ImVudDAwMDMiIGlkPSJlbnRpdHlfYWRhcHRlZSI+PHJlY3QgZmlsbD0iI0YxRjFGMSIgaGVpZ2h0PSI2NC4yOTY5IiByeD0iMi41IiByeT0iMi41IiBzdHlsZT0ic3Ryb2tlOiMxODE4MTg7c3Ryb2tlLXdpZHRoOjAuNTsiIHdpZHRoPSIxNDUuMDQ3OSIgeD0iOS4wNyIgeT0iMTY0LjU5Ii8+PGVsbGlwc2UgY3g9IjQ4LjU1MTEiIGN5PSIxODAuNTkiIGZpbGw9IiNBREQxQjIiIHJ4PSIxMSIgcnk9IjExIiBzdHlsZT0ic3Ryb2tlOiMxODE4MTg7c3Ryb2tlLXdpZHRoOjE7Ii8+PHBhdGggZD0iTTUxLjUxOTgsMTg2LjIzMDYgUTUwLjk0MTcsMTg2LjUyNzUgNTAuMzAxMSwxODYuNjY4MSBRNDkuNjYwNCwxODYuODI0NCA0OC45NTczLDE4Ni44MjQ0IFE0Ni40NTczLDE4Ni44MjQ0IDQ1LjEyOTIsMTg1LjE4MzcgUTQzLjgxNjcsMTgzLjUyNzUgNDMuODE2NywxODAuNDAyNSBRNDMuODE2NywxNzcuMjc3NSA0NS4xMjkyLDE3NS42MjEyIFE0Ni40NTczLDE3My45NjUgNDguOTU3MywxNzMuOTY1IFE0OS42NjA0LDE3My45NjUgNTAuMzAxMSwxNzQuMTIxMiBRNTAuOTU3MywxNzQuMjc3NSA1MS41MTk4LDE3NC41NzQ0IEw1MS41MTk4LDE3Ny4yOTMxIFE1MC44OTQ4LDE3Ni43MTUgNTAuMzAxMSwxNzYuNDQ5NCBRNDkuNzA3MywxNzYuMTY4MSA0OS4wODIzLDE3Ni4xNjgxIFE0Ny43Mzg2LDE3Ni4xNjgxIDQ3LjA1MTEsMTc3LjI0NjIgUTQ2LjM2MzYsMTc4LjMwODcgNDYuMzYzNiwxODAuNDAyNSBRNDYuMzYzNiwxODIuNDk2MiA0Ny4wNTExLDE4My41NzQ0IFE0Ny43Mzg2LDE4NC42MzY5IDQ5LjA4MjMsMTg0LjYzNjkgUTQ5LjcwNzMsMTg0LjYzNjkgNTAuMzAxMSwxODQuMzcxMiBRNTAuODk0OCwxODQuMDkgNTEuNTE5OCwxODMuNTExOSBMNTEuNTE5OCwxODYuMjMwNiBaICIgZmlsbD0iIzAwMDAwMCIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjU4LjY0NTUiIHg9IjY3Ljk5MTMiIHk9IjE4NS40MzY3Ij5BZGFwdGVlPC90ZXh0PjxsaW5lIHN0eWxlPSJzdHJva2U6IzE4MTgxODtzdHJva2Utd2lkdGg6MC41OyIgeDE9IjEwLjA3IiB4Mj0iMTUzLjExNzkiIHkxPSIxOTYuNTkiIHkyPSIxOTYuNTkiLz48bGluZSBzdHlsZT0ic3Ryb2tlOiMxODE4MTg7c3Ryb2tlLXdpZHRoOjAuNTsiIHgxPSIxMC4wNyIgeDI9IjE1My4xMTc5IiB5MT0iMjA0LjU5IiB5Mj0iMjA0LjU5Ii8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTQiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iMTMzLjA0NzkiIHg9IjE1LjA3IiB5PSIyMjEuNTg1MSI+K3NwZWNpZmljUmVxdWVzdCgpPC90ZXh0PjwvZz48IS0tY2xhc3MgYWRhcHRlci0tPjxnIGNsYXNzPSJlbnRpdHkiIGRhdGEtZW50aXR5PSJhZGFwdGVyIiBkYXRhLXNvdXJjZS1saW5lPSIxMSIgZGF0YS11aWQ9ImVudDAwMDQiIGlkPSJlbnRpdHlfYWRhcHRlciI+PHJlY3QgZmlsbD0iI0YxRjFGMSIgaGVpZ2h0PSI4MC41OTM4IiByeD0iMi41IiByeT0iMi41IiBzdHlsZT0ic3Ryb2tlOiMxODE4MTg7c3Ryb2tlLXdpZHRoOjAuNTsiIHdpZHRoPSIxNDkuMTkwNCIgeD0iNyIgeT0iNyIvPjxlbGxpcHNlIGN4PSI0OS42MzExIiBjeT0iMjMiIGZpbGw9IiNBREQxQjIiIHJ4PSIxMSIgcnk9IjExIiBzdHlsZT0ic3Ryb2tlOiMxODE4MTg7c3Ryb2tlLXdpZHRoOjE7Ii8+PHBhdGggZD0iTTUyLjU5OTgsMjguNjQwNiBRNTIuMDIxNywyOC45Mzc1IDUxLjM4MTEsMjkuMDc4MSBRNTAuNzQwNCwyOS4yMzQ0IDUwLjAzNzMsMjkuMjM0NCBRNDcuNTM3MywyOS4yMzQ0IDQ2LjIwOTIsMjcuNTkzOCBRNDQuODk2NywyNS45Mzc1IDQ0Ljg5NjcsMjIuODEyNSBRNDQuODk2NywxOS42ODc1IDQ2LjIwOTIsMTguMDMxMyBRNDcuNTM3MywxNi4zNzUgNTAuMDM3MywxNi4zNzUgUTUwLjc0MDQsMTYuMzc1IDUxLjM4MTEsMTYuNTMxMyBRNTIuMDM3MywxNi42ODc1IDUyLjU5OTgsMTYuOTg0NCBMNTIuNTk5OCwxOS43MDMxIFE1MS45NzQ4LDE5LjEyNSA1MS4zODExLDE4Ljg1OTQgUTUwLjc4NzMsMTguNTc4MSA1MC4xNjIzLDE4LjU3ODEgUTQ4LjgxODYsMTguNTc4MSA0OC4xMzExLDE5LjY1NjMgUTQ3LjQ0MzYsMjAuNzE4OCA0Ny40NDM2LDIyLjgxMjUgUTQ3LjQ0MzYsMjQuOTA2MyA0OC4xMzExLDI1Ljk4NDQgUTQ4LjgxODYsMjcuMDQ2OSA1MC4xNjIzLDI3LjA0NjkgUTUwLjc4NzMsMjcuMDQ2OSA1MS4zODExLDI2Ljc4MTMgUTUxLjk3NDgsMjYuNSA1Mi41OTk4LDI1LjkyMTkgTDUyLjU5OTgsMjguNjQwNiBaICIgZmlsbD0iIzAwMDAwMCIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjU1Ljc4ODEiIHg9IjY5Ljc3MTMiIHk9IjI3Ljg0NjciPkFkYXB0ZXI8L3RleHQ+PGxpbmUgc3R5bGU9InN0cm9rZTojMTgxODE4O3N0cm9rZS13aWR0aDowLjU7IiB4MT0iOCIgeDI9IjE1NS4xOTA0IiB5MT0iMzkiIHkyPSIzOSIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjEzNy4xOTA0IiB4PSIxMyIgeT0iNTUuOTk1MSI+K2FkYXB0ZWU6IEFkYXB0ZWU8L3RleHQ+PGxpbmUgc3R5bGU9InN0cm9rZTojMTgxODE4O3N0cm9rZS13aWR0aDowLjU7IiB4MT0iOCIgeDI9IjE1NS4xOTA0IiB5MT0iNjMuMjk2OSIgeTI9IjYzLjI5NjkiLz48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSI3Ni4xNzk3IiB4PSIxMyIgeT0iODAuMjkyIj4rcmVxdWVzdCgpPC90ZXh0PjwvZz48IS0tY2xhc3MgY2xpZW50LS0+PGcgY2xhc3M9ImVudGl0eSIgZGF0YS1lbnRpdHk9ImNsaWVudCIgZGF0YS1zb3VyY2UtbGluZT0iMTYiIGRhdGEtdWlkPSJlbnQwMDA1IiBpZD0iZW50aXR5X2NsaWVudCI+PHJlY3QgZmlsbD0iI0YxRjFGMSIgaGVpZ2h0PSI2NC4yOTY5IiByeD0iMi41IiByeT0iMi41IiBzdHlsZT0ic3Ryb2tlOiMxODE4MTg7c3Ryb2tlLXdpZHRoOjAuNTsiIHdpZHRoPSIxMDEuODcyMSIgeD0iNDcxLjY2IiB5PSIxNS4xNSIvPjxlbGxpcHNlIGN4PSI0OTkuODYzOCIgY3k9IjMxLjE1IiBmaWxsPSIjQUREMUIyIiByeD0iMTEiIHJ5PSIxMSIgc3R5bGU9InN0cm9rZTojMTgxODE4O3N0cm9rZS13aWR0aDoxOyIvPjxwYXRoIGQ9Ik01MDIuODMyNiwzNi43OTA2IFE1MDIuMjU0NCwzNy4wODc1IDUwMS42MTM4LDM3LjIyODEgUTUwMC45NzMyLDM3LjM4NDQgNTAwLjI3MDEsMzcuMzg0NCBRNDk3Ljc3MDEsMzcuMzg0NCA0OTYuNDQxOSwzNS43NDM3IFE0OTUuMTI5NCwzNC4wODc1IDQ5NS4xMjk0LDMwLjk2MjUgUTQ5NS4xMjk0LDI3LjgzNzUgNDk2LjQ0MTksMjYuMTgxMiBRNDk3Ljc3MDEsMjQuNTI1IDUwMC4yNzAxLDI0LjUyNSBRNTAwLjk3MzIsMjQuNTI1IDUwMS42MTM4LDI0LjY4MTIgUTUwMi4yNzAxLDI0LjgzNzUgNTAyLjgzMjYsMjUuMTM0NCBMNTAyLjgzMjYsMjcuODUzMSBRNTAyLjIwNzYsMjcuMjc1IDUwMS42MTM4LDI3LjAwOTQgUTUwMS4wMjAxLDI2LjcyODEgNTAwLjM5NTEsMjYuNzI4MSBRNDk5LjA1MTMsMjYuNzI4MSA0OTguMzYzOCwyNy44MDYyIFE0OTcuNjc2MywyOC44Njg3IDQ5Ny42NzYzLDMwLjk2MjUgUTQ5Ny42NzYzLDMzLjA1NjIgNDk4LjM2MzgsMzQuMTM0NCBRNDk5LjA1MTMsMzUuMTk2OSA1MDAuMzk1MSwzNS4xOTY5IFE1MDEuMDIwMSwzNS4xOTY5IDUwMS42MTM4LDM0LjkzMTIgUTUwMi4yMDc2LDM0LjY1IDUwMi44MzI2LDM0LjA3MTkgTDUwMi44MzI2LDM2Ljc5MDYgWiAiIGZpbGw9IiMwMDAwMDAiLz48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSI0MC41MzAzIiB4PSI1MTYuNzk4IiB5PSIzNS45OTY3Ij5DbGllbnQ8L3RleHQ+PGxpbmUgc3R5bGU9InN0cm9rZTojMTgxODE4O3N0cm9rZS13aWR0aDowLjU7IiB4MT0iNDcyLjY2IiB4Mj0iNTcyLjUzMjEiIHkxPSI0Ny4xNSIgeTI9IjQ3LjE1Ii8+PGxpbmUgc3R5bGU9InN0cm9rZTojMTgxODE4O3N0cm9rZS13aWR0aDowLjU7IiB4MT0iNDcyLjY2IiB4Mj0iNTcyLjUzMjEiIHkxPSI1NS4xNSIgeTI9IjU1LjE1Ii8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTQiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iODkuODcyMSIgeD0iNDc3LjY2IiB5PSI3Mi4xNDUxIj4rb3BlcmF0aW9uKCk8L3RleHQ+PC9nPjxnIGNsYXNzPSJlbnRpdHkiIGRhdGEtZW50aXR5PSJHTU45IiBkYXRhLXNvdXJjZS1saW5lPSIyNSIgZGF0YS11aWQ9ImVudDAwMTAiIGlkPSJlbnRpdHlfR01OOSI+PHBhdGggZD0iTTU3MC42LDE2OS4wNCBMNTcwLjYsMTkyLjc0IEw1MzYuMTEsMTk2Ljc0IEw1NzAuNiwyMDAuNzQgTDU3MC42LDIyNC40Mzg0IEEwLDAgMCAwIDAgNTcwLjYsMjI0LjQzODQgTDc2MC42MDAyLDIyNC40Mzg0IEEwLDAgMCAwIDAgNzYwLjYwMDIsMjI0LjQzODQgTDc2MC42MDAyLDE3OS4wNCBMNzUwLjYwMDIsMTY5LjA0IEw1NzAuNiwxNjkuMDQgQTAsMCAwIDAgMCA1NzAuNiwxNjkuMDQiIGZpbGw9IiNGRUZGREQiIHN0eWxlPSJzdHJva2U6IzE4MTgxODtzdHJva2Utd2lkdGg6MC41OyIvPjxwYXRoIGQ9Ik03NTAuNjAwMiwxNjkuMDQgTDc1MC42MDAyLDE3OS4wNCBMNzYwLjYwMDIsMTc5LjA0IEw3NTAuNjAwMiwxNjkuMDQiIGZpbGw9IiNGRUZGREQiIHN0eWxlPSJzdHJva2U6IzE4MTgxODtzdHJva2Utd2lkdGg6MC41OyIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXNpemU9IjEzIiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjE0Ni41OTkyIiB4PSI1NzYuNiIgeT0iMTg2LjEwNjkiPlRhcmdldCYjMTIzOTk7JiMxMjQ2MzsmIzEyNTIxOyYjMTI0NTI7JiMxMjQ1MDsmIzEyNTMxOyYjMTI0ODg7JiMxMjM2NDs8L3RleHQ+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTMiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iMTY5LjAwMDIiIHg9IjU3Ni42IiB5PSIyMDEuMjM5NyI+JiMyNjM5OTsmIzI0NDUzOyYjMTIzNzc7JiMxMjQyNzsmIzEyNDUyOyYjMTI1MzE7JiMxMjQ3OTsmIzEyNTQwOyYjMTI1MDE7JiMxMjQ1NTsmIzEyNTQwOyYjMTI0NzM7JiMxMjQzNDs8L3RleHQ+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTMiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iNzguMDAwMSIgeD0iNTc2LjYiIHk9IjIxNi4zNzI1Ij4mIzIzNDUwOyYjMzI2ODE7JiMxMjM3NTsmIzEyNDE0OyYjMTIzNzc7JiMxMjI5MDs8L3RleHQ+PC9nPjxnIGNsYXNzPSJlbnRpdHkiIGRhdGEtZW50aXR5PSJHTU4xMiIgZGF0YS1zb3VyY2UtbGluZT0iMzEiIGRhdGEtdWlkPSJlbnQwMDEzIiBpZD0iZW50aXR5X0dNTjEyIj48cGF0aCBkPSJNMTg5LjM3LDE2OS4wNCBMMTg5LjM3LDE5Mi43NCBMMTU0LjUxLDE5Ni43NCBMMTg5LjM3LDIwMC43NCBMMTg5LjM3LDIyNC40Mzg0IEEwLDAgMCAwIDAgMTg5LjM3LDIyNC40Mzg0IEwzODEuODI2NywyMjQuNDM4NCBBMCwwIDAgMCAwIDM4MS44MjY3LDIyNC40Mzg0IEwzODEuODI2NywxNzkuMDQgTDM3MS44MjY3LDE2OS4wNCBMMTg5LjM3LDE2OS4wNCBBMCwwIDAgMCAwIDE4OS4zNywxNjkuMDQiIGZpbGw9IiNGRUZGREQiIHN0eWxlPSJzdHJva2U6IzE4MTgxODtzdHJva2Utd2lkdGg6MC41OyIvPjxwYXRoIGQ9Ik0zNzEuODI2NywxNjkuMDQgTDM3MS44MjY3LDE3OS4wNCBMMzgxLjgyNjcsMTc5LjA0IEwzNzEuODI2NywxNjkuMDQiIGZpbGw9IiNGRUZGREQiIHN0eWxlPSJzdHJva2U6IzE4MTgxODtzdHJva2Utd2lkdGg6MC41OyIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXNpemU9IjEzIiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjE3MS40NTY3IiB4PSIxOTUuMzciIHk9IjE4Ni4xMDY5Ij5BZGFwdGVlJiMxMjM5OTsmIzI2MDgyOyYjMjMzODQ7JiMxMjM5ODsmIzEyNDYzOyYjMTI1MjE7JiMxMjQ3MzsmIzEyMzkxOyYjMTIyODk7PC90ZXh0Pjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXNpemU9IjEzIiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjE1Ni4wMDAyIiB4PSIxOTUuMzciIHk9IjIwMS4yMzk3Ij4mIzMwMDY0OyYjMTIzOTQ7JiMxMjQyNzsmIzEyNDUyOyYjMTI1MzE7JiMxMjQ3OTsmIzEyNTQwOyYjMTI1MDE7JiMxMjQ1NTsmIzEyNTQwOyYjMTI0NzM7JiMxMjQzNDs8L3RleHQ+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTMiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iOTEuMDAwMSIgeD0iMTk1LjM3IiB5PSIyMTYuMzcyNSI+JiMyNTM0NTsmIzEyMzg3OyYjMTIzOTA7JiMxMjM1NjsmIzEyNDE0OyYjMTIzNzc7JiMxMjI5MDs8L3RleHQ+PC9nPjxnIGNsYXNzPSJlbnRpdHkiIGRhdGEtZW50aXR5PSJHTU4xNSIgZGF0YS1zb3VyY2UtbGluZT0iMzciIGRhdGEtdWlkPSJlbnQwMDE2IiBpZD0iZW50aXR5X0dNTjE1Ij48cGF0aCBkPSJNMTkwLjg5LDE5LjYgTDE5MC44OSw0My4zIEwxNTYuMzYsNDcuMyBMMTkwLjg5LDUxLjMgTDE5MC44OSw3NC45OTg0IEEwLDAgMCAwIDAgMTkwLjg5LDc0Ljk5ODQgTDQzNi4yOTI1LDc0Ljk5ODQgQTAsMCAwIDAgMCA0MzYuMjkyNSw3NC45OTg0IEw0MzYuMjkyNSwyOS42IEw0MjYuMjkyNSwxOS42IEwxOTAuODksMTkuNiBBMCwwIDAgMCAwIDE5MC44OSwxOS42IiBmaWxsPSIjRkVGRkREIiBzdHlsZT0ic3Ryb2tlOiMxODE4MTg7c3Ryb2tlLXdpZHRoOjAuNTsiLz48cGF0aCBkPSJNNDI2LjI5MjUsMTkuNiBMNDI2LjI5MjUsMjkuNiBMNDM2LjI5MjUsMjkuNiBMNDI2LjI5MjUsMTkuNiIgZmlsbD0iI0ZFRkZERCIgc3R5bGU9InN0cm9rZTojMTgxODE4O3N0cm9rZS13aWR0aDowLjU7Ii8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTMiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iMjI0LjQwMjUiIHg9IjE5Ni44OSIgeT0iMzYuNjY2OSI+QWRhcHRlciYjMTIzOTk7VGFyZ2V0JiMxMjQ1MjsmIzEyNTMxOyYjMTI0Nzk7JiMxMjU0MDsmIzEyNTAxOyYjMTI0NTU7JiMxMjU0MDsmIzEyNDczOyYjMTI0MzQ7PC90ZXh0Pjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXNpemU9IjEzIiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjE4NC40NTY3IiB4PSIxOTYuODkiIHk9IjUxLjc5OTciPiYjMjM0NTU7JiMzNTAxMzsmIzEyMzc1OyYjMTIyODk7QWRhcHRlZSYjMTIzOTg7JiMxMjUxMzsmIzEyNDc3OyYjMTI0ODM7JiMxMjQ4OTsmIzEyNDM0OzwvdGV4dD48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIxMyIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSI5MS4wMDAxIiB4PSIxOTYuODkiIHk9IjY2LjkzMjUiPiYjMjE2Mjg7JiMxMjQwMzsmIzIwOTg2OyYjMTIzNzU7JiMxMjQxNDsmIzEyMzc3OyYjMTIyOTA7PC90ZXh0PjwvZz48IS0tbGluayBhZGFwdGVyIHRvIHRhcmdldC0tPjxnIGNsYXNzPSJsaW5rIiBkYXRhLWVudGl0eS0xPSJhZGFwdGVyIiBkYXRhLWVudGl0eS0yPSJ0YXJnZXQiIGRhdGEtc291cmNlLWxpbmU9IjIwIiBkYXRhLXVpZD0ibG5rNiIgaWQ9ImxpbmtfYWRhcHRlcl90YXJnZXQiPjxwYXRoIGNvZGVMaW5lPSIyMCIgZD0iTTE1Ni40Nyw4MC44MyBDMTYyLjI0LDgzLjE3IDE2OCw4NS40NSAxNzMuNiw4Ny41OSBDMTgwLjIzLDkwLjEzIDM0NC4yMjM3LDE0NS43Njg3IDQzMC4xMTM3LDE3NC44OTg3IiBmaWxsPSJub25lIiBpZD0iYWRhcHRlci10by10YXJnZXQiIHN0eWxlPSJzdHJva2U6IzE4MTgxODtzdHJva2Utd2lkdGg6MTtzdHJva2UtZGFzaGFycmF5OjcsNzsiLz48cG9seWdvbiBmaWxsPSJub25lIiBwb2ludHM9IjQ0Ny4xNiwxODAuNjgsNDMyLjA0MDgsMTY5LjIxNjYsNDI4LjE4NjYsMTgwLjU4MDgsNDQ3LjE2LDE4MC42OCIgc3R5bGU9InN0cm9rZTojMTgxODE4O3N0cm9rZS13aWR0aDoxOyIvPjwvZz48IS0tbGluayBhZGFwdGVyIHRvIGFkYXB0ZWUtLT48ZyBjbGFzcz0ibGluayIgZGF0YS1lbnRpdHktMT0iYWRhcHRlciIgZGF0YS1lbnRpdHktMj0iYWRhcHRlZSIgZGF0YS1zb3VyY2UtbGluZT0iMjEiIGRhdGEtdWlkPSJsbms3IiBpZD0ibGlua19hZGFwdGVyX2FkYXB0ZWUiPjxwYXRoIGNvZGVMaW5lPSIyMSIgZD0iTTgxLjYsODcuODEgQzgxLjYsMTExLjg2IDgxLjYsMTM2LjE2IDgxLjYsMTU4LjUzIiBmaWxsPSJub25lIiBpZD0iYWRhcHRlci10by1hZGFwdGVlIiBzdHlsZT0ic3Ryb2tlOiMxODE4MTg7c3Ryb2tlLXdpZHRoOjE7Ii8+PHBvbHlnb24gZmlsbD0iIzE4MTgxOCIgcG9pbnRzPSI4MS42LDE2NC41Myw4NS42LDE1NS41Myw4MS42LDE1OS41Myw3Ny42LDE1NS41Myw4MS42LDE2NC41MyIgc3R5bGU9InN0cm9rZTojMTgxODE4O3N0cm9rZS13aWR0aDoxOyIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXNpemU9IjEzIiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjQ0LjMwNjYiIHg9IjgyLjYiIHk9IjEzMC42NTY5Ij5hZGFwdHM8L3RleHQ+PC9nPjwhLS1saW5rIGNsaWVudCB0byB0YXJnZXQtLT48ZyBjbGFzcz0ibGluayIgZGF0YS1lbnRpdHktMT0iY2xpZW50IiBkYXRhLWVudGl0eS0yPSJ0YXJnZXQiIGRhdGEtc291cmNlLWxpbmU9IjIyIiBkYXRhLXVpZD0ibG5rOCIgaWQ9ImxpbmtfY2xpZW50X3RhcmdldCI+PHBhdGggY29kZUxpbmU9IjIyIiBkPSJNNTE1Ljk0LDc5LjkzIEM1MTAuNzEsMTA0LjggNTA0LjY5NTIsMTMzLjQyODUgNDk5LjQ2NTIsMTU4LjI4ODUiIGZpbGw9Im5vbmUiIGlkPSJjbGllbnQtdG8tdGFyZ2V0IiBzdHlsZT0ic3Ryb2tlOiMxODE4MTg7c3Ryb2tlLXdpZHRoOjE7Ii8+PHBvbHlnb24gZmlsbD0iIzE4MTgxOCIgcG9pbnRzPSI0OTguMjMsMTY0LjE2LDUwMy45OTcyLDE1Ni4xNzYzLDQ5OS4yNTk0LDE1OS4yNjcxLDQ5Ni4xNjg1LDE1NC41MjkzLDQ5OC4yMywxNjQuMTYiIHN0eWxlPSJzdHJva2U6IzE4MTgxODtzdHJva2Utd2lkdGg6MTsiLz48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIxMyIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSIyOS43ODMyIiB4PSI1MDkuMDIiIHk9IjEzMC42NTY5Ij51c2VzPC90ZXh0PjwvZz48IS0tU1JDPVtaTDNESWE5MTVEeEZLbW9rWWIxUWtuMmFMVGxnMVFSaFE0RHNoeXNDY3R4MGNLYWdTYkNXTFdJSUhjQUcxZ3VDaXVTdmczcjZwaHNaSERaRnhrRVN4LXlTaVNseTBrNWEzdGp2OGFIUUlpd3NZdkFrVXU2X29HdWVOYU04LVBCb0JGNGVaY3FIZGdDb1hlZDBDZUp1NEFybWtiLWFHWXVqZXNFNEdYaVNJc1Q4R0w4UUNhYzRCTEtLZ0NVb3BEbHVLU0FfSUJZTEU3S0lFeWw1VU1qdkhsc2VjMVQyQW1xQWIxRjkwWi1ZcGFtSllRRUtncC1WblVFZlVTemFYMEhvSmRSZGhhdFllZzAyOEotRzU3RU1zdjR1b0N3eWVrVTB3ZUJrV2NjM1ZXM1QwREMzU21RZ1dpUHR6VDZtM0VlNno4TlRKSFZ3N1NtMEoxTHFvbUJUMXRzNUhmdFJvUjBEZ1dQZ1FEYWJaUVlWbUpSb1V4MWhaRG5oZmo3Wk1jRnFWMHNnQy1sRzF6TTJhYUFKd1drZWZwLVlubks1Z1dkZzRUSjlWekV2SS1WSlRGVTFOdS1oVnBKQnpoWUljaFZrV0JhN19HUjZXM2FGTVBTM0tCdEh3VWwyQnRtMl0tLT48L2c+PC9zdmc+" class="uml" alt="uml diagram" title="" /></p>
+<h2 id="2-variablelight">2. VariableLight の例<a class="headerlink" href="#2-variablelight" title="Permanent link">&para;</a></h2>
+<h3 id="switchable-target">Switchable インターフェース (Target)<a class="headerlink" href="#switchable-target" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="sd">/// Switchableインターフェース（Target）</span>
+<span class="k">type</span><span class="w"> </span><span class="nc">Switchable</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="k">abstract</span><span class="w"> </span><span class="k">member</span><span class="w"> </span><span class="n">TurnOn</span><span class="o">:</span><span class="w"> </span><span class="kt">unit</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="kt">unit</span>
+<span class="w">    </span><span class="k">abstract</span><span class="w"> </span><span class="k">member</span><span class="w"> </span><span class="n">TurnOff</span><span class="o">:</span><span class="w"> </span><span class="kt">unit</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="kt">unit</span>
+</code></pre></div>
+<h3 id="variablelight-adaptee">VariableLight (Adaptee)<a class="headerlink" href="#variablelight-adaptee" title="Permanent link">&para;</a></h3>
+<p>可変強度を持つライトは、単純なオン/オフではなく、強度を指定する必要があります。</p>
+<div class="highlight"><pre><span></span><code><span class="sd">/// 可変強度ライト（Adaptee）</span>
+<span class="k">type</span><span class="w"> </span><span class="nc">VariableLight</span><span class="bp">()</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="k">member</span><span class="w"> </span><span class="n">this</span><span class="p">.</span><span class="nf">SetIntensity</span><span class="o">(</span><span class="n">intensity</span><span class="o">:</span><span class="w"> </span><span class="n">int</span><span class="o">)</span><span class="w"> </span><span class="o">=</span>
+<span class="w">        </span><span class="n">printfn</span><span class="w"> </span><span class="s">&quot;VariableLight: intensity set to %d&quot;</span><span class="w"> </span><span class="n">intensity</span>
+<span class="w">        </span><span class="n">intensity</span>
+</code></pre></div>
+<h3 id="variablelightadapter-adapter">VariableLightAdapter (Adapter)<a class="headerlink" href="#variablelightadapter-adapter" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="sd">/// VariableLightをSwitchableに適応させるアダプター</span>
+<span class="k">type</span><span class="w"> </span><span class="nc">VariableLightAdapter</span><span class="o">(</span><span class="n">light</span><span class="o">:</span><span class="w"> </span><span class="n">VariableLight</span><span class="o">,</span><span class="w"> </span><span class="n">minIntensity</span><span class="o">:</span><span class="w"> </span><span class="n">int</span><span class="o">,</span><span class="w"> </span><span class="n">maxIntensity</span><span class="o">:</span><span class="w"> </span><span class="n">int</span><span class="o">)</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="k">interface</span><span class="w"> </span><span class="n">Switchable</span><span class="w"> </span><span class="k">with</span>
+<span class="w">        </span><span class="k">member</span><span class="w"> </span><span class="n">this</span><span class="p">.</span><span class="nf">TurnOn</span><span class="bp">()</span><span class="w"> </span><span class="o">=</span>
+<span class="w">            </span><span class="n">light</span><span class="o">.</span><span class="n">SetIntensity</span><span class="o">(</span><span class="n">maxIntensity</span><span class="o">)</span><span class="w"> </span><span class="o">|&gt;</span><span class="w"> </span><span class="n">ignore</span>
+<span class="w">        </span><span class="k">member</span><span class="w"> </span><span class="n">this</span><span class="p">.</span><span class="nf">TurnOff</span><span class="bp">()</span><span class="w"> </span><span class="o">=</span>
+<span class="w">            </span><span class="n">light</span><span class="o">.</span><span class="n">SetIntensity</span><span class="o">(</span><span class="n">minIntensity</span><span class="o">)</span><span class="w"> </span><span class="o">|&gt;</span><span class="w"> </span><span class="n">ignore</span>
+</code></pre></div>
+<h3 id="_2">関数型アダプター<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h3>
+<p>F# では、関数を使ったアダプターも自然に実装できます：</p>
+<div class="highlight"><pre><span></span><code><span class="k">module</span><span class="w"> </span><span class="nn">VariableLightAdapter</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="sd">/// VariableLight を Switchable 風の関数に適応</span>
+<span class="w">    </span><span class="k">let</span><span class="w"> </span><span class="nv">adapt</span><span class="w"> </span><span class="o">(</span><span class="n">minIntensity</span><span class="o">:</span><span class="w"> </span><span class="n">int</span><span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="n">maxIntensity</span><span class="o">:</span><span class="w"> </span><span class="n">int</span><span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="n">light</span><span class="o">:</span><span class="w"> </span><span class="n">VariableLight</span><span class="o">)</span><span class="w"> </span><span class="o">=</span>
+<span class="w">        </span><span class="k">let</span><span class="w"> </span><span class="nv">turnOn</span><span class="w"> </span><span class="bp">()</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">light</span><span class="o">.</span><span class="n">SetIntensity</span><span class="o">(</span><span class="n">maxIntensity</span><span class="o">)</span><span class="w"> </span><span class="o">|&gt;</span><span class="w"> </span><span class="n">ignore</span>
+<span class="w">        </span><span class="k">let</span><span class="w"> </span><span class="nv">turnOff</span><span class="w"> </span><span class="bp">()</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">light</span><span class="o">.</span><span class="n">SetIntensity</span><span class="o">(</span><span class="n">minIntensity</span><span class="o">)</span><span class="w"> </span><span class="o">|&gt;</span><span class="w"> </span><span class="n">ignore</span>
+<span class="w">        </span><span class="o">(</span><span class="n">turnOn</span><span class="o">,</span><span class="w"> </span><span class="n">turnOff</span><span class="o">)</span>
+</code></pre></div>
+<h3 id="_3">使用例<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1">// アダプターを作成（最小0、最大100）</span>
+<span class="k">let</span><span class="w"> </span><span class="nv">light</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">VariableLight</span><span class="bp">()</span>
+<span class="k">let</span><span class="w"> </span><span class="nv">adapter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">VariableLightAdapter</span><span class="o">(</span><span class="n">light</span><span class="o">,</span><span class="w"> </span><span class="mi">0</span><span class="o">,</span><span class="w"> </span><span class="mi">100</span><span class="o">)</span><span class="w"> </span><span class="o">:&gt;</span><span class="w"> </span><span class="n">Switchable</span>
+
+<span class="c1">// Switchableインターフェースで操作</span>
+<span class="n">adapter</span><span class="o">.</span><span class="n">TurnOn</span><span class="bp">()</span><span class="w">   </span><span class="c1">// VariableLight: intensity set to 100</span>
+<span class="n">adapter</span><span class="o">.</span><span class="n">TurnOff</span><span class="bp">()</span><span class="w">  </span><span class="c1">// VariableLight: intensity set to 0</span>
+
+<span class="c1">// 関数型アダプターの場合</span>
+<span class="k">let</span><span class="w"> </span><span class="o">(</span><span class="n">turnOn</span><span class="o">,</span><span class="w"> </span><span class="n">turnOff</span><span class="o">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nn">VariableLightAdapter</span><span class="p">.</span><span class="n">adapt</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mi">100</span><span class="w"> </span><span class="n">light</span>
+<span class="n">turnOn</span><span class="bp">()</span><span class="w">  </span><span class="c1">// VariableLight: intensity set to 100</span>
+<span class="n">turnOff</span><span class="bp">()</span><span class="w"> </span><span class="c1">// VariableLight: intensity set to 0</span>
+</code></pre></div>
+<h2 id="3">3. データフォーマットアダプター<a class="headerlink" href="#3" title="Permanent link">&para;</a></h2>
+<h3 id="_4">ユーザーフォーマット変換<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h3>
+<p>異なるシステム間でデータフォーマットが異なる場合、アダプターを使って変換します。</p>
+<div class="highlight"><pre><span></span><code><span class="sd">/// 旧ユーザーフォーマット</span>
+<span class="k">type</span><span class="w"> </span><span class="nc">OldUserFormat</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="o">{</span><span class="w"> </span><span class="n">FirstName</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span>
+<span class="w">      </span><span class="n">LastName</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span>
+<span class="w">      </span><span class="n">EmailAddress</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span>
+<span class="w">      </span><span class="n">PhoneNumber</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="w"> </span><span class="o">}</span>
+
+<span class="sd">/// 新ユーザーフォーマット</span>
+<span class="k">type</span><span class="w"> </span><span class="nc">NewUserFormat</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="o">{</span><span class="w"> </span><span class="n">Name</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span>
+<span class="w">      </span><span class="n">Email</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span>
+<span class="w">      </span><span class="n">Phone</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span>
+<span class="w">      </span><span class="n">Metadata</span><span class="o">:</span><span class="w"> </span><span class="n">Map</span><span class="o">&lt;</span><span class="kt">string</span><span class="o">,</span><span class="w"> </span><span class="kt">obj</span><span class="o">&gt;</span><span class="w"> </span><span class="o">}</span>
+
+<span class="k">module</span><span class="w"> </span><span class="nn">UserFormatAdapter</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="sd">/// 旧フォーマットを新フォーマットに変換</span>
+<span class="w">    </span><span class="k">let</span><span class="w"> </span><span class="nv">oldToNew</span><span class="w"> </span><span class="o">(</span><span class="n">oldUser</span><span class="o">:</span><span class="w"> </span><span class="n">OldUserFormat</span><span class="o">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">NewUserFormat</span><span class="w"> </span><span class="o">=</span>
+<span class="w">        </span><span class="o">{</span><span class="w"> </span><span class="n">Name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">sprintf</span><span class="w"> </span><span class="s">&quot;%s %s&quot;</span><span class="w"> </span><span class="n">oldUser</span><span class="o">.</span><span class="n">LastName</span><span class="w"> </span><span class="n">oldUser</span><span class="o">.</span><span class="n">FirstName</span>
+<span class="w">          </span><span class="n">Email</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">oldUser</span><span class="o">.</span><span class="n">EmailAddress</span>
+<span class="w">          </span><span class="n">Phone</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">oldUser</span><span class="o">.</span><span class="n">PhoneNumber</span>
+<span class="w">          </span><span class="n">Metadata</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nn">Map</span><span class="p">.</span><span class="n">ofList</span><span class="w"> </span><span class="o">[</span><span class="w"> </span><span class="o">(</span><span class="s">&quot;migrated&quot;</span><span class="o">,</span><span class="w"> </span><span class="n">box</span><span class="w"> </span><span class="k">true</span><span class="o">);</span><span class="w"> </span><span class="o">(</span><span class="s">&quot;originalFormat&quot;</span><span class="o">,</span><span class="w"> </span><span class="n">box</span><span class="w"> </span><span class="s">&quot;old&quot;</span><span class="o">)</span><span class="w"> </span><span class="o">]</span><span class="w"> </span><span class="o">}</span>
+
+<span class="w">    </span><span class="sd">/// 新フォーマットを旧フォーマットに変換</span>
+<span class="w">    </span><span class="k">let</span><span class="w"> </span><span class="nv">newToOld</span><span class="w"> </span><span class="o">(</span><span class="n">newUser</span><span class="o">:</span><span class="w"> </span><span class="n">NewUserFormat</span><span class="o">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">OldUserFormat</span><span class="w"> </span><span class="o">=</span>
+<span class="w">        </span><span class="k">let</span><span class="w"> </span><span class="nv">nameParts</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">newUser</span><span class="o">.</span><span class="n">Name</span><span class="o">.</span><span class="n">Split</span><span class="o">(</span><span class="sc">&#39; &#39;</span><span class="o">)</span>
+<span class="w">        </span><span class="k">let</span><span class="w"> </span><span class="nv">lastName</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">nameParts</span><span class="o">.</span><span class="n">Length</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="k">then</span><span class="w"> </span><span class="n">nameParts</span><span class="o">.[</span><span class="mi">0</span><span class="o">]</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s">&quot;&quot;</span>
+<span class="w">        </span><span class="k">let</span><span class="w"> </span><span class="nv">firstName</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">nameParts</span><span class="o">.</span><span class="n">Length</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="k">then</span><span class="w"> </span><span class="n">nameParts</span><span class="o">.[</span><span class="mi">1</span><span class="o">]</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s">&quot;&quot;</span>
+<span class="w">        </span><span class="o">{</span><span class="w"> </span><span class="n">FirstName</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">firstName</span>
+<span class="w">          </span><span class="n">LastName</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">lastName</span>
+<span class="w">          </span><span class="n">EmailAddress</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">newUser</span><span class="o">.</span><span class="n">Email</span>
+<span class="w">          </span><span class="n">PhoneNumber</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">newUser</span><span class="o">.</span><span class="n">Phone</span><span class="w"> </span><span class="o">}</span>
+</code></pre></div>
+<h3 id="_5">使用例<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1">// 旧フォーマット → 新フォーマット</span>
+<span class="k">let</span><span class="w"> </span><span class="nv">oldUser</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="o">{</span><span class="w"> </span><span class="n">FirstName</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;太郎&quot;</span>
+<span class="w">      </span><span class="n">LastName</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;山田&quot;</span>
+<span class="w">      </span><span class="n">EmailAddress</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;taro@example.com&quot;</span>
+<span class="w">      </span><span class="n">PhoneNumber</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;090-1234-5678&quot;</span><span class="w"> </span><span class="o">}</span>
+
+<span class="k">let</span><span class="w"> </span><span class="nv">newUser</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nn">UserFormatAdapter</span><span class="p">.</span><span class="n">oldToNew</span><span class="w"> </span><span class="n">oldUser</span>
+<span class="c1">// { Name = &quot;山田 太郎&quot;</span>
+<span class="c1">//   Email = &quot;taro@example.com&quot;</span>
+<span class="c1">//   Phone = &quot;090-1234-5678&quot;</span>
+<span class="c1">//   Metadata = ... }</span>
+
+<span class="c1">// 新フォーマット → 旧フォーマット</span>
+<span class="k">let</span><span class="w"> </span><span class="nv">converted</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nn">UserFormatAdapter</span><span class="p">.</span><span class="n">newToOld</span><span class="w"> </span><span class="n">newUser</span>
+<span class="c1">// { FirstName = &quot;太郎&quot;</span>
+<span class="c1">//   LastName = &quot;山田&quot;</span>
+<span class="c1">//   EmailAddress = &quot;taro@example.com&quot;</span>
+<span class="c1">//   PhoneNumber = &quot;090-1234-5678&quot; }</span>
+</code></pre></div>
+<h2 id="4">4. 温度変換アダプター<a class="headerlink" href="#4" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><span class="sd">/// 温度の単位</span>
+<span class="o">[&lt;</span><span class="n">RequireQualifiedAccess</span><span class="o">&gt;]</span>
+<span class="k">type</span><span class="w"> </span><span class="nc">TemperatureUnit</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="o">|</span><span class="w"> </span><span class="n">Celsius</span>
+<span class="w">    </span><span class="o">|</span><span class="w"> </span><span class="n">Fahrenheit</span>
+<span class="w">    </span><span class="o">|</span><span class="w"> </span><span class="n">Kelvin</span>
+
+<span class="k">type</span><span class="w"> </span><span class="nc">Temperature</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">{</span><span class="w"> </span><span class="n">Value</span><span class="o">:</span><span class="w"> </span><span class="kt">float</span><span class="o">;</span><span class="w"> </span><span class="n">Unit</span><span class="o">:</span><span class="w"> </span><span class="n">TemperatureUnit</span><span class="w"> </span><span class="o">}</span>
+
+<span class="k">module</span><span class="w"> </span><span class="nn">TemperatureAdapter</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="sd">/// 華氏を摂氏に変換</span>
+<span class="w">    </span><span class="k">let</span><span class="w"> </span><span class="nv">fahrenheitToCelsius</span><span class="w"> </span><span class="o">(</span><span class="n">temp</span><span class="o">:</span><span class="w"> </span><span class="n">Temperature</span><span class="o">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Temperature</span><span class="w"> </span><span class="o">=</span>
+<span class="w">        </span><span class="k">match</span><span class="w"> </span><span class="n">temp</span><span class="o">.</span><span class="n">Unit</span><span class="w"> </span><span class="k">with</span>
+<span class="w">        </span><span class="o">|</span><span class="w"> </span><span class="nn">TemperatureUnit</span><span class="p">.</span><span class="n">Fahrenheit</span><span class="w"> </span><span class="o">-&gt;</span>
+<span class="w">            </span><span class="o">{</span><span class="w"> </span><span class="n">Value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">(</span><span class="n">temp</span><span class="o">.</span><span class="n">Value</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">32</span><span class="o">.</span><span class="mi">0</span><span class="o">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">5</span><span class="o">.</span><span class="mi">0</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">9</span><span class="o">.</span><span class="mi">0</span>
+<span class="w">              </span><span class="n">Unit</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nn">TemperatureUnit</span><span class="p">.</span><span class="n">Celsius</span><span class="w"> </span><span class="o">}</span>
+<span class="w">        </span><span class="o">|</span><span class="w"> </span><span class="o">_</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">temp</span>
+
+<span class="w">    </span><span class="sd">/// 摂氏を華氏に変換</span>
+<span class="w">    </span><span class="k">let</span><span class="w"> </span><span class="nv">celsiusToFahrenheit</span><span class="w"> </span><span class="o">(</span><span class="n">temp</span><span class="o">:</span><span class="w"> </span><span class="n">Temperature</span><span class="o">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Temperature</span><span class="w"> </span><span class="o">=</span>
+<span class="w">        </span><span class="k">match</span><span class="w"> </span><span class="n">temp</span><span class="o">.</span><span class="n">Unit</span><span class="w"> </span><span class="k">with</span>
+<span class="w">        </span><span class="o">|</span><span class="w"> </span><span class="nn">TemperatureUnit</span><span class="p">.</span><span class="n">Celsius</span><span class="w"> </span><span class="o">-&gt;</span>
+<span class="w">            </span><span class="o">{</span><span class="w"> </span><span class="n">Value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">temp</span><span class="o">.</span><span class="n">Value</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">9</span><span class="o">.</span><span class="mi">0</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">5</span><span class="o">.</span><span class="mi">0</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">32</span><span class="o">.</span><span class="mi">0</span>
+<span class="w">              </span><span class="n">Unit</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nn">TemperatureUnit</span><span class="p">.</span><span class="n">Fahrenheit</span><span class="w"> </span><span class="o">}</span>
+<span class="w">        </span><span class="o">|</span><span class="w"> </span><span class="o">_</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">temp</span>
+
+<span class="w">    </span><span class="sd">/// ケルビンを摂氏に変換</span>
+<span class="w">    </span><span class="k">let</span><span class="w"> </span><span class="nv">kelvinToCelsius</span><span class="w"> </span><span class="o">(</span><span class="n">temp</span><span class="o">:</span><span class="w"> </span><span class="n">Temperature</span><span class="o">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Temperature</span><span class="w"> </span><span class="o">=</span>
+<span class="w">        </span><span class="k">match</span><span class="w"> </span><span class="n">temp</span><span class="o">.</span><span class="n">Unit</span><span class="w"> </span><span class="k">with</span>
+<span class="w">        </span><span class="o">|</span><span class="w"> </span><span class="nn">TemperatureUnit</span><span class="p">.</span><span class="n">Kelvin</span><span class="w"> </span><span class="o">-&gt;</span>
+<span class="w">            </span><span class="o">{</span><span class="w"> </span><span class="n">Value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">temp</span><span class="o">.</span><span class="n">Value</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">273</span><span class="o">.</span><span class="mi">15</span>
+<span class="w">              </span><span class="n">Unit</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nn">TemperatureUnit</span><span class="p">.</span><span class="n">Celsius</span><span class="w"> </span><span class="o">}</span>
+<span class="w">        </span><span class="o">|</span><span class="w"> </span><span class="o">_</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">temp</span>
+</code></pre></div>
+<h2 id="5">5. 日付・時刻変換アダプター<a class="headerlink" href="#5" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><span class="k">module</span><span class="w"> </span><span class="nn">DateTimeAdapter</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="sd">/// Unix タイムスタンプを DateTime に変換</span>
+<span class="w">    </span><span class="k">let</span><span class="w"> </span><span class="nv">unixToDateTime</span><span class="w"> </span><span class="o">(</span><span class="n">timestamp</span><span class="o">:</span><span class="w"> </span><span class="kt">int64</span><span class="o">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="nn">System</span><span class="p">.</span><span class="n">DateTime</span><span class="w"> </span><span class="o">=</span>
+<span class="w">        </span><span class="nn">System</span><span class="p">.</span><span class="nn">DateTimeOffset</span><span class="p">.</span><span class="n">FromUnixTimeSeconds</span><span class="o">(</span><span class="n">timestamp</span><span class="o">).</span><span class="n">DateTime</span>
+
+<span class="w">    </span><span class="sd">/// DateTime を Unix タイムスタンプに変換</span>
+<span class="w">    </span><span class="k">let</span><span class="w"> </span><span class="nv">dateTimeToUnix</span><span class="w"> </span><span class="o">(</span><span class="n">dt</span><span class="o">:</span><span class="w"> </span><span class="nn">System</span><span class="p">.</span><span class="n">DateTime</span><span class="o">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">int64</span><span class="w"> </span><span class="o">=</span>
+<span class="w">        </span><span class="nn">System</span><span class="p">.</span><span class="n">DateTimeOffset</span><span class="o">(</span><span class="n">dt</span><span class="o">).</span><span class="n">ToUnixTimeSeconds</span><span class="bp">()</span>
+
+<span class="w">    </span><span class="sd">/// ISO8601 文字列を DateTime に変換</span>
+<span class="w">    </span><span class="k">let</span><span class="w"> </span><span class="nv">iso8601ToDateTime</span><span class="w"> </span><span class="o">(</span><span class="n">iso</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="o">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="nn">System</span><span class="p">.</span><span class="n">DateTime</span><span class="w"> </span><span class="n">option</span><span class="w"> </span><span class="o">=</span>
+<span class="w">        </span><span class="k">match</span><span class="w"> </span><span class="nn">System</span><span class="p">.</span><span class="nn">DateTime</span><span class="p">.</span><span class="n">TryParse</span><span class="o">(</span><span class="n">iso</span><span class="o">)</span><span class="w"> </span><span class="k">with</span>
+<span class="w">        </span><span class="o">|</span><span class="w"> </span><span class="k">true</span><span class="o">,</span><span class="w"> </span><span class="n">dt</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">Some</span><span class="w"> </span><span class="n">dt</span>
+<span class="w">        </span><span class="o">|</span><span class="w"> </span><span class="k">false</span><span class="o">,</span><span class="w"> </span><span class="o">_</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">None</span>
+
+<span class="w">    </span><span class="sd">/// DateTime を ISO8601 文字列に変換</span>
+<span class="w">    </span><span class="k">let</span><span class="w"> </span><span class="nv">dateTimeToIso8601</span><span class="w"> </span><span class="o">(</span><span class="n">dt</span><span class="o">:</span><span class="w"> </span><span class="nn">System</span><span class="p">.</span><span class="n">DateTime</span><span class="o">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="w"> </span><span class="o">=</span>
+<span class="w">        </span><span class="n">dt</span><span class="o">.</span><span class="n">ToString</span><span class="o">(</span><span class="s">&quot;o&quot;</span><span class="o">)</span>
+</code></pre></div>
+<h2 id="6">6. 通貨変換アダプター<a class="headerlink" href="#6" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><span class="o">[&lt;</span><span class="n">RequireQualifiedAccess</span><span class="o">&gt;]</span>
+<span class="k">type</span><span class="w"> </span><span class="nc">Currency</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="o">|</span><span class="w"> </span><span class="n">USD</span><span class="w"> </span><span class="k">of</span><span class="w"> </span><span class="kt">decimal</span>
+<span class="w">    </span><span class="o">|</span><span class="w"> </span><span class="n">JPY</span><span class="w"> </span><span class="k">of</span><span class="w"> </span><span class="kt">decimal</span>
+<span class="w">    </span><span class="o">|</span><span class="w"> </span><span class="n">EUR</span><span class="w"> </span><span class="k">of</span><span class="w"> </span><span class="kt">decimal</span>
+<span class="w">    </span><span class="o">|</span><span class="w"> </span><span class="n">GBP</span><span class="w"> </span><span class="k">of</span><span class="w"> </span><span class="kt">decimal</span>
+
+<span class="k">module</span><span class="w"> </span><span class="nn">CurrencyAdapter</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="k">let</span><span class="w"> </span><span class="nv">private</span><span class="w"> </span><span class="n">rates</span><span class="w"> </span><span class="o">=</span>
+<span class="w">        </span><span class="nn">Map</span><span class="p">.</span><span class="n">ofList</span>
+<span class="w">            </span><span class="o">[</span><span class="w"> </span><span class="o">(</span><span class="s">&quot;USD_JPY&quot;</span><span class="o">,</span><span class="w"> </span><span class="mi">150</span><span class="o">.</span><span class="mi">0m</span><span class="o">)</span>
+<span class="w">              </span><span class="o">(</span><span class="s">&quot;EUR_USD&quot;</span><span class="o">,</span><span class="w"> </span><span class="mi">1</span><span class="o">.</span><span class="mi">08m</span><span class="o">)</span>
+<span class="w">              </span><span class="o">(</span><span class="s">&quot;GBP_USD&quot;</span><span class="o">,</span><span class="w"> </span><span class="mi">1</span><span class="o">.</span><span class="mi">27m</span><span class="o">)</span><span class="w"> </span><span class="o">]</span>
+
+<span class="w">    </span><span class="sd">/// USD を JPY に変換</span>
+<span class="w">    </span><span class="k">let</span><span class="w"> </span><span class="nv">usdToJpy</span><span class="w"> </span><span class="o">(</span><span class="n">currency</span><span class="o">:</span><span class="w"> </span><span class="n">Currency</span><span class="o">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Currency</span><span class="w"> </span><span class="o">=</span>
+<span class="w">        </span><span class="k">match</span><span class="w"> </span><span class="n">currency</span><span class="w"> </span><span class="k">with</span>
+<span class="w">        </span><span class="o">|</span><span class="w"> </span><span class="nn">Currency</span><span class="p">.</span><span class="n">USD</span><span class="w"> </span><span class="n">amount</span><span class="w"> </span><span class="o">-&gt;</span>
+<span class="w">            </span><span class="nn">Currency</span><span class="p">.</span><span class="n">JPY</span><span class="o">(</span><span class="n">amount</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">rates</span><span class="o">.[</span><span class="s">&quot;USD_JPY&quot;</span><span class="o">])</span>
+<span class="w">        </span><span class="o">|</span><span class="w"> </span><span class="o">_</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">currency</span>
+
+<span class="w">    </span><span class="sd">/// JPY を USD に変換</span>
+<span class="w">    </span><span class="k">let</span><span class="w"> </span><span class="nv">jpyToUsd</span><span class="w"> </span><span class="o">(</span><span class="n">currency</span><span class="o">:</span><span class="w"> </span><span class="n">Currency</span><span class="o">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Currency</span><span class="w"> </span><span class="o">=</span>
+<span class="w">        </span><span class="k">match</span><span class="w"> </span><span class="n">currency</span><span class="w"> </span><span class="k">with</span>
+<span class="w">        </span><span class="o">|</span><span class="w"> </span><span class="nn">Currency</span><span class="p">.</span><span class="n">JPY</span><span class="w"> </span><span class="n">amount</span><span class="w"> </span><span class="o">-&gt;</span>
+<span class="w">            </span><span class="nn">Currency</span><span class="p">.</span><span class="n">USD</span><span class="o">(</span><span class="n">amount</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">rates</span><span class="o">.[</span><span class="s">&quot;USD_JPY&quot;</span><span class="o">])</span>
+<span class="w">        </span><span class="o">|</span><span class="w"> </span><span class="o">_</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">currency</span>
+</code></pre></div>
+<h2 id="7">7. ファイルパス変換アダプター<a class="headerlink" href="#7" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><span class="k">module</span><span class="w"> </span><span class="nn">FilePathAdapter</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="sd">/// Windows パスを Unix パスに変換</span>
+<span class="w">    </span><span class="k">let</span><span class="w"> </span><span class="nv">windowsToUnix</span><span class="w"> </span><span class="o">(</span><span class="n">path</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="o">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="w"> </span><span class="o">=</span>
+<span class="w">        </span><span class="n">path</span><span class="o">.</span><span class="n">Replace</span><span class="o">(</span><span class="s">&quot;</span><span class="se">\\</span><span class="s">&quot;</span><span class="o">,</span><span class="w"> </span><span class="s">&quot;/&quot;</span><span class="o">)</span>
+<span class="w">            </span><span class="o">.</span><span class="n">Replace</span><span class="o">(</span><span class="s">&quot;C:&quot;</span><span class="o">,</span><span class="w"> </span><span class="s">&quot;/c&quot;</span><span class="o">)</span>
+<span class="w">            </span><span class="o">.</span><span class="n">Replace</span><span class="o">(</span><span class="s">&quot;D:&quot;</span><span class="o">,</span><span class="w"> </span><span class="s">&quot;/d&quot;</span><span class="o">)</span>
+
+<span class="w">    </span><span class="sd">/// Unix パスを Windows パスに変換</span>
+<span class="w">    </span><span class="k">let</span><span class="w"> </span><span class="nv">unixToWindows</span><span class="w"> </span><span class="o">(</span><span class="n">path</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="o">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="w"> </span><span class="o">=</span>
+<span class="w">        </span><span class="k">let</span><span class="w"> </span><span class="nv">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">path</span><span class="o">.</span><span class="n">Replace</span><span class="o">(</span><span class="s">&quot;/&quot;</span><span class="o">,</span><span class="w"> </span><span class="s">&quot;</span><span class="se">\\</span><span class="s">&quot;</span><span class="o">)</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="n">result</span><span class="o">.</span><span class="n">StartsWith</span><span class="o">(</span><span class="s">&quot;</span><span class="se">\\</span><span class="s">c</span><span class="se">\\</span><span class="s">&quot;</span><span class="o">)</span><span class="w"> </span><span class="k">then</span>
+<span class="w">            </span><span class="s">&quot;C:&quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">result</span><span class="o">.</span><span class="n">Substring</span><span class="o">(</span><span class="mi">2</span><span class="o">)</span>
+<span class="w">        </span><span class="k">elif</span><span class="w"> </span><span class="n">result</span><span class="o">.</span><span class="n">StartsWith</span><span class="o">(</span><span class="s">&quot;</span><span class="se">\\</span><span class="s">d</span><span class="se">\\</span><span class="s">&quot;</span><span class="o">)</span><span class="w"> </span><span class="k">then</span>
+<span class="w">            </span><span class="s">&quot;D:&quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">result</span><span class="o">.</span><span class="n">Substring</span><span class="o">(</span><span class="mi">2</span><span class="o">)</span>
+<span class="w">        </span><span class="k">else</span>
+<span class="w">            </span><span class="n">result</span>
+</code></pre></div>
+<h2 id="8">8. ログレベル変換アダプター<a class="headerlink" href="#8" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><span class="sd">/// アプリケーションのログレベル</span>
+<span class="o">[&lt;</span><span class="n">RequireQualifiedAccess</span><span class="o">&gt;]</span>
+<span class="k">type</span><span class="w"> </span><span class="nc">AppLogLevel</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="o">|</span><span class="w"> </span><span class="n">Trace</span>
+<span class="w">    </span><span class="o">|</span><span class="w"> </span><span class="n">Debug</span>
+<span class="w">    </span><span class="o">|</span><span class="w"> </span><span class="n">Info</span>
+<span class="w">    </span><span class="o">|</span><span class="w"> </span><span class="n">Warning</span>
+<span class="w">    </span><span class="o">|</span><span class="w"> </span><span class="n">Error</span>
+<span class="w">    </span><span class="o">|</span><span class="w"> </span><span class="n">Fatal</span>
+
+<span class="sd">/// 外部ライブラリのログレベル</span>
+<span class="k">type</span><span class="w"> </span><span class="nc">ExternalLogLevel</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="o">|</span><span class="w"> </span><span class="n">Verbose</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span>
+<span class="w">    </span><span class="o">|</span><span class="w"> </span><span class="n">Debug</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span>
+<span class="w">    </span><span class="o">|</span><span class="w"> </span><span class="n">Information</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span>
+<span class="w">    </span><span class="o">|</span><span class="w"> </span><span class="n">Warning</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">3</span>
+<span class="w">    </span><span class="o">|</span><span class="w"> </span><span class="n">Error</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">4</span>
+<span class="w">    </span><span class="o">|</span><span class="w"> </span><span class="n">Critical</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">5</span>
+
+<span class="k">module</span><span class="w"> </span><span class="nn">LogLevelAdapter</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="sd">/// アプリのログレベルを外部形式に変換</span>
+<span class="w">    </span><span class="k">let</span><span class="w"> </span><span class="nv">appToExternal</span><span class="w"> </span><span class="n">level</span><span class="w"> </span><span class="o">=</span>
+<span class="w">        </span><span class="k">match</span><span class="w"> </span><span class="n">level</span><span class="w"> </span><span class="k">with</span>
+<span class="w">        </span><span class="o">|</span><span class="w"> </span><span class="nn">AppLogLevel</span><span class="p">.</span><span class="n">Trace</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nn">ExternalLogLevel</span><span class="p">.</span><span class="n">Verbose</span>
+<span class="w">        </span><span class="o">|</span><span class="w"> </span><span class="nn">AppLogLevel</span><span class="p">.</span><span class="n">Debug</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nn">ExternalLogLevel</span><span class="p">.</span><span class="n">Debug</span>
+<span class="w">        </span><span class="o">|</span><span class="w"> </span><span class="nn">AppLogLevel</span><span class="p">.</span><span class="n">Info</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nn">ExternalLogLevel</span><span class="p">.</span><span class="n">Information</span>
+<span class="w">        </span><span class="o">|</span><span class="w"> </span><span class="nn">AppLogLevel</span><span class="p">.</span><span class="n">Warning</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nn">ExternalLogLevel</span><span class="p">.</span><span class="n">Warning</span>
+<span class="w">        </span><span class="o">|</span><span class="w"> </span><span class="nn">AppLogLevel</span><span class="p">.</span><span class="n">Error</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nn">ExternalLogLevel</span><span class="p">.</span><span class="n">Error</span>
+<span class="w">        </span><span class="o">|</span><span class="w"> </span><span class="nn">AppLogLevel</span><span class="p">.</span><span class="n">Fatal</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nn">ExternalLogLevel</span><span class="p">.</span><span class="n">Critical</span>
+
+<span class="w">    </span><span class="sd">/// 外部形式をアプリのログレベルに変換</span>
+<span class="w">    </span><span class="k">let</span><span class="w"> </span><span class="nv">externalToApp</span><span class="w"> </span><span class="n">level</span><span class="w"> </span><span class="o">=</span>
+<span class="w">        </span><span class="k">match</span><span class="w"> </span><span class="n">level</span><span class="w"> </span><span class="k">with</span>
+<span class="w">        </span><span class="o">|</span><span class="w"> </span><span class="nn">ExternalLogLevel</span><span class="p">.</span><span class="n">Verbose</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nn">AppLogLevel</span><span class="p">.</span><span class="n">Trace</span>
+<span class="w">        </span><span class="o">|</span><span class="w"> </span><span class="nn">ExternalLogLevel</span><span class="p">.</span><span class="n">Debug</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nn">AppLogLevel</span><span class="p">.</span><span class="n">Debug</span>
+<span class="w">        </span><span class="o">|</span><span class="w"> </span><span class="nn">ExternalLogLevel</span><span class="p">.</span><span class="n">Information</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nn">AppLogLevel</span><span class="p">.</span><span class="n">Info</span>
+<span class="w">        </span><span class="o">|</span><span class="w"> </span><span class="nn">ExternalLogLevel</span><span class="p">.</span><span class="n">Warning</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nn">AppLogLevel</span><span class="p">.</span><span class="n">Warning</span>
+<span class="w">        </span><span class="o">|</span><span class="w"> </span><span class="nn">ExternalLogLevel</span><span class="p">.</span><span class="n">Error</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nn">AppLogLevel</span><span class="p">.</span><span class="n">Error</span>
+<span class="w">        </span><span class="o">|</span><span class="w"> </span><span class="nn">ExternalLogLevel</span><span class="p">.</span><span class="n">Critical</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nn">AppLogLevel</span><span class="p">.</span><span class="n">Fatal</span>
+<span class="w">        </span><span class="o">|</span><span class="w"> </span><span class="o">_</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nn">AppLogLevel</span><span class="p">.</span><span class="n">Info</span>
+</code></pre></div>
+<h2 id="9">9. コレクション変換アダプター<a class="headerlink" href="#9" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><span class="k">module</span><span class="w"> </span><span class="nn">CollectionAdapter</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="sd">/// Array を List に変換</span>
+<span class="w">    </span><span class="k">let</span><span class="w"> </span><span class="nv">arrayToList</span><span class="w"> </span><span class="o">(</span><span class="n">arr</span><span class="o">:</span><span class="w"> </span><span class="k">&#39;</span><span class="n">T</span><span class="w"> </span><span class="n">array</span><span class="o">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nn">Array</span><span class="p">.</span><span class="n">toList</span><span class="w"> </span><span class="n">arr</span>
+
+<span class="w">    </span><span class="sd">/// List を Array に変換</span>
+<span class="w">    </span><span class="k">let</span><span class="w"> </span><span class="nv">listToArray</span><span class="w"> </span><span class="o">(</span><span class="n">lst</span><span class="o">:</span><span class="w"> </span><span class="k">&#39;</span><span class="n">T</span><span class="w"> </span><span class="kt">list</span><span class="o">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nn">List</span><span class="p">.</span><span class="n">toArray</span><span class="w"> </span><span class="n">lst</span>
+
+<span class="w">    </span><span class="sd">/// Seq を List に変換</span>
+<span class="w">    </span><span class="k">let</span><span class="w"> </span><span class="nv">seqToList</span><span class="w"> </span><span class="o">(</span><span class="n">seq</span><span class="o">:</span><span class="w"> </span><span class="k">&#39;</span><span class="n">T</span><span class="w"> </span><span class="n">seq</span><span class="o">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nn">Seq</span><span class="p">.</span><span class="n">toList</span><span class="w"> </span><span class="n">seq</span>
+
+<span class="w">    </span><span class="sd">/// List を Seq に変換</span>
+<span class="w">    </span><span class="k">let</span><span class="w"> </span><span class="nv">listToSeq</span><span class="w"> </span><span class="o">(</span><span class="n">lst</span><span class="o">:</span><span class="w"> </span><span class="k">&#39;</span><span class="n">T</span><span class="w"> </span><span class="kt">list</span><span class="o">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nn">List</span><span class="p">.</span><span class="n">toSeq</span><span class="w"> </span><span class="n">lst</span>
+
+<span class="w">    </span><span class="sd">/// Dictionary を Map に変換</span>
+<span class="w">    </span><span class="k">let</span><span class="w"> </span><span class="nv">dictToMap</span><span class="w"> </span><span class="o">(</span><span class="n">dict</span><span class="o">:</span><span class="w"> </span><span class="nn">System</span><span class="p">.</span><span class="nn">Collections</span><span class="p">.</span><span class="nn">Generic</span><span class="p">.</span><span class="n">Dictionary</span><span class="o">&lt;</span><span class="k">&#39;</span><span class="n">K</span><span class="o">,</span><span class="w"> </span><span class="k">&#39;</span><span class="n">V</span><span class="o">&gt;)</span><span class="w"> </span><span class="o">=</span>
+<span class="w">        </span><span class="n">dict</span><span class="w"> </span><span class="o">|&gt;</span><span class="w"> </span><span class="nn">Seq</span><span class="p">.</span><span class="n">map</span><span class="w"> </span><span class="o">(</span><span class="k">fun</span><span class="w"> </span><span class="n">kvp</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="o">(</span><span class="n">kvp</span><span class="o">.</span><span class="n">Key</span><span class="o">,</span><span class="w"> </span><span class="n">kvp</span><span class="o">.</span><span class="n">Value</span><span class="o">))</span><span class="w"> </span><span class="o">|&gt;</span><span class="w"> </span><span class="nn">Map</span><span class="p">.</span><span class="n">ofSeq</span>
+
+<span class="w">    </span><span class="sd">/// Map を Dictionary に変換</span>
+<span class="w">    </span><span class="k">let</span><span class="w"> </span><span class="nv">mapToDict</span><span class="w"> </span><span class="o">(</span><span class="n">map</span><span class="o">:</span><span class="w"> </span><span class="n">Map</span><span class="o">&lt;</span><span class="k">&#39;</span><span class="n">K</span><span class="o">,</span><span class="w"> </span><span class="k">&#39;</span><span class="n">V</span><span class="o">&gt;)</span><span class="w"> </span><span class="o">=</span>
+<span class="w">        </span><span class="k">let</span><span class="w"> </span><span class="nv">dict</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nn">System</span><span class="p">.</span><span class="nn">Collections</span><span class="p">.</span><span class="nn">Generic</span><span class="p">.</span><span class="n">Dictionary</span><span class="o">&lt;</span><span class="k">&#39;</span><span class="n">K</span><span class="o">,</span><span class="w"> </span><span class="k">&#39;</span><span class="n">V</span><span class="o">&gt;</span><span class="bp">()</span>
+<span class="w">        </span><span class="n">map</span><span class="w"> </span><span class="o">|&gt;</span><span class="w"> </span><span class="nn">Map</span><span class="p">.</span><span class="n">iter</span><span class="w"> </span><span class="o">(</span><span class="k">fun</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">dict</span><span class="o">.[</span><span class="n">k</span><span class="o">]</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">v</span><span class="o">)</span>
+<span class="w">        </span><span class="n">dict</span>
+</code></pre></div>
+<h2 id="10-result">10. Result 型変換アダプター<a class="headerlink" href="#10-result" title="Permanent link">&para;</a></h2>
+<p>F# の <code>Result</code> 型と他の形式間の変換：</p>
+<div class="highlight"><pre><span></span><code><span class="k">module</span><span class="w"> </span><span class="nn">ResultAdapter</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="sd">/// Option を Result に変換</span>
+<span class="w">    </span><span class="k">let</span><span class="w"> </span><span class="nv">optionToResult</span><span class="w"> </span><span class="o">(</span><span class="n">error</span><span class="o">:</span><span class="w"> </span><span class="k">&#39;</span><span class="n">E</span><span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="n">opt</span><span class="o">:</span><span class="w"> </span><span class="k">&#39;</span><span class="n">T</span><span class="w"> </span><span class="n">option</span><span class="o">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Result</span><span class="o">&lt;</span><span class="k">&#39;</span><span class="n">T</span><span class="o">,</span><span class="w"> </span><span class="k">&#39;</span><span class="n">E</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span>
+<span class="w">        </span><span class="k">match</span><span class="w"> </span><span class="n">opt</span><span class="w"> </span><span class="k">with</span>
+<span class="w">        </span><span class="o">|</span><span class="w"> </span><span class="n">Some</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">Ok</span><span class="w"> </span><span class="n">v</span>
+<span class="w">        </span><span class="o">|</span><span class="w"> </span><span class="n">None</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">Error</span><span class="w"> </span><span class="n">error</span>
+
+<span class="w">    </span><span class="sd">/// Result を Option に変換</span>
+<span class="w">    </span><span class="k">let</span><span class="w"> </span><span class="nv">resultToOption</span><span class="w"> </span><span class="o">(</span><span class="n">result</span><span class="o">:</span><span class="w"> </span><span class="n">Result</span><span class="o">&lt;</span><span class="k">&#39;</span><span class="n">T</span><span class="o">,</span><span class="w"> </span><span class="k">&#39;</span><span class="n">E</span><span class="o">&gt;)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">&#39;</span><span class="n">T</span><span class="w"> </span><span class="n">option</span><span class="w"> </span><span class="o">=</span>
+<span class="w">        </span><span class="k">match</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="k">with</span>
+<span class="w">        </span><span class="o">|</span><span class="w"> </span><span class="n">Ok</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">Some</span><span class="w"> </span><span class="n">v</span>
+<span class="w">        </span><span class="o">|</span><span class="w"> </span><span class="n">Error</span><span class="w"> </span><span class="o">_</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">None</span>
+
+<span class="w">    </span><span class="sd">/// 例外ベースの処理を Result に変換</span>
+<span class="w">    </span><span class="k">let</span><span class="w"> </span><span class="nv">tryToResult</span><span class="w"> </span><span class="o">(</span><span class="n">f</span><span class="o">:</span><span class="w"> </span><span class="kt">unit</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="k">&#39;</span><span class="n">T</span><span class="o">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Result</span><span class="o">&lt;</span><span class="k">&#39;</span><span class="n">T</span><span class="o">,</span><span class="w"> </span><span class="kt">exn</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span>
+<span class="w">        </span><span class="k">try</span>
+<span class="w">            </span><span class="n">Ok</span><span class="o">(</span><span class="n">f</span><span class="w"> </span><span class="bp">()</span><span class="o">)</span>
+<span class="w">        </span><span class="k">with</span><span class="w"> </span><span class="n">ex</span><span class="w"> </span><span class="o">-&gt;</span>
+<span class="w">            </span><span class="n">Error</span><span class="w"> </span><span class="n">ex</span>
+
+<span class="w">    </span><span class="sd">/// Result を例外ベースに変換（例外をスロー）</span>
+<span class="w">    </span><span class="k">let</span><span class="w"> </span><span class="nv">resultToTry</span><span class="w"> </span><span class="o">(</span><span class="n">result</span><span class="o">:</span><span class="w"> </span><span class="n">Result</span><span class="o">&lt;</span><span class="k">&#39;</span><span class="n">T</span><span class="o">,</span><span class="w"> </span><span class="kt">exn</span><span class="o">&gt;)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">&#39;</span><span class="n">T</span><span class="w"> </span><span class="o">=</span>
+<span class="w">        </span><span class="k">match</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="k">with</span>
+<span class="w">        </span><span class="o">|</span><span class="w"> </span><span class="n">Ok</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">v</span>
+<span class="w">        </span><span class="o">|</span><span class="w"> </span><span class="n">Error</span><span class="w"> </span><span class="n">ex</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">raise</span><span class="w"> </span><span class="n">ex</span>
+</code></pre></div>
+<h3 id="_6">使用例<a class="headerlink" href="#_6" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1">// Option → Result</span>
+<span class="k">let</span><span class="w"> </span><span class="nv">maybeValue</span><span class="o">:</span><span class="w"> </span><span class="n">int</span><span class="w"> </span><span class="n">option</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Some</span><span class="w"> </span><span class="mi">42</span>
+<span class="k">let</span><span class="w"> </span><span class="nv">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nn">ResultAdapter</span><span class="p">.</span><span class="n">optionToResult</span><span class="w"> </span><span class="s">&quot;値が見つかりません&quot;</span><span class="w"> </span><span class="n">maybeValue</span>
+<span class="c1">// Ok 42</span>
+
+<span class="k">let</span><span class="w"> </span><span class="nv">nothing</span><span class="o">:</span><span class="w"> </span><span class="n">int</span><span class="w"> </span><span class="n">option</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">None</span>
+<span class="k">let</span><span class="w"> </span><span class="nv">errorResult</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nn">ResultAdapter</span><span class="p">.</span><span class="n">optionToResult</span><span class="w"> </span><span class="s">&quot;値が見つかりません&quot;</span><span class="w"> </span><span class="n">nothing</span>
+<span class="c1">// Error &quot;値が見つかりません&quot;</span>
+
+<span class="c1">// 例外ベース → Result</span>
+<span class="k">let</span><span class="w"> </span><span class="nv">safeDiv</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="nn">ResultAdapter</span><span class="p">.</span><span class="n">tryToResult</span><span class="w"> </span><span class="o">(</span><span class="k">fun</span><span class="w"> </span><span class="bp">()</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="mi">10</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">2</span><span class="o">)</span>
+<span class="c1">// Ok 5</span>
+
+<span class="k">let</span><span class="w"> </span><span class="nv">failedDiv</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="nn">ResultAdapter</span><span class="p">.</span><span class="n">tryToResult</span><span class="w"> </span><span class="o">(</span><span class="k">fun</span><span class="w"> </span><span class="bp">()</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="mi">10</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">0</span><span class="o">)</span>
+<span class="c1">// Error (System.DivideByZeroException)</span>
+</code></pre></div>
+<h2 id="11">11. パターンの利点<a class="headerlink" href="#11" title="Permanent link">&para;</a></h2>
+<ol>
+<li><strong>既存コードの再利用</strong>: 既存のクラスを変更せずに新しいインターフェースで使用</li>
+<li><strong>単一責任の原則</strong>: インターフェース変換のロジックを分離</li>
+<li><strong>開放/閉鎖の原則</strong>: 新しいアダプターを追加しても既存コードは変更不要</li>
+<li><strong>レガシーシステムとの統合</strong>: 古いシステムと新しいシステムを連携</li>
+</ol>
+<h2 id="12">12. 関数型プログラミングでの特徴<a class="headerlink" href="#12" title="Permanent link">&para;</a></h2>
+<p>F# での Adapter パターンの実装には以下の特徴があります：</p>
+<ol>
+<li><strong>関数による変換</strong>: 単純なデータ変換は関数で直接実装</li>
+<li><strong>パイプライン演算子</strong>: 変換を連鎖させやすい</li>
+<li><strong>イミュータブルなデータ</strong>: 変換後も元のデータは変更されない</li>
+<li><strong>型安全</strong>: コンパイル時に型の不整合を検出</li>
+<li><strong>合成のしやすさ</strong>: 複数のアダプターを <code>&gt;&gt;</code> で合成可能</li>
+</ol>
+<div class="highlight"><pre><span></span><code><span class="c1">// アダプターの合成例</span>
+<span class="k">let</span><span class="w"> </span><span class="nv">convertAndFormat</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="nn">TemperatureAdapter</span><span class="p">.</span><span class="n">celsiusToFahrenheit</span>
+<span class="w">    </span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="k">fun</span><span class="w"> </span><span class="n">temp</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">sprintf</span><span class="w"> </span><span class="s">&quot;%.1f°F&quot;</span><span class="w"> </span><span class="n">temp</span><span class="o">.</span><span class="n">Value</span>
+
+<span class="k">let</span><span class="w"> </span><span class="nv">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">{</span><span class="w"> </span><span class="n">Value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">100</span><span class="o">.</span><span class="mi">0</span><span class="o">;</span><span class="w"> </span><span class="n">Unit</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nn">TemperatureUnit</span><span class="p">.</span><span class="n">Celsius</span><span class="w"> </span><span class="o">}</span><span class="w"> </span><span class="o">|&gt;</span><span class="w"> </span><span class="n">convertAndFormat</span>
+<span class="c1">// &quot;212.0°F&quot;</span>
+</code></pre></div>
+<h2 id="_7">まとめ<a class="headerlink" href="#_7" title="Permanent link">&para;</a></h2>
+<p>本章では、Adapter パターンについて学びました：</p>
+<ol>
+<li><strong>VariableLightAdapter</strong>: 可変強度ライトを単純なオン/オフインターフェースに適応</li>
+<li><strong>データフォーマットアダプター</strong>: 異なるデータ形式間の変換</li>
+<li><strong>型変換アダプター</strong>: 温度、通貨、日時などの単位変換</li>
+<li><strong>コレクションアダプター</strong>: 異なるコレクション型間の変換</li>
+<li><strong>Result アダプター</strong>: エラーハンドリング方式間の変換</li>
+</ol>
+<p>F# では、関数とパイプライン演算子を活用することで、シンプルで合成しやすいアダプターを実装できます。</p>
+<h2 id="_8">参考コード<a class="headerlink" href="#_8" title="Permanent link">&para;</a></h2>
+<p>本章のコード例は以下のファイルで確認できます：</p>
+<ul>
+<li>ソースコード: <code>app/fsharp/part3/src/Library.fs</code></li>
+<li>テストコード: <code>app/fsharp/part3/tests/Tests.fs</code></li>
+</ul>
+<h2 id="_9">次章予告<a class="headerlink" href="#_9" title="Permanent link">&para;</a></h2>
+<p>次章では、<strong>Strategy パターン</strong>について学びます。アルゴリズムをカプセル化し、実行時に切り替え可能にする方法を探ります。</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+    <a href="https://github.com/k2works" target="_blank" rel="noopener" title="GitHub Repository/claude-code-booster" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "toc.integrate", "search.suggest", "search.highlight"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+      
+        <script src="../../docs/assets/js/extra.js"></script>
+      
+    
+  </body>
+</html>
