@@ -165,3 +165,10 @@ nav:
           - 07. Composite パターン: haskell/07-composite-pattern.md
           - 08. Decorator パターン: haskell/08-decorator-pattern.md
           - 09. Adapter パターン: haskell/09-adapter-pattern.md
+      - Part 4 - 振る舞いパターン:
+          - 10. Strategy パターン: haskell/10-strategy-pattern.md
+          - 11. Command パターン: haskell/11-command-pattern.md
+          - 12. Visitor パターン: haskell/12-visitor-pattern.md
+      - Part 5 - 生成パターン:
+          - 13. Abstract Factory パターン: haskell/13-abstract-factory-pattern.md
+          - 14. Abstract Server パターン: haskell/14-abstract-server-pattern.md
