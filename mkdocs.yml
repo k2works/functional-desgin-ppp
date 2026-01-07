@@ -113,3 +113,4 @@ nav:
       - 第6部 - ケーススタディ:
           - 15. ゴシップ好きなバスの運転手: scala/15-gossiping-bus-drivers.md
           - 16. 給与計算システム: scala/16-payroll-system.md
+          - 17. レンタルビデオシステム: scala/17-video-rental-system.md
