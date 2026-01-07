@@ -4,6 +4,7 @@ open System
 open Xunit
 open FunctionalDesign.Immutability
 open FunctionalDesign.Composition
+open FunctionalDesign.Polymorphism
 
 // ============================================
 // 第1章: 不変データ構造の基本
@@ -781,3 +782,412 @@ module PredicateCompositionTests =
               TotalSpent = 1000 }
 
         Assert.False(premiumCustomer customer)
+
+
+// ============================================
+// 第3章: 多態性とディスパッチ
+// ============================================
+
+// ============================================
+// 1. 判別共用体による多態性
+// ============================================
+
+module ShapeTests =
+
+    [<Fact>]
+    let ``Rectangle の面積を計算`` () =
+        let shape = Rectangle(4.0, 5.0)
+        Assert.Equal(20.0, calculateArea shape)
+
+    [<Fact>]
+    let ``Circle の面積を計算`` () =
+        let shape = Circle(3.0)
+        let expected = System.Math.PI * 9.0
+        Assert.Equal(expected, calculateArea shape, 5)
+
+    [<Fact>]
+    let ``Triangle の面積を計算`` () =
+        let shape = Triangle(6.0, 5.0)
+        Assert.Equal(15.0, calculateArea shape)
+
+    [<Fact>]
+    let ``Rectangle の周囲長を計算`` () =
+        let shape = Rectangle(4.0, 5.0)
+        Assert.Equal(18.0, calculatePerimeter shape)
+
+    [<Fact>]
+    let ``Circle の周囲長を計算`` () =
+        let shape = Circle(3.0)
+        let expected = 2.0 * System.Math.PI * 3.0
+        Assert.Equal(expected, calculatePerimeter shape, 5)
+
+// ============================================
+// 2. 複合ディスパッチ
+// ============================================
+
+module PaymentTests =
+
+    [<Fact>]
+    let ``クレジットカード（円）の処理`` () =
+        let payment =
+            { Method = CreditCard
+              Currency = JPY
+              Amount = 1000 }
+
+        let result = processPayment payment
+        Assert.Equal("processed", result.Status)
+        Assert.Equal("クレジットカード（円）で処理しました", result.Message)
+        Assert.Equal(1000, result.Amount)
+
+    [<Fact>]
+    let ``クレジットカード（ドル）の処理`` () =
+        let payment =
+            { Method = CreditCard
+              Currency = USD
+              Amount = 100 }
+
+        let result = processPayment payment
+        Assert.Equal("processed", result.Status)
+        Assert.Equal("Credit card (USD) processed", result.Message)
+        Assert.Equal(Some 15000, result.Converted)
+
+    [<Fact>]
+    let ``銀行振込（円）の処理`` () =
+        let payment =
+            { Method = BankTransfer
+              Currency = JPY
+              Amount = 5000 }
+
+        let result = processPayment payment
+        Assert.Equal("pending", result.Status)
+        Assert.Equal("銀行振込を受け付けました", result.Message)
+
+    [<Fact>]
+    let ``サポートされていない支払い方法`` () =
+        let payment =
+            { Method = Cash
+              Currency = EUR
+              Amount = 100 }
+
+        let result = processPayment payment
+        Assert.Equal("error", result.Status)
+        Assert.Equal("サポートされていない支払い方法です", result.Message)
+
+// ============================================
+// 3. 階層的ディスパッチ
+// ============================================
+
+module AccountTests =
+
+    [<Fact>]
+    let ``普通預金の利息計算`` () =
+        let account = { AccountType = Savings; Balance = 10000 }
+        Assert.Equal(200.0, calculateInterest account)
+
+    [<Fact>]
+    let ``プレミアム普通預金の利息計算`` () =
+        let account =
+            { AccountType = PremiumSavings
+              Balance = 10000 }
+
+        Assert.Equal(500.0, calculateInterest account)
+
+    [<Fact>]
+    let ``当座預金の利息計算`` () =
+        let account =
+            { AccountType = Checking
+              Balance = 10000 }
+
+        Assert.Equal(10.0, calculateInterest account)
+
+    [<Fact>]
+    let ``利率の取得`` () =
+        Assert.Equal(0.02, getInterestRate Savings)
+        Assert.Equal(0.05, getInterestRate PremiumSavings)
+        Assert.Equal(0.001, getInterestRate Checking)
+
+// ============================================
+// 4-5. インターフェースを実装するレコード
+// ============================================
+
+module DrawableTests =
+
+    [<Fact>]
+    let ``Rectangle を描画`` () =
+        let rect =
+            { DrawableRectangle.X = 10.0
+              Y = 20.0
+              Width = 100.0
+              Height = 50.0 }
+
+        let result = draw rect
+        Assert.Equal("Rectangle at (10.0,20.0) with size 100.0x50.0", result)
+
+    [<Fact>]
+    let ``Rectangle のバウンディングボックス`` () =
+        let rect =
+            { DrawableRectangle.X = 10.0
+              Y = 20.0
+              Width = 100.0
+              Height = 50.0 }
+
+        let bbox = getBoundingBox rect
+        Assert.Equal(10.0, bbox.X)
+        Assert.Equal(20.0, bbox.Y)
+        Assert.Equal(100.0, bbox.Width)
+        Assert.Equal(50.0, bbox.Height)
+
+    [<Fact>]
+    let ``Circle を描画`` () =
+        let circle =
+            { DrawableCircle.X = 50.0
+              Y = 50.0
+              Radius = 25.0 }
+
+        let result = draw circle
+        Assert.Equal("Circle at (50.0,50.0) with radius 25.0", result)
+
+    [<Fact>]
+    let ``Circle のバウンディングボックス`` () =
+        let circle =
+            { DrawableCircle.X = 50.0
+              Y = 50.0
+              Radius = 25.0 }
+
+        let bbox = getBoundingBox circle
+        Assert.Equal(25.0, bbox.X)
+        Assert.Equal(25.0, bbox.Y)
+        Assert.Equal(50.0, bbox.Width)
+        Assert.Equal(50.0, bbox.Height)
+
+    [<Fact>]
+    let ``Rectangle を移動`` () =
+        let rect =
+            { DrawableRectangle.X = 10.0
+              Y = 20.0
+              Width = 100.0
+              Height = 50.0 }
+
+        let moved = translateRect rect (5.0, 10.0)
+        Assert.Equal(15.0, moved.X)
+        Assert.Equal(30.0, moved.Y)
+
+    [<Fact>]
+    let ``Rectangle を拡大`` () =
+        let rect =
+            { DrawableRectangle.X = 10.0
+              Y = 20.0
+              Width = 100.0
+              Height = 50.0 }
+
+        let scaled = scaleRect rect 2.0
+        Assert.Equal(200.0, scaled.Width)
+        Assert.Equal(100.0, scaled.Height)
+
+    [<Fact>]
+    let ``Circle を移動`` () =
+        let circle =
+            { DrawableCircle.X = 50.0
+              Y = 50.0
+              Radius = 25.0 }
+
+        let moved = translateCircle circle (10.0, 20.0)
+        Assert.Equal(60.0, moved.X)
+        Assert.Equal(70.0, moved.Y)
+
+    [<Fact>]
+    let ``Circle を拡大`` () =
+        let circle =
+            { DrawableCircle.X = 50.0
+              Y = 50.0
+              Radius = 25.0 }
+
+        let scaled = scaleCircle circle 2.0
+        Assert.Equal(50.0, scaled.Radius)
+
+// ============================================
+// 6. アクティブパターン
+// ============================================
+
+module StringifyTests =
+
+    [<Fact>]
+    let ``Map を文字列化`` () =
+        let m = Map.ofList [ "name", box "田中"; "age", box 30 ]
+        let result = stringify m
+        Assert.Contains("name: 田中", result)
+        Assert.Contains("age: 30", result)
+
+    [<Fact>]
+    let ``リストを文字列化`` () =
+        let l = [ 1; 2; 3 ]
+        let result = stringify l
+        Assert.Equal("[1, 2, 3]", result)
+
+    [<Fact>]
+    let ``文字列を文字列化`` () =
+        Assert.Equal("hello", stringify "hello")
+
+    [<Fact>]
+    let ``整数を文字列化`` () =
+        Assert.Equal("42", stringify 42)
+
+// ============================================
+// 7. コンポーネントパターン
+// ============================================
+
+module LifecycleTests =
+
+    [<Fact>]
+    let ``DatabaseConnection を開始`` () =
+        let db = DatabaseConnection.Create("localhost", 5432)
+        Assert.False(db.Connected)
+
+        let started = startDb db
+        Assert.True(started.Connected)
+
+    [<Fact>]
+    let ``DatabaseConnection を停止`` () =
+        let db = DatabaseConnection.Create("localhost", 5432)
+        let started = startDb db
+        let stopped = stopDb started
+        Assert.False(stopped.Connected)
+
+    [<Fact>]
+    let ``WebServer を開始`` () =
+        let db = DatabaseConnection.Create("localhost", 5432)
+        let server = WebServer.Create(8080, db)
+        Assert.False(server.Running)
+        Assert.False(server.Db.Connected)
+
+        let started = startServer server
+        Assert.True(started.Running)
+        Assert.True(started.Db.Connected)
+
+    [<Fact>]
+    let ``WebServer を停止`` () =
+        let db = DatabaseConnection.Create("localhost", 5432)
+        let server = WebServer.Create(8080, db)
+        let started = startServer server
+        let stopped = stopServer started
+        Assert.False(stopped.Running)
+        Assert.False(stopped.Db.Connected)
+
+// ============================================
+// 8. Strategy パターン（通知）
+// ============================================
+
+module NotificationTests =
+
+    [<Fact>]
+    let ``メール通知を送信`` () =
+        let sender = createNotification "email" (Map.ofList [ "to", "user@example.com" ])
+        let result = send sender "重要なお知らせ"
+
+        Assert.Equal("email", result.NotificationType)
+        Assert.Equal("user@example.com", result.To)
+        Assert.Equal("重要なお知らせ", result.Body)
+        Assert.Equal("sent", result.Status)
+        Assert.Equal(Some "通知", result.Subject)
+
+    [<Fact>]
+    let ``SMS通知を送信`` () =
+        let sender = createNotification "sms" (Map.ofList [ "phone", "090-1234-5678" ])
+        let result = send sender "短いメッセージ"
+
+        Assert.Equal("sms", result.NotificationType)
+        Assert.Equal("090-1234-5678", result.To)
+        Assert.Equal("短いメッセージ", result.Body)
+        Assert.True(result.Subject.IsNone)
+
+    [<Fact>]
+    let ``SMS通知は160文字で切り詰め`` () =
+        let sender = createNotification "sms" (Map.ofList [ "phone", "090-1234-5678" ])
+        let longMessage = String.replicate 200 "a"
+        let result = send sender longMessage
+
+        Assert.Equal(157, result.Body.Length)
+
+    [<Fact>]
+    let ``プッシュ通知を送信`` () =
+        let sender = createNotification "push" (Map.ofList [ "device", "device-token-123" ])
+        let result = send sender "プッシュ通知"
+
+        Assert.Equal("push", result.NotificationType)
+        Assert.Equal("device-token-123", result.To)
+        Assert.Equal("プッシュ通知", result.Body)
+
+    [<Fact>]
+    let ``配信時間を取得`` () =
+        let email = createNotification "email" (Map.ofList [ "to", "test@example.com" ])
+        let sms = createNotification "sms" (Map.ofList [ "phone", "090-0000-0000" ])
+        let push = createNotification "push" (Map.ofList [ "device", "token" ])
+
+        Assert.Equal("1-2分", getDeliveryTime email)
+        Assert.Equal("数秒", getDeliveryTime sms)
+        Assert.Equal("即時", getDeliveryTime push)
+
+    [<Fact>]
+    let ``未知の通知タイプは例外`` () =
+        Assert.Throws<Exception>(fun () -> createNotification "unknown" Map.empty |> ignore)
+
+// ============================================
+// 9. 式ツリーパターン
+// ============================================
+
+module ExprTests =
+
+    [<Fact>]
+    let ``数値を評価`` () =
+        Assert.Equal(42, eval (Num 42))
+
+    [<Fact>]
+    let ``加算を評価`` () =
+        let expr = Add(Num 2, Num 3)
+        Assert.Equal(5, eval expr)
+
+    [<Fact>]
+    let ``乗算を評価`` () =
+        let expr = Mul(Num 4, Num 5)
+        Assert.Equal(20, eval expr)
+
+    [<Fact>]
+    let ``否定を評価`` () =
+        let expr = Neg(Num 10)
+        Assert.Equal(-10, eval expr)
+
+    [<Fact>]
+    let ``複合式を評価`` () =
+        // (2 + 3) * 4 = 20
+        let expr = Mul(Add(Num 2, Num 3), Num 4)
+        Assert.Equal(20, eval expr)
+
+    [<Fact>]
+    let ``式を文字列化`` () =
+        let expr = Add(Num 2, Mul(Num 3, Num 4))
+        Assert.Equal("(2 + (3 * 4))", exprToString expr)
+
+    [<Fact>]
+    let ``0との加算を簡約`` () =
+        let expr = Add(Num 0, Num 5)
+        let simplified = simplify expr
+        Assert.Equal(Num 5, simplified)
+
+    [<Fact>]
+    let ``0との乗算を簡約`` () =
+        let expr = Mul(Num 0, Num 5)
+        let simplified = simplify expr
+        Assert.Equal(Num 0, simplified)
+
+    [<Fact>]
+    let ``1との乗算を簡約`` () =
+        let expr = Mul(Num 1, Num 5)
+        let simplified = simplify expr
+        Assert.Equal(Num 5, simplified)
+
+    [<Fact>]
+    let ``二重否定を簡約`` () =
+        let expr = Neg(Neg(Num 5))
+        let simplified = simplify expr
+        Assert.Equal(Num 5, simplified)
+

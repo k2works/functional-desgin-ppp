@@ -503,3 +503,436 @@ module Composition =
               (fun c -> c.PurchaseCount >= 100)
               (fun c -> c.TotalSpent >= 100000) ]
 
+
+// ============================================
+// 第3章: 多態性とディスパッチ
+// ============================================
+
+module Polymorphism =
+
+    // ============================================
+    // 1. 判別共用体による多態性（代数的データ型）
+    // ============================================
+
+    /// 図形を表す判別共用体
+    type Shape =
+        | Rectangle of width: float * height: float
+        | Circle of radius: float
+        | Triangle of baseLength: float * height: float
+
+    /// 図形の面積を計算する
+    let calculateArea shape =
+        match shape with
+        | Rectangle(w, h) -> w * h
+        | Circle r -> System.Math.PI * r * r
+        | Triangle(b, h) -> b * h / 2.0
+
+    /// 図形の周囲長を計算する
+    let calculatePerimeter shape =
+        match shape with
+        | Rectangle(w, h) -> 2.0 * (w + h)
+        | Circle r -> 2.0 * System.Math.PI * r
+        | Triangle(b, h) ->
+            // 底辺と高さから等脚三角形の周囲長を近似
+            let side = sqrt ((b / 2.0) ** 2.0 + h ** 2.0)
+            b + 2.0 * side
+
+    // ============================================
+    // 2. 複合ディスパッチ
+    // ============================================
+
+    /// 支払い方法
+    type PaymentMethod =
+        | CreditCard
+        | BankTransfer
+        | Cash
+
+    /// 通貨
+    type Currency =
+        | JPY
+        | USD
+        | EUR
+
+    /// 支払い情報
+    type Payment =
+        { Method: PaymentMethod
+          Currency: Currency
+          Amount: int }
+
+    /// 支払い結果
+    type PaymentResult =
+        { Status: string
+          Message: string
+          Amount: int
+          Converted: int option }
+
+    /// 支払いを処理する（複合ディスパッチ）
+    let processPayment payment =
+        match payment.Method, payment.Currency with
+        | CreditCard, JPY ->
+            { Status = "processed"
+              Message = "クレジットカード（円）で処理しました"
+              Amount = payment.Amount
+              Converted = None }
+        | CreditCard, USD ->
+            { Status = "processed"
+              Message = "Credit card (USD) processed"
+              Amount = payment.Amount
+              Converted = Some(payment.Amount * 150) }
+        | BankTransfer, JPY ->
+            { Status = "pending"
+              Message = "銀行振込を受け付けました"
+              Amount = payment.Amount
+              Converted = None }
+        | _, _ ->
+            { Status = "error"
+              Message = "サポートされていない支払い方法です"
+              Amount = payment.Amount
+              Converted = None }
+
+    // ============================================
+    // 3. 階層的ディスパッチ（型階層の模倣）
+    // ============================================
+
+    /// 口座タイプ
+    type AccountType =
+        | Savings
+        | PremiumSavings
+        | Checking
+
+    /// 口座
+    type Account =
+        { AccountType: AccountType
+          Balance: int }
+
+    /// 利率を取得
+    let getInterestRate accountType =
+        match accountType with
+        | Savings -> 0.02
+        | PremiumSavings -> 0.05
+        | Checking -> 0.001
+
+    /// 利息を計算
+    let calculateInterest account =
+        float account.Balance * getInterestRate account.AccountType
+
+    // ============================================
+    // 4. インターフェース（F# のオブジェクト指向機能）
+    // ============================================
+
+    /// バウンディングボックス
+    type BoundingBox =
+        { X: float
+          Y: float
+          Width: float
+          Height: float }
+
+    /// 描画可能インターフェース
+    type IDrawable =
+        abstract member Draw: unit -> string
+        abstract member GetBoundingBox: unit -> BoundingBox
+
+    /// 変換可能インターフェース
+    type ITransformable<'T> =
+        abstract member Translate: float * float -> 'T
+        abstract member Scale: float -> 'T
+        abstract member Rotate: float -> 'T
+
+    // ============================================
+    // 5. インターフェースを実装するレコード
+    // ============================================
+
+    /// 描画可能な長方形
+    type DrawableRectangle =
+        { X: float
+          Y: float
+          Width: float
+          Height: float }
+
+        interface IDrawable with
+            member this.Draw() =
+                sprintf "Rectangle at (%.1f,%.1f) with size %.1fx%.1f" this.X this.Y this.Width this.Height
+
+            member this.GetBoundingBox() =
+                { X = this.X
+                  Y = this.Y
+                  Width = this.Width
+                  Height = this.Height }
+
+        interface ITransformable<DrawableRectangle> with
+            member this.Translate(dx, dy) =
+                { this with X = this.X + dx; Y = this.Y + dy }
+
+            member this.Scale(factor) =
+                { this with
+                    Width = this.Width * factor
+                    Height = this.Height * factor }
+
+            member this.Rotate(_) = this
+
+    /// 描画可能な円
+    type DrawableCircle =
+        { X: float
+          Y: float
+          Radius: float }
+
+        interface IDrawable with
+            member this.Draw() =
+                sprintf "Circle at (%.1f,%.1f) with radius %.1f" this.X this.Y this.Radius
+
+            member this.GetBoundingBox() =
+                { X = this.X - this.Radius
+                  Y = this.Y - this.Radius
+                  Width = this.Radius * 2.0
+                  Height = this.Radius * 2.0 }
+
+        interface ITransformable<DrawableCircle> with
+            member this.Translate(dx, dy) =
+                { this with X = this.X + dx; Y = this.Y + dy }
+
+            member this.Scale(factor) =
+                { this with Radius = this.Radius * factor }
+
+            member this.Rotate(_) = this
+
+    // ヘルパー関数（インターフェースメソッドを呼び出しやすくする）
+    let draw (drawable: IDrawable) = drawable.Draw()
+
+    let getBoundingBox (drawable: IDrawable) = drawable.GetBoundingBox()
+
+    let translateRect (rect: DrawableRectangle) (dx, dy) =
+        (rect :> ITransformable<DrawableRectangle>).Translate(dx, dy)
+
+    let scaleRect (rect: DrawableRectangle) factor =
+        (rect :> ITransformable<DrawableRectangle>).Scale(factor)
+
+    let translateCircle (circle: DrawableCircle) (dx, dy) =
+        (circle :> ITransformable<DrawableCircle>).Translate(dx, dy)
+
+    let scaleCircle (circle: DrawableCircle) factor =
+        (circle :> ITransformable<DrawableCircle>).Scale(factor)
+
+    // ============================================
+    // 6. アクティブパターン（既存型への拡張）
+    // ============================================
+
+    /// 文字列化アクティブパターン（Map用）
+    let (|MapToString|) (m: Map<string, obj>) =
+        let pairs = m |> Map.toSeq |> Seq.map (fun (k, v) -> sprintf "%s: %O" k v)
+        "{" + System.String.Join(", ", pairs) + "}"
+
+    /// 文字列化アクティブパターン（リスト用）
+    let (|ListToString|) (l: 'a list) =
+        "[" + System.String.Join(", ", l |> List.map string) + "]"
+
+    /// 文字列化関数
+    let stringify value =
+        match box value with
+        | :? Map<string, obj> as m ->
+            let (MapToString s) = m
+            s
+        | :? (int list) as l ->
+            let (ListToString s) = l
+            s
+        | :? string as s -> s
+        | :? int as i -> string i
+        | null -> "nil"
+        | _ -> sprintf "%O" value
+
+    // ============================================
+    // 7. コンポーネントパターン（ライフサイクル管理）
+    // ============================================
+
+    /// ライフサイクルインターフェース
+    type ILifecycle<'T> =
+        abstract member Start: unit -> 'T
+        abstract member Stop: unit -> 'T
+
+    /// データベース接続
+    type DatabaseConnection =
+        { Host: string
+          Port: int
+          Connected: bool }
+
+        static member Create(host, port) =
+            { Host = host
+              Port = port
+              Connected = false }
+
+        interface ILifecycle<DatabaseConnection> with
+            member this.Start() =
+                printfn "データベースに接続中: %s : %d" this.Host this.Port
+                { this with Connected = true }
+
+            member this.Stop() =
+                printfn "データベース接続を切断中"
+                { this with Connected = false }
+
+    /// Webサーバー
+    type WebServer =
+        { Port: int
+          Db: DatabaseConnection
+          Running: bool }
+
+        static member Create(port, db) =
+            { Port = port
+              Db = db
+              Running = false }
+
+        interface ILifecycle<WebServer> with
+            member this.Start() =
+                printfn "Webサーバーを起動中 ポート: %d" this.Port
+                let startedDb = (this.Db :> ILifecycle<DatabaseConnection>).Start()
+
+                { this with
+                    Db = startedDb
+                    Running = true }
+
+            member this.Stop() =
+                printfn "Webサーバーを停止中"
+                let stoppedDb = (this.Db :> ILifecycle<DatabaseConnection>).Stop()
+
+                { this with
+                    Db = stoppedDb
+                    Running = false }
+
+    // ヘルパー関数
+    let startDb (db: DatabaseConnection) =
+        (db :> ILifecycle<DatabaseConnection>).Start()
+
+    let stopDb (db: DatabaseConnection) =
+        (db :> ILifecycle<DatabaseConnection>).Stop()
+
+    let startServer (server: WebServer) =
+        (server :> ILifecycle<WebServer>).Start()
+
+    let stopServer (server: WebServer) =
+        (server :> ILifecycle<WebServer>).Stop()
+
+    // ============================================
+    // 8. 条件分岐の置き換え（Strategy パターン）
+    // ============================================
+
+    /// 通知結果
+    type NotificationResult =
+        { NotificationType: string
+          To: string
+          Body: string
+          Status: string
+          Subject: string option }
+
+    /// 通知送信インターフェース
+    type INotificationSender =
+        abstract member SendNotification: string -> NotificationResult
+        abstract member DeliveryTime: string
+
+    /// メール通知
+    type EmailNotification =
+        { To: string
+          Subject: string }
+
+        interface INotificationSender with
+            member this.SendNotification(message) =
+                { NotificationType = "email"
+                  To = this.To
+                  Body = message
+                  Status = "sent"
+                  Subject = Some this.Subject }
+
+            member this.DeliveryTime = "1-2分"
+
+    /// SMS通知
+    type SMSNotification =
+        { PhoneNumber: string }
+
+        interface INotificationSender with
+            member this.SendNotification(message) =
+                let truncated =
+                    if message.Length > 160 then
+                        message.Substring(0, 157)
+                    else
+                        message
+
+                { NotificationType = "sms"
+                  To = this.PhoneNumber
+                  Body = truncated
+                  Status = "sent"
+                  Subject = None }
+
+            member this.DeliveryTime = "数秒"
+
+    /// プッシュ通知
+    type PushNotification =
+        { DeviceToken: string }
+
+        interface INotificationSender with
+            member this.SendNotification(message) =
+                { NotificationType = "push"
+                  To = this.DeviceToken
+                  Body = message
+                  Status = "sent"
+                  Subject = None }
+
+            member this.DeliveryTime = "即時"
+
+    /// 通知を作成するファクトリ関数
+    let createNotification notificationType (opts: Map<string, string>) : INotificationSender =
+        match notificationType with
+        | "email" ->
+            { To = opts |> Map.tryFind "to" |> Option.defaultValue ""
+              Subject = opts |> Map.tryFind "subject" |> Option.defaultValue "通知" }
+        | "sms" ->
+            { PhoneNumber = opts |> Map.tryFind "phone" |> Option.defaultValue "" }
+        | "push" ->
+            { DeviceToken = opts |> Map.tryFind "device" |> Option.defaultValue "" }
+        | _ -> failwithf "未知の通知タイプ: %s" notificationType
+
+    // ヘルパー関数
+    let send (sender: INotificationSender) message =
+        sender.SendNotification(message)
+
+    let getDeliveryTime (sender: INotificationSender) = sender.DeliveryTime
+
+    // ============================================
+    // 9. 式ツリーパターン（Expression Problem の解決）
+    // ============================================
+
+    /// 式を表す判別共用体
+    type Expr =
+        | Num of int
+        | Add of Expr * Expr
+        | Mul of Expr * Expr
+        | Neg of Expr
+
+    /// 式を評価する
+    let rec eval expr =
+        match expr with
+        | Num n -> n
+        | Add(e1, e2) -> eval e1 + eval e2
+        | Mul(e1, e2) -> eval e1 * eval e2
+        | Neg e -> -(eval e)
+
+    /// 式を文字列化する
+    let rec exprToString expr =
+        match expr with
+        | Num n -> string n
+        | Add(e1, e2) -> sprintf "(%s + %s)" (exprToString e1) (exprToString e2)
+        | Mul(e1, e2) -> sprintf "(%s * %s)" (exprToString e1) (exprToString e2)
+        | Neg e -> sprintf "(-%s)" (exprToString e)
+
+    /// 式を簡約する（定数畳み込み）
+    let rec simplify expr =
+        match expr with
+        | Add(Num 0, e)
+        | Add(e, Num 0) -> simplify e
+        | Mul(Num 0, _)
+        | Mul(_, Num 0) -> Num 0
+        | Mul(Num 1, e)
+        | Mul(e, Num 1) -> simplify e
+        | Neg(Neg e) -> simplify e
+        | Add(e1, e2) -> Add(simplify e1, simplify e2)
+        | Mul(e1, e2) -> Mul(simplify e1, simplify e2)
+        | Neg e -> Neg(simplify e)
+        | e -> e
+
+
