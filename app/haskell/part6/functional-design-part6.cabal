@@ -1,0 +1,41 @@
+cabal-version:      3.4
+name:               functional-design-part6
+version:            0.1.0.0
+synopsis:           Functional Design Part 6 - Concurrency and Simulation
+license:            MIT
+author:             K2works
+maintainer:         k2works@example.com
+category:           Education
+build-type:         Simple
+extra-doc-files:    CHANGELOG.md
+
+common warnings
+    ghc-options: -Wall
+
+library
+    import:           warnings
+    exposed-modules:  ConcurrencySystem
+                    , WatorSimulation
+    build-depends:    base ^>=4.20.0.0
+                    , containers
+                    , stm
+                    , random
+                    , array
+    hs-source-dirs:   src
+    default-language: GHC2024
+
+test-suite functional-design-part6-test
+    import:           warnings
+    default-language: GHC2024
+    type:             exitcode-stdio-1.0
+    hs-source-dirs:   test
+    main-is:          Spec.hs
+    other-modules:    ConcurrencySystemSpec
+                    , WatorSimulationSpec
+    build-depends:    base ^>=4.20.0.0
+                    , functional-design-part6
+                    , hspec
+                    , QuickCheck
+                    , containers
+                    , stm
+                    , random
