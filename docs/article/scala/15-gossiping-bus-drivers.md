@@ -17,13 +17,23 @@
 
 **ゴール**: 全ての運転手が全ての噂を知るまでに何分かかるか？
 
-```
-Driver 1 ---(噂A)---> Stop 1 <---(噂B)--- Driver 2
-                         |
-                    噂を共有
-                         |
-                         v
-              Driver 1, 2 => {噂A, 噂B}
+```plantuml
+@startuml
+title ゴシップの伝播
+
+actor "Driver 1\n(噂A)" as D1
+actor "Driver 2\n(噂B)" as D2
+node "Stop 1" as S1
+
+D1 --> S1 : 到着
+D2 --> S1 : 到着
+S1 --> D1 : 噂を共有
+S1 --> D2 : 噂を共有
+
+note right of S1
+  結果: 両者とも {噂A, 噂B} を取得
+end note
+@enduml
 ```
 
 ## 2. データモデル

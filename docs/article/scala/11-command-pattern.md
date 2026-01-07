@@ -8,33 +8,40 @@ Command パターンは、リクエストをオブジェクトとしてカプセ
 
 ## 1. パターンの構造
 
-```
-┌─────────────────────────────────────────────────┐
-│                   Command[S]                     │
-│  ─────────────────────────────────────────────  │
-│  + execute(state: S): S                          │
-│  + undo(state: S): S                             │
-└─────────────────────────────────────────────────┘
-            △                    △
-            │                    │
-┌───────────┴──────┐  ┌─────────┴──────┐
-│ ConcreteCommand  │  │  MacroCommand   │
-│──────────────────│  │────────────────│
-│ + execute(s)     │  │ + commands     │
-│ + undo(s)        │  │ + execute(s)   │
-└──────────────────┘  │ + undo(s)      │
-                      └────────────────┘
+```plantuml
+@startuml
+title Command パターン構造
 
-┌─────────────────────────────────────────────────┐
-│              CommandExecutor[S]                  │
-│  ─────────────────────────────────────────────  │
-│  - state: S                                      │
-│  - undoStack: List[Command[S]]                   │
-│  - redoStack: List[Command[S]]                   │
-│  + execute(command): CommandExecutor[S]          │
-│  + undo: CommandExecutor[S]                      │
-│  + redo: CommandExecutor[S]                      │
-└─────────────────────────────────────────────────┘
+interface "Command[S]" as Command {
+  +execute(state: S): S
+  +undo(state: S): S
+}
+
+class "ConcreteCommand" as Concrete {
+  +execute(state: S): S
+  +undo(state: S): S
+}
+
+class "MacroCommand" as Macro {
+  +commands: List[Command]
+  +execute(state: S): S
+  +undo(state: S): S
+}
+
+class "CommandExecutor[S]" as Executor {
+  -state: S
+  -undoStack: List[Command[S]]
+  -redoStack: List[Command[S]]
+  +execute(command): CommandExecutor[S]
+  +undo: CommandExecutor[S]
+  +redo: CommandExecutor[S]
+}
+
+Command <|.. Concrete
+Command <|.. Macro
+Executor --> Command : manages
+Macro o-- Command : contains
+@enduml
 ```
 
 ## 2. Command インターフェース

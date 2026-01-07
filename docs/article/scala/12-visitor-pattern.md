@@ -8,34 +8,54 @@ Visitor パターンは、データ構造と操作を分離し、既存のデー
 
 ## 1. パターンの構造
 
-```
-┌─────────────────────────────────────────────────┐
-│               ShapeVisitor[A]                    │
-│  ─────────────────────────────────────────────  │
-│  + visitCircle(circle): A                        │
-│  + visitSquare(square): A                        │
-│  + visitRectangle(rectangle): A                  │
-│  + visitTriangle(triangle): A                    │
-│  + visitComposite(composite): A                  │
-└─────────────────────────────────────────────────┘
-            △                    △                    △
-            │                    │                    │
-┌───────────┴──────┐  ┌─────────┴──────┐  ┌────────┴───────┐
-│   AreaVisitor    │  │  JsonVisitor   │  │ BoundingBoxVisitor │
-│──────────────────│  │────────────────│  │──────────────────│
-│ + visitCircle... │  │ + visitCircle..│  │ + visitCircle... │
-└──────────────────┘  └────────────────┘  └──────────────────┘
+```plantuml
+@startuml
+title Visitor パターン構造
 
-┌─────────────────────────────────────────────────┐
-│                    Shape                         │
-│  ─────────────────────────────────────────────  │
-│  + accept[A](visitor: ShapeVisitor[A]): A        │
-└─────────────────────────────────────────────────┘
-            △
-            │
-     ┌──────┼──────┬──────────┐
-     │      │      │          │
-  Circle  Square  Rectangle  Triangle
+interface "ShapeVisitor[A]" as Visitor {
+  +visitCircle(circle): A
+  +visitSquare(square): A
+  +visitRectangle(rectangle): A
+  +visitTriangle(triangle): A
+  +visitComposite(composite): A
+}
+
+class "AreaVisitor" as Area {
+  +visitCircle(circle): Double
+  +visitSquare(square): Double
+  ...
+}
+
+class "JsonVisitor" as Json {
+  +visitCircle(circle): String
+  +visitSquare(square): String
+  ...
+}
+
+class "BoundingBoxVisitor" as BBox {
+  +visitCircle(circle): BBox
+  +visitSquare(square): BBox
+  ...
+}
+
+interface "Shape" as Shape {
+  +accept[A](visitor: ShapeVisitor[A]): A
+}
+
+class "Circle" as Circle
+class "Square" as Square
+class "Rectangle" as Rectangle
+class "Triangle" as Triangle
+
+Visitor <|.. Area
+Visitor <|.. Json
+Visitor <|.. BBox
+Shape <|-- Circle
+Shape <|-- Square
+Shape <|-- Rectangle
+Shape <|-- Triangle
+Shape ..> Visitor : accepts
+@enduml
 ```
 
 ## 2. Element: 図形の定義

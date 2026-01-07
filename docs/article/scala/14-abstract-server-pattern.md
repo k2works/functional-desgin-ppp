@@ -14,32 +14,31 @@ Abstract Server パターンは以下の要素で構成されます：
 - **Abstract Server**: サービスの抽象インターフェース
 - **Concrete Server**: 具体的なサービスの実装
 
-```
-┌─────────────────┐
-│     Client      │
-│    (Switch)     │
-│                 │
-│ +engage(device) │
-│ +disengage()    │
-│ +toggle()       │
-└────────┬────────┘
-         │ depends on
-         ▼
-┌─────────────────────────────┐
-│      Abstract Server        │
-│      (Switchable)           │
-│                             │
-│ +turnOn(device)             │
-│ +turnOff(device)            │
-│ +isOn(device)               │
-└─────────────────────────────┘
-         △
-         │ implements
-    ┌────┴────┬────────┐
-    │         │        │
-┌───┴───┐ ┌───┴───┐ ┌──┴────┐
-│ Light │ │  Fan  │ │ Motor │
-└───────┘ └───────┘ └───────┘
+```plantuml
+@startuml
+title Abstract Server パターン構造
+
+class "Client\n(Switch)" as Client {
+  +engage(device)
+  +disengage()
+  +toggle()
+}
+
+interface "Abstract Server\n(Switchable)" as Server {
+  +turnOn(device)
+  +turnOff(device)
+  +isOn(device)
+}
+
+class "Light" as Light
+class "Fan" as Fan
+class "Motor" as Motor
+
+Client --> Server : depends on
+Server <|.. Light
+Server <|.. Fan
+Server <|.. Motor
+@enduml
 ```
 
 ## 2. Switchable パターン - 型クラスアプローチ

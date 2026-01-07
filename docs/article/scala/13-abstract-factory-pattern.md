@@ -8,24 +8,45 @@ Abstract Factory パターンは、関連するオブジェクトのファミリ
 
 ## 1. パターンの構造
 
-```
-┌─────────────────────────────────────────────────┐
-│              AbstractFactory                     │
-│  ─────────────────────────────────────────────  │
-│  + createProductA(): ProductA                    │
-│  + createProductB(): ProductB                    │
-└─────────────────────────────────────────────────┘
-            △                    △
-            │                    │
-┌───────────┴──────┐  ┌─────────┴──────┐
-│ ConcreteFactory1 │  │ ConcreteFactory2 │
-│──────────────────│  │──────────────────│
-│ + createProductA │  │ + createProductA │
-│ + createProductB │  │ + createProductB │
-└──────────────────┘  └──────────────────┘
-         │                      │
-         ▼                      ▼
-   ProductA1, B1          ProductA2, B2
+```plantuml
+@startuml
+title Abstract Factory パターン構造
+
+interface "AbstractFactory" as Factory {
+  +createProductA(): ProductA
+  +createProductB(): ProductB
+}
+
+class "ConcreteFactory1" as Factory1 {
+  +createProductA(): ProductA1
+  +createProductB(): ProductB1
+}
+
+class "ConcreteFactory2" as Factory2 {
+  +createProductA(): ProductA2
+  +createProductB(): ProductB2
+}
+
+interface "ProductA" as ProductA
+interface "ProductB" as ProductB
+
+class "ProductA1" as A1
+class "ProductA2" as A2
+class "ProductB1" as B1
+class "ProductB2" as B2
+
+Factory <|.. Factory1
+Factory <|.. Factory2
+ProductA <|.. A1
+ProductA <|.. A2
+ProductB <|.. B1
+ProductB <|.. B2
+
+Factory1 ..> A1 : creates
+Factory1 ..> B1 : creates
+Factory2 ..> A2 : creates
+Factory2 ..> B2 : creates
+@enduml
 ```
 
 ## 2. 図形とスタイル - Product

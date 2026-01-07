@@ -62,11 +62,30 @@ val newTeam = addMember(team, Member("山田", "developer"))
 
 `newTeam` は新しい Team ですが、`name` の値や既存のメンバーデータは `team` と共有されています。変更されていない部分はコピーされず、参照が共有されます。
 
-```
-team:     Team("開発チーム", List(田中, 鈴木, 佐藤))
-                 ↓                    ↓
-newTeam:  Team("開発チーム", List(田中, 鈴木, 佐藤, 山田))
-               (共有)              ↑ 既存データは共有
+```plantuml
+@startuml
+title 構造共有（Structural Sharing）
+
+object "team" as team {
+  name = "開発チーム"
+}
+
+object "newTeam" as newTeam {
+  name = "開発チーム"
+}
+
+object "List(田中, 鈴木, 佐藤)" as oldList
+object "山田" as newMember
+
+team --> oldList : members
+newTeam --> oldList : 共有
+newTeam --> newMember : 新規追加のみ
+
+note bottom of oldList
+  既存データは共有され
+  コピーされない
+end note
+@enduml
 ```
 
 ## 3. データ変換パイプライン

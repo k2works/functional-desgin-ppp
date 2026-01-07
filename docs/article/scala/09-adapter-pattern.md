@@ -8,30 +8,30 @@ Adapter パターンは、既存のクラスのインターフェースを、ク
 
 ## 1. パターンの構造
 
-```
-┌─────────────────────────────────────────────────┐
-│                    Target                        │
-│  ─────────────────────────────────────────────  │
-│  + request(): Result                             │
-└─────────────────────────────────────────────────┘
-            △
-            │ implements
-            │
-┌───────────┴────────────────────────────┐
-│              Adapter                    │
-│  ─────────────────────────────────────  │
-│  - adaptee: Adaptee                     │
-│  + request(): Result                    │
-│     └─> adaptee.specificRequest()       │
-└─────────────────────────────────────────┘
-                    │
-                    │ uses
-                    ▼
-┌─────────────────────────────────────────────────┐
-│                   Adaptee                        │
-│  ─────────────────────────────────────────────  │
-│  + specificRequest(): SpecificResult             │
-└─────────────────────────────────────────────────┘
+```plantuml
+@startuml
+title Adapter パターン構造
+
+interface "Target" as Target {
+  +request(): Result
+}
+
+class "Adapter" as Adapter {
+  -adaptee: Adaptee
+  +request(): Result
+}
+
+class "Adaptee" as Adaptee {
+  +specificRequest(): SpecificResult
+}
+
+Target <|.. Adapter
+Adapter --> Adaptee : uses
+note right of Adapter::request
+  adaptee.specificRequest()を呼び出し
+  結果を変換して返す
+end note
+@enduml
 ```
 
 ## 2. VariableLightAdapter - インターフェースアダプター

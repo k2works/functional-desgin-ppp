@@ -10,16 +10,30 @@
 
 ### Red-Green-Refactor
 
-```
-┌─────────────────────────────────────────────────┐
-│                                                 │
-│    ┌───────┐     ┌───────┐     ┌───────────┐   │
-│    │  Red  │ ──► │ Green │ ──► │ Refactor  │   │
-│    └───────┘     └───────┘     └───────────┘   │
-│        ▲                              │         │
-│        └──────────────────────────────┘         │
-│                                                 │
-└─────────────────────────────────────────────────┘
+```plantuml
+@startuml
+title TDD サイクル
+
+state "Red" as red #pink
+state "Green" as green #lightgreen
+state "Refactor" as refactor #lightyellow
+
+red --> green : テストを通す
+green --> refactor : コードを改善
+refactor --> red : 次のテスト
+
+note right of red
+  失敗するテストを書く
+end note
+
+note right of green
+  最小限のコードを実装
+end note
+
+note right of refactor
+  テストを維持しながら改善
+end note
+@enduml
 ```
 
 1. **Red（赤）**: 失敗するテストを書く
