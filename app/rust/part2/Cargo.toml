@@ -5,6 +5,7 @@ edition = "2021"
 description = "Part 2: 仕様とテスト - データ検証、プロパティベーステスト、TDD"
 
 [dependencies]
+regex = "1"
 
 [dev-dependencies]
 proptest = "1.4"
