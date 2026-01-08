@@ -7,5 +7,8 @@ description = "Part 6: ケーススタディ - 実践的なアプリケーショ
 [dependencies]
 tokio = { version = "1.0", features = ["full"] }
 rand = "0.8"
+rust_decimal = "1.33"
+rust_decimal_macros = "1.33"
+chrono = "0.4"
 
 [dev-dependencies]
