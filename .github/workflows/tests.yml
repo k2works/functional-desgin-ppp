@@ -61,10 +61,10 @@ jobs:
             experimental-features = nix-command flakes
 
       - name: Run Clojure Part 1 Tests
-        run: nix develop .#clojure --command bash -c "cd app/clojure/part1 && lein test"
+        run: nix develop .#clojure --command bash -c "cd app/clojure/part1 && clj -M:spec"
 
       - name: Run Clojure Part 2 Tests
-        run: nix develop .#clojure --command bash -c "cd app/clojure/part2 && lein test"
+        run: nix develop .#clojure --command bash -c "cd app/clojure/part2 && clj -M:spec"
 
   # Scala Tests
   scala:
