@@ -214,3 +214,34 @@ nav:
           - 20. パターン間の相互作用: rust/20-pattern-interactions.md
           - 21. ベストプラクティス: rust/21-best-practices.md
           - 22. OO から FP への移行: rust/22-oo-to-fp-migration.md
+  - Elixir:
+      - 概要: elixir/index.md
+      - 第1部 - 基礎原則:
+          - 1. 不変性とデータ変換: elixir/01-immutability-and-data-transformation.md
+          - 2. 関数合成と高階関数: elixir/02-function-composition.md
+          - 3. 多態性の実現方法: elixir/03-polymorphism.md
+      - 第2部 - 仕様とテスト:
+          - 4. データ検証: elixir/04-data-validation.md
+          - 5. プロパティベーステスト: elixir/05-property-based-testing.md
+          - 6. TDD と関数型プログラミング: elixir/06-tdd-functional.md
+      - 第3部 - 構造パターン:
+          - 7. Composite パターン: elixir/07-composite-pattern.md
+          - 8. Decorator パターン: elixir/08-decorator-pattern.md
+          - 9. Adapter パターン: elixir/09-adapter-pattern.md
+      - 第4部 - 振る舞いパターン:
+          - 10. Strategy パターン: elixir/10-strategy-pattern.md
+          - 11. Command パターン: elixir/11-command-pattern.md
+          - 12. Visitor パターン: elixir/12-visitor-pattern.md
+      - 第5部 - 生成パターン:
+          - 13. Abstract Factory パターン: elixir/13-abstract-factory-pattern.md
+          - 14. Abstract Server パターン: elixir/14-abstract-server-pattern.md
+      - 第6部 - ケーススタディ:
+          - 15. ゴシップ好きなバスの運転手: elixir/15-gossiping-bus-drivers.md
+          - 16. 給与計算システム: elixir/16-payroll-system.md
+          - 17. レンタルビデオシステム: elixir/17-video-rental-system.md
+          - 18. 並行処理システム: elixir/18-concurrency-system.md
+          - 19. Wa-Tor シミュレーション: elixir/19-wator-simulation.md
+      - 第7部 - まとめと応用:
+          - 20. パターン間の相互作用: elixir/20-pattern-interactions.md
+          - 21. ベストプラクティス: elixir/21-best-practices.md
+          - 22. OO から FP への移行: elixir/22-oo-to-fp-migration.md

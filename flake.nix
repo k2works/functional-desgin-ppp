@@ -20,6 +20,7 @@
           fsharp = import ./environments/fsharp/shell.nix { inherit packages; };
           haskell = import ./environments/haskell/shell.nix { inherit packages; };
           rust = import ./environments/rust/shell.nix { inherit packages; };
+          elixir = import ./environments/elixir/shell.nix { inherit packages; };
         };
       }
     );
