@@ -66,6 +66,21 @@ jobs:
       - name: Run Clojure Part 2 Tests
         run: nix develop .#clojure --command bash -c "cd app/clojure/part2 && clj -M:spec"
 
+      - name: Run Clojure Part 3 Tests
+        run: nix develop .#clojure --command bash -c "cd app/clojure/part3 && clj -M:spec"
+
+      - name: Run Clojure Part 4 Tests
+        run: nix develop .#clojure --command bash -c "cd app/clojure/part4 && clj -M:spec"
+
+      - name: Run Clojure Part 5 Tests
+        run: nix develop .#clojure --command bash -c "cd app/clojure/part5 && clj -M:spec"
+
+      - name: Run Clojure Part 6 Tests
+        run: nix develop .#clojure --command bash -c "cd app/clojure/part6 && clj -M:spec"
+
+      - name: Run Clojure Part 7 Tests
+        run: nix develop .#clojure --command bash -c "cd app/clojure/part7 && clj -M:spec"
+
   # Scala Tests
   scala:
     name: Scala Tests
@@ -87,6 +102,15 @@ jobs:
       - name: Run Scala Part 2 Tests
         run: nix develop .#scala --command bash -c "cd app/scala/part2 && sbt test"
 
+      - name: Run Scala Part 3 Tests
+        run: nix develop .#scala --command bash -c "cd app/scala/part3 && sbt test"
+
+      - name: Run Scala Part 6 Tests
+        run: nix develop .#scala --command bash -c "cd app/scala/part6 && sbt test"
+
+      - name: Run Scala Part 7 Tests
+        run: nix develop .#scala --command bash -c "cd app/scala/part7 && sbt test"
+
   # F# Tests
   fsharp:
     name: F# Tests
@@ -104,6 +128,24 @@ jobs:
 
       - name: Run F# Part 1 Tests
         run: nix develop .#fsharp --command bash -c "cd app/fsharp/part1 && dotnet test"
+
+      - name: Run F# Part 2 Tests
+        run: nix develop .#fsharp --command bash -c "cd app/fsharp/part2 && dotnet test"
+
+      - name: Run F# Part 3 Tests
+        run: nix develop .#fsharp --command bash -c "cd app/fsharp/part3 && dotnet test"
+
+      - name: Run F# Part 4 Tests
+        run: nix develop .#fsharp --command bash -c "cd app/fsharp/part4 && dotnet test"
+
+      - name: Run F# Part 5 Tests
+        run: nix develop .#fsharp --command bash -c "cd app/fsharp/part5 && dotnet test"
+
+      - name: Run F# Part 6 Tests
+        run: nix develop .#fsharp --command bash -c "cd app/fsharp/part6 && dotnet test"
+
+      - name: Run F# Part 7 Tests
+        run: nix develop .#fsharp --command bash -c "cd app/fsharp/part7 && dotnet test"
 
   # Haskell Tests
   haskell:
@@ -126,6 +168,21 @@ jobs:
       - name: Run Haskell Part 2 Tests
         run: nix develop .#haskell --command bash -c "cd app/haskell/part2 && cabal update && cabal test"
 
+      - name: Run Haskell Part 3 Tests
+        run: nix develop .#haskell --command bash -c "cd app/haskell/part3 && cabal update && cabal test"
+
+      - name: Run Haskell Part 4 Tests
+        run: nix develop .#haskell --command bash -c "cd app/haskell/part4 && cabal update && cabal test"
+
+      - name: Run Haskell Part 5 Tests
+        run: nix develop .#haskell --command bash -c "cd app/haskell/part5 && cabal update && cabal test"
+
+      - name: Run Haskell Part 6 Tests
+        run: nix develop .#haskell --command bash -c "cd app/haskell/part6 && cabal update && cabal test"
+
+      - name: Run Haskell Part 7 Tests
+        run: nix develop .#haskell --command bash -c "cd app/haskell/part7 && cabal update && cabal test"
+
   # Rust Tests
   rust:
     name: Rust Tests
@@ -146,3 +203,18 @@ jobs:
 
       - name: Run Rust Part 2 Tests
         run: nix develop .#rust --command bash -c "cd app/rust/part2 && cargo test"
+
+      - name: Run Rust Part 3 Tests
+        run: nix develop .#rust --command bash -c "cd app/rust/part3 && cargo test"
+
+      - name: Run Rust Part 4 Tests
+        run: nix develop .#rust --command bash -c "cd app/rust/part4 && cargo test"
+
+      - name: Run Rust Part 5 Tests
+        run: nix develop .#rust --command bash -c "cd app/rust/part5 && cargo test"
+
+      - name: Run Rust Part 6 Tests
+        run: nix develop .#rust --command bash -c "cd app/rust/part6 && cargo test"
+
+      - name: Run Rust Part 7 Tests
+        run: nix develop .#rust --command bash -c "cd app/rust/part7 && cargo test"
