@@ -183,3 +183,34 @@ nav:
           - 20. パターンの相互作用: haskell/20-pattern-interactions.md
           - 21. ベストプラクティス: haskell/21-best-practices.md
           - 22. OO から FP への移行: haskell/22-oo-to-fp-migration.md
+  - Rust:
+      - 概要: rust/index.md
+      - 第1部 - 基礎原則:
+          - 1. 不変性とデータ変換: rust/01-immutability-and-data-transformation.md
+          - 2. 関数合成と高階関数: rust/02-function-composition.md
+          - 3. 多態性の実現方法: rust/03-polymorphism.md
+      - 第2部 - 仕様とテスト:
+          - 4. データ検証: rust/04-data-validation.md
+          - 5. プロパティベーステスト: rust/05-property-based-testing.md
+          - 6. TDD と関数型プログラミング: rust/06-tdd-functional.md
+      - 第3部 - 構造パターン:
+          - 7. Composite パターン: rust/07-composite-pattern.md
+          - 8. Decorator パターン: rust/08-decorator-pattern.md
+          - 9. Adapter パターン: rust/09-adapter-pattern.md
+      - 第4部 - 振る舞いパターン:
+          - 10. Strategy パターン: rust/10-strategy-pattern.md
+          - 11. Command パターン: rust/11-command-pattern.md
+          - 12. Visitor パターン: rust/12-visitor-pattern.md
+      - 第5部 - 生成パターン:
+          - 13. Abstract Factory パターン: rust/13-abstract-factory-pattern.md
+          - 14. Abstract Server パターン: rust/14-abstract-server-pattern.md
+      - 第6部 - ケーススタディ:
+          - 15. ゴシップ好きなバスの運転手: rust/15-gossiping-bus-drivers.md
+          - 16. 給与計算システム: rust/16-payroll-system.md
+          - 17. レンタルビデオシステム: rust/17-video-rental-system.md
+          - 18. 並行処理システム: rust/18-concurrency-system.md
+          - 19. Wa-Tor シミュレーション: rust/19-wator-simulation.md
+      - 第7部 - まとめと応用:
+          - 20. パターン間の相互作用: rust/20-pattern-interactions.md
+          - 21. ベストプラクティス: rust/21-best-practices.md
+          - 22. OO から FP への移行: rust/22-oo-to-fp-migration.md

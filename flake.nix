@@ -19,6 +19,7 @@
           scala = import ./environments/scala/shell.nix { inherit packages; };
           fsharp = import ./environments/fsharp/shell.nix { inherit packages; };
           haskell = import ./environments/haskell/shell.nix { inherit packages; };
+          rust = import ./environments/rust/shell.nix { inherit packages; };
         };
       }
     );

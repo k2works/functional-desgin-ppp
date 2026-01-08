@@ -1,0 +1,9 @@
+[package]
+name = "functional-design-part7"
+version = "0.1.0"
+edition = "2021"
+description = "Part 7: まとめと応用 - ベストプラクティス、移行ガイド"
+
+[dependencies]
+
+[dev-dependencies]

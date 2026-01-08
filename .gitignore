@@ -156,3 +156,7 @@ pom.xml.asc
 /app/scala/*/target/
 /app/scala/*/project/target/
 app/haskell/**/dist-newstyle/
+
+# Rust
+/app/rust/*/target/
+/app/rust/*/Cargo.lock

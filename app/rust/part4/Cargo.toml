@@ -1,0 +1,9 @@
+[package]
+name = "functional-design-part4"
+version = "0.1.0"
+edition = "2021"
+description = "Part 4: 振る舞いパターン - Strategy, Command, Visitor"
+
+[dependencies]
+
+[dev-dependencies]

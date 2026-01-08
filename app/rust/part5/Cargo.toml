@@ -1,0 +1,9 @@
+[package]
+name = "functional-design-part5"
+version = "0.1.0"
+edition = "2021"
+description = "Part 5: 生成パターン - Abstract Factory, Abstract Server"
+
+[dependencies]
+
+[dev-dependencies]

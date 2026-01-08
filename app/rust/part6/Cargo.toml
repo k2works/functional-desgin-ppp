@@ -1,0 +1,11 @@
+[package]
+name = "functional-design-part6"
+version = "0.1.0"
+edition = "2021"
+description = "Part 6: ケーススタディ - 実践的なアプリケーション"
+
+[dependencies]
+tokio = { version = "1.0", features = ["full"] }
+rand = "0.8"
+
+[dev-dependencies]

@@ -1,0 +1,9 @@
+[package]
+name = "functional-design-part1"
+version = "0.1.0"
+edition = "2021"
+description = "Part 1: 基礎原則 - 不変性、関数合成、多態性"
+
+[dependencies]
+
+[dev-dependencies]

@@ -1,0 +1,10 @@
+[package]
+name = "functional-design-part2"
+version = "0.1.0"
+edition = "2021"
+description = "Part 2: 仕様とテスト - データ検証、プロパティベーステスト、TDD"
+
+[dependencies]
+
+[dev-dependencies]
+proptest = "1.4"
