@@ -160,3 +160,4 @@ app/haskell/**/dist-newstyle/
 # Rust
 /app/rust/*/target/
 /app/rust/*/Cargo.lock
+*.dump
