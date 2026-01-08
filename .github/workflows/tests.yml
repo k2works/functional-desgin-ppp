@@ -1,0 +1,148 @@
+name: Tests
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  # Elixir Tests
+  elixir:
+    name: Elixir Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Nix
+        uses: cachix/install-nix-action@v27
+        with:
+          nix_path: nixpkgs=channel:nixos-unstable
+          extra_nix_config: |
+            experimental-features = nix-command flakes
+
+      - name: Run Elixir Part 1 Tests
+        run: nix develop .#elixir --command bash -c "cd app/elixir/part1 && mix deps.get && mix test"
+
+      - name: Run Elixir Part 2 Tests
+        run: nix develop .#elixir --command bash -c "cd app/elixir/part2 && mix deps.get && mix test"
+
+      - name: Run Elixir Part 3 Tests
+        run: nix develop .#elixir --command bash -c "cd app/elixir/part3 && mix deps.get && mix test"
+
+      - name: Run Elixir Part 4 Tests
+        run: nix develop .#elixir --command bash -c "cd app/elixir/part4 && mix deps.get && mix test"
+
+      - name: Run Elixir Part 5 Tests
+        run: nix develop .#elixir --command bash -c "cd app/elixir/part5 && mix deps.get && mix test"
+
+      - name: Run Elixir Part 6 Tests
+        run: nix develop .#elixir --command bash -c "cd app/elixir/part6 && mix deps.get && mix test"
+
+      - name: Run Elixir Part 7 Tests
+        run: nix develop .#elixir --command bash -c "cd app/elixir/part7 && mix deps.get && mix test"
+
+  # Clojure Tests
+  clojure:
+    name: Clojure Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Nix
+        uses: cachix/install-nix-action@v27
+        with:
+          nix_path: nixpkgs=channel:nixos-unstable
+          extra_nix_config: |
+            experimental-features = nix-command flakes
+
+      - name: Run Clojure Part 1 Tests
+        run: nix develop .#clojure --command bash -c "cd app/clojure/part1 && lein test"
+
+      - name: Run Clojure Part 2 Tests
+        run: nix develop .#clojure --command bash -c "cd app/clojure/part2 && lein test"
+
+  # Scala Tests
+  scala:
+    name: Scala Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Nix
+        uses: cachix/install-nix-action@v27
+        with:
+          nix_path: nixpkgs=channel:nixos-unstable
+          extra_nix_config: |
+            experimental-features = nix-command flakes
+
+      - name: Run Scala Part 1 Tests
+        run: nix develop .#scala --command bash -c "cd app/scala/part1 && sbt test"
+
+      - name: Run Scala Part 2 Tests
+        run: nix develop .#scala --command bash -c "cd app/scala/part2 && sbt test"
+
+  # F# Tests
+  fsharp:
+    name: F# Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Nix
+        uses: cachix/install-nix-action@v27
+        with:
+          nix_path: nixpkgs=channel:nixos-unstable
+          extra_nix_config: |
+            experimental-features = nix-command flakes
+
+      - name: Run F# Part 1 Tests
+        run: nix develop .#fsharp --command bash -c "cd app/fsharp/part1 && dotnet test"
+
+  # Haskell Tests
+  haskell:
+    name: Haskell Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Nix
+        uses: cachix/install-nix-action@v27
+        with:
+          nix_path: nixpkgs=channel:nixos-unstable
+          extra_nix_config: |
+            experimental-features = nix-command flakes
+
+      - name: Run Haskell Part 1 Tests
+        run: nix develop .#haskell --command bash -c "cd app/haskell/part1 && cabal update && cabal test"
+
+      - name: Run Haskell Part 2 Tests
+        run: nix develop .#haskell --command bash -c "cd app/haskell/part2 && cabal update && cabal test"
+
+  # Rust Tests
+  rust:
+    name: Rust Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Nix
+        uses: cachix/install-nix-action@v27
+        with:
+          nix_path: nixpkgs=channel:nixos-unstable
+          extra_nix_config: |
+            experimental-features = nix-command flakes
+
+      - name: Run Rust Part 1 Tests
+        run: nix develop .#rust --command bash -c "cd app/rust/part1 && cargo test"
+
+      - name: Run Rust Part 2 Tests
+        run: nix develop .#rust --command bash -c "cd app/rust/part2 && cargo test"
