@@ -7515,75 +7515,87 @@
 <h2 id="_2">記事構成<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
 <h3 id="1">第1部: 関数型プログラミングの基礎原則<a class="headerlink" href="#1" title="Permanent link">&para;</a></h3>
 <ol>
-<li><a href="01-immutability-and-data-transformation/">不変性とデータ変換</a></li>
+<li>
+<p><a href="01-immutability-and-data-transformation/">不変性とデータ変換</a></p>
+<ul>
 <li>不変データ構造の重要性</li>
 <li>データ変換パイプライン</li>
-<li>
-<p>副作用の分離</p>
+<li>副作用の分離</li>
+</ul>
 </li>
 <li>
 <p><a href="02-function-composition/">関数合成と高階関数</a></p>
-</li>
+<ul>
 <li>関数合成の基本</li>
 <li>部分適用とカリー化</li>
-<li>
-<p>高階関数の活用</p>
+<li>高階関数の活用</li>
+</ul>
 </li>
 <li>
 <p><a href="03-polymorphism/">多態性の実現方法</a></p>
-</li>
+<ul>
 <li>マルチメソッドによるディスパッチ</li>
 <li>プロトコルとレコード</li>
 <li>マルチメソッド vs プロトコルの使い分け</li>
+</ul>
+</li>
 </ol>
 <h3 id="2">第2部: 仕様とテスト<a class="headerlink" href="#2" title="Permanent link">&para;</a></h3>
 <ol>
-<li><a href="04-clojure-spec/">Clojure Spec による仕様定義</a></li>
+<li>
+<p><a href="04-clojure-spec/">Clojure Spec による仕様定義</a></p>
+<ul>
 <li>データ構造の仕様定義</li>
 <li>関数仕様の定義（fdef）</li>
-<li>
-<p>実行時検証と自動テスト生成</p>
+<li>実行時検証と自動テスト生成</li>
+</ul>
 </li>
 <li>
 <p><a href="05-property-based-testing/">プロパティベーステスト</a></p>
-</li>
+<ul>
 <li>test.check の基本</li>
 <li>ジェネレータの作成</li>
-<li>
-<p>プロパティの定義と検証</p>
+<li>プロパティの定義と検証</li>
+</ul>
 </li>
 <li>
 <p><a href="06-tdd-in-functional/">テスト駆動開発と関数型プログラミング</a></p>
-</li>
+<ul>
 <li>Red-Green-Refactor サイクル</li>
 <li>テストファーストの関数設計</li>
 <li>リファクタリングと不変性</li>
+</ul>
+</li>
 </ol>
 <h3 id="3-">第3部: デザインパターン - 構造パターン<a class="headerlink" href="#3-" title="Permanent link">&para;</a></h3>
 <ol>
-<li><a href="07-composite-pattern/">Composite パターン</a></li>
+<li>
+<p><a href="07-composite-pattern/">Composite パターン</a></p>
+<ul>
 <li>個別オブジェクトと複合オブジェクトの統一的な扱い</li>
 <li>Shape（図形）の移動・拡大を統一インターフェースで操作</li>
 <li>Switchable（スイッチ）のグループ化と一括操作</li>
-<li>
-<p>マルチメソッドによる多態性の実現</p>
+<li>マルチメソッドによる多態性の実現</li>
+</ul>
 </li>
 <li>
 <p><a href="08-decorator-pattern/">Decorator パターン</a></p>
-</li>
+<ul>
 <li>機能の動的な追加</li>
 <li>JournaledShape: 操作履歴の記録（ジャーナリング）</li>
 <li>関数デコレータ: ログ、リトライ、キャッシュ</li>
-<li>
-<p>デコレータの組み合わせ</p>
+<li>デコレータの組み合わせ</li>
+</ul>
 </li>
 <li>
 <p><a href="09-adapter-pattern/">Adapter パターン</a></p>
-</li>
+<ul>
 <li>インターフェースの変換</li>
 <li>VariableLightAdapter: 可変強度ライトをオン/オフに適応</li>
 <li>データフォーマットアダプター: 新旧フォーマット変換</li>
 <li>マルチメソッドによる適応</li>
+</ul>
+</li>
 </ol>
 <h3 id="4-">第4部: デザインパターン - 振る舞いパターン<a class="headerlink" href="#4-" title="Permanent link">&para;</a></h3>
 <ol>

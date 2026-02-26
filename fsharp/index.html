@@ -7532,15 +7532,17 @@
 <h2 id="_2">記事構成<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
 <h3 id="1">第1部: 関数型プログラミングの基礎原則<a class="headerlink" href="#1" title="Permanent link">&para;</a></h3>
 <ol>
-<li><a href="01-immutability-and-data-transformation/">不変性とデータ変換</a></li>
+<li>
+<p><a href="01-immutability-and-data-transformation/">不変性とデータ変換</a></p>
+<ul>
 <li>レコードと不変データ構造</li>
 <li>パイプライン演算子（|&gt;）</li>
-<li>
-<p>副作用の分離</p>
+<li>副作用の分離</li>
+</ul>
 </li>
 <li>
 <p><a href="02-function-composition/">関数合成と高階関数</a></p>
-</li>
+<ul>
 <li>
 <blockquote>
 <blockquote>
@@ -7549,61 +7551,71 @@
 </blockquote>
 </li>
 <li>カリー化と部分適用</li>
-<li>
-<p>高階関数の活用</p>
+<li>高階関数の活用</li>
+</ul>
 </li>
 <li>
 <p><a href="03-polymorphism/">多態性の実現方法</a></p>
-</li>
+<ul>
 <li>判別共用体（Discriminated Union）</li>
 <li>アクティブパターン</li>
 <li>型拡張とインターフェース</li>
+</ul>
+</li>
 </ol>
 <h3 id="2">第2部: 仕様とテスト<a class="headerlink" href="#2" title="Permanent link">&para;</a></h3>
 <ol>
-<li><a href="04-data-validation/">データ検証</a></li>
+<li>
+<p><a href="04-data-validation/">データ検証</a></p>
+<ul>
 <li>Result 型によるエラーハンドリング</li>
 <li>Computation Expression</li>
-<li>
-<p>カスタムバリデータの作成</p>
+<li>カスタムバリデータの作成</li>
+</ul>
 </li>
 <li>
 <p><a href="05-property-based-testing/">プロパティベーステスト</a></p>
-</li>
+<ul>
 <li>FsCheck の基本</li>
 <li>ジェネレータの作成</li>
-<li>
-<p>プロパティの定義と検証</p>
+<li>プロパティの定義と検証</li>
+</ul>
 </li>
 <li>
 <p><a href="06-tdd-functional/">TDD と関数型プログラミング</a></p>
-</li>
+<ul>
 <li>xUnit / Expecto によるテスト</li>
 <li>Red-Green-Refactor サイクル</li>
 <li>テストファーストの関数設計</li>
+</ul>
+</li>
 </ol>
 <h3 id="3">第3部: 構造パターン<a class="headerlink" href="#3" title="Permanent link">&para;</a></h3>
 <ol>
-<li><a href="07-composite-pattern/">Composite パターン</a></li>
+<li>
+<p><a href="07-composite-pattern/">Composite パターン</a></p>
+<ul>
 <li>再帰的な判別共用体</li>
 <li>ツリー構造の表現</li>
-<li>
-<p>fold による走査</p>
+<li>fold による走査</li>
+</ul>
 </li>
 <li>
 <p><a href="08-decorator-pattern/">Decorator パターン</a></p>
-</li>
+<ul>
 <li>関数合成によるデコレーション</li>
 <li>高階関数でのラッピング</li>
-<li>
-<p>振る舞いの動的追加</p>
+<li>振る舞いの動的追加</li>
+</ul>
 </li>
 <li>
 <p><a href="09-adapter-pattern/">Adapter パターン</a></p>
-</li>
+<ul>
 <li>関数アダプター</li>
 <li>プロトコル変換</li>
 <li>レガシーコードとの統合</li>
+</ul>
+</li>
 </ol>
 <h3 id="4">第4部: 振る舞いパターン<a class="headerlink" href="#4" title="Permanent link">&para;</a></h3>
 <ol>
