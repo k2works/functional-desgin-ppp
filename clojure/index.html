@@ -23,7 +23,7 @@
       
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.1">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.3">
     
     
       
@@ -78,7 +78,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#-" class="md-skip">
+        <a href="#rust" class="md-skip">
           Skip to content
         </a>
       
@@ -577,10 +577,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#3-" class="md-nav__link">
+  <a href="#3" class="md-nav__link">
     <span class="md-ellipsis">
       
-        第3部: デザインパターン - 構造パターン
+        第3部: 構造パターン
       
     </span>
   </a>
@@ -588,10 +588,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#4-" class="md-nav__link">
+  <a href="#4" class="md-nav__link">
     <span class="md-ellipsis">
       
-        第4部: デザインパターン - 振る舞いパターン
+        第4部: 振る舞いパターン
       
     </span>
   </a>
@@ -599,10 +599,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#5-" class="md-nav__link">
+  <a href="#5" class="md-nav__link">
     <span class="md-ellipsis">
       
-        第5部: デザインパターン - 生成パターン
+        第5部: 生成パターン
       
     </span>
   </a>
@@ -613,7 +613,7 @@
   <a href="#6" class="md-nav__link">
     <span class="md-ellipsis">
       
-        第6部: 実践的なケーススタディ
+        第6部: ケーススタディ
       
     </span>
   </a>
@@ -640,17 +640,6 @@
   <a href="#_3" class="md-nav__link">
     <span class="md-ellipsis">
       
-        付録
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#_4" class="md-nav__link">
-    <span class="md-ellipsis">
-      
         本シリーズの特徴
       
     </span>
@@ -660,7 +649,18 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#_5" class="md-nav__link">
+  <a href="#rust_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rust の特性を活かした実装
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
     <span class="md-ellipsis">
       
         実践重視
@@ -671,32 +671,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#_6" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        テスト駆動
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#_7" class="md-nav__link">
+  <a href="#_5" class="md-nav__link">
     <span class="md-ellipsis">
       
         段階的な学習
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#_8" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        日本語での解説
       
     </span>
   </a>
@@ -709,7 +687,7 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#_9" class="md-nav__link">
+  <a href="#_6" class="md-nav__link">
     <span class="md-ellipsis">
       
         対象読者
@@ -720,7 +698,7 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#_10" class="md-nav__link">
+  <a href="#_7" class="md-nav__link">
     <span class="md-ellipsis">
       
         前提知識
@@ -731,7 +709,35 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#_11" class="md-nav__link">
+  <a href="#_8" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        開発環境
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="開発環境">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_9" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        環境構築
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_10" class="md-nav__link">
     <span class="md-ellipsis">
       
         参考書籍
@@ -7509,175 +7515,177 @@
   
 
 
-<h1 id="-">関数型デザイン - 原則、パターン、実践<a class="headerlink" href="#-" title="Permanent link">&para;</a></h1>
+<h1 id="rust">Rust で学ぶ関数型デザイン<a class="headerlink" href="#rust" title="Permanent link">&para;</a></h1>
 <h2 id="_1">はじめに<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
-<p>本記事シリーズは、関数型プログラミングにおける設計原則とデザインパターンを実践的に学ぶためのガイドです。Clojure を主な実装言語として、従来のオブジェクト指向デザインパターンを関数型パラダイムでどのように表現し、活用できるかを探求します。</p>
+<p>本記事シリーズは、関数型プログラミングにおける設計原則とデザインパターンを Rust を使って実践的に学ぶためのガイドです。Rust の所有権システムと型システムを活かし、従来のデザインパターンを関数型パラダイムでどのように表現し、活用できるかを探求します。</p>
 <h2 id="_2">記事構成<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
 <h3 id="1">第1部: 関数型プログラミングの基礎原則<a class="headerlink" href="#1" title="Permanent link">&para;</a></h3>
 <ol>
-<li><a href="01-immutability-and-data-transformation/">不変性とデータ変換</a></li>
-<li>不変データ構造の重要性</li>
-<li>データ変換パイプライン</li>
 <li>
-<p>副作用の分離</p>
+<p><a href="01-immutability-and-data-transformation/">不変性とデータ変換</a></p>
+<ul>
+<li>デフォルトの不変性と所有権</li>
+<li>イテレータとデータ変換パイプライン</li>
+<li>副作用の分離</li>
+</ul>
 </li>
 <li>
 <p><a href="02-function-composition/">関数合成と高階関数</a></p>
-</li>
-<li>関数合成の基本</li>
-<li>部分適用とカリー化</li>
-<li>
-<p>高階関数の活用</p>
+<ul>
+<li>クロージャによる関数合成</li>
+<li>カリー化と部分適用</li>
+<li>高階関数の活用</li>
+</ul>
 </li>
 <li>
 <p><a href="03-polymorphism/">多態性の実現方法</a></p>
+<ul>
+<li>enum と代数的データ型</li>
+<li>trait による抽象化</li>
+<li>ジェネリクスと trait bounds</li>
+</ul>
 </li>
-<li>マルチメソッドによるディスパッチ</li>
-<li>プロトコルとレコード</li>
-<li>マルチメソッド vs プロトコルの使い分け</li>
 </ol>
 <h3 id="2">第2部: 仕様とテスト<a class="headerlink" href="#2" title="Permanent link">&para;</a></h3>
 <ol>
-<li><a href="04-clojure-spec/">Clojure Spec による仕様定義</a></li>
-<li>データ構造の仕様定義</li>
-<li>関数仕様の定義（fdef）</li>
 <li>
-<p>実行時検証と自動テスト生成</p>
+<p><a href="./04-data-validation.md">データ検証</a></p>
+<ul>
+<li>型によるバリデーション</li>
+<li>Result によるエラーハンドリング</li>
+<li>カスタムバリデータの作成</li>
+</ul>
 </li>
 <li>
 <p><a href="05-property-based-testing/">プロパティベーステスト</a></p>
-</li>
-<li>test.check の基本</li>
+<ul>
+<li>proptest の基本</li>
 <li>ジェネレータの作成</li>
-<li>
-<p>プロパティの定義と検証</p>
+<li>プロパティの定義と検証</li>
+</ul>
 </li>
 <li>
-<p><a href="06-tdd-in-functional/">テスト駆動開発と関数型プログラミング</a></p>
-</li>
+<p><a href="./06-tdd-and-functional.md">TDD と関数型プログラミング</a></p>
+<ul>
+<li>Rust 組み込みテストの活用</li>
 <li>Red-Green-Refactor サイクル</li>
 <li>テストファーストの関数設計</li>
-<li>リファクタリングと不変性</li>
+</ul>
+</li>
 </ol>
-<h3 id="3-">第3部: デザインパターン - 構造パターン<a class="headerlink" href="#3-" title="Permanent link">&para;</a></h3>
+<h3 id="3">第3部: 構造パターン<a class="headerlink" href="#3" title="Permanent link">&para;</a></h3>
 <ol>
-<li><a href="07-composite-pattern/">Composite パターン</a></li>
-<li>個別オブジェクトと複合オブジェクトの統一的な扱い</li>
-<li>Shape（図形）の移動・拡大を統一インターフェースで操作</li>
-<li>Switchable（スイッチ）のグループ化と一括操作</li>
 <li>
-<p>マルチメソッドによる多態性の実現</p>
+<p><a href="07-composite-pattern/">Composite パターン</a></p>
+<ul>
+<li>再帰的なデータ構造</li>
+<li>enum によるツリー構造</li>
+<li>fold による走査</li>
+</ul>
 </li>
 <li>
 <p><a href="08-decorator-pattern/">Decorator パターン</a></p>
-</li>
-<li>機能の動的な追加</li>
-<li>JournaledShape: 操作履歴の記録（ジャーナリング）</li>
-<li>関数デコレータ: ログ、リトライ、キャッシュ</li>
-<li>
-<p>デコレータの組み合わせ</p>
+<ul>
+<li>関数合成によるデコレーション</li>
+<li>クロージャでのラッピング</li>
+<li>振る舞いの動的追加</li>
+</ul>
 </li>
 <li>
 <p><a href="09-adapter-pattern/">Adapter パターン</a></p>
+<ul>
+<li>関数アダプター</li>
+<li>プロトコル変換</li>
+<li>レガシーコードとの統合</li>
+</ul>
 </li>
-<li>インターフェースの変換</li>
-<li>VariableLightAdapter: 可変強度ライトをオン/オフに適応</li>
-<li>データフォーマットアダプター: 新旧フォーマット変換</li>
-<li>マルチメソッドによる適応</li>
 </ol>
-<h3 id="4-">第4部: デザインパターン - 振る舞いパターン<a class="headerlink" href="#4-" title="Permanent link">&para;</a></h3>
+<h3 id="4">第4部: 振る舞いパターン<a class="headerlink" href="#4" title="Permanent link">&para;</a></h3>
 <ol>
 <li>
 <p><a href="10-strategy-pattern/">Strategy パターン</a></p>
 <ul>
-<li>アルゴリズムをカプセル化し交換可能にする</li>
-<li>料金計算: 通常・割引・会員・数量割引の各戦略</li>
-<li>関数型アプローチ: 高階関数による戦略の合成</li>
-<li>マルチメソッドによる多態性の実現</li>
+<li>クロージャとしての戦略</li>
+<li>動的な戦略切り替え</li>
+<li>戦略の合成</li>
 </ul>
 </li>
 <li>
 <p><a href="11-command-pattern/">Command パターン</a></p>
 <ul>
-<li>操作をデータとしてカプセル化</li>
-<li>テキストコマンド: 挿入・削除・置換</li>
-<li>キャンバスコマンド: 図形の追加・削除・移動</li>
-<li>Undo/Redo 機能と MacroCommand</li>
+<li>不変コマンド構造体</li>
+<li>コマンドの履歴と Undo</li>
+<li>マクロコマンド</li>
 </ul>
 </li>
 <li>
 <p><a href="12-visitor-pattern/">Visitor パターン</a></p>
 <ul>
-<li>データ構造と操作の分離</li>
-<li>JSON/XML 変換 Visitor の実装</li>
-<li>面積・周囲長計算 Visitor</li>
-<li>マルチメソッドによるダブルディスパッチ</li>
+<li>match によるパターンマッチ</li>
+<li>fold ベースのビジター</li>
+<li>拡張可能なビジター</li>
 </ul>
 </li>
 </ol>
-<h3 id="5-">第5部: デザインパターン - 生成パターン<a class="headerlink" href="#5-" title="Permanent link">&para;</a></h3>
+<h3 id="5">第5部: 生成パターン<a class="headerlink" href="#5" title="Permanent link">&para;</a></h3>
 <ol>
 <li>
 <p><a href="13-abstract-factory-pattern/">Abstract Factory パターン</a></p>
 <ul>
-<li>関連するオブジェクトのファミリーを一貫して生成</li>
-<li>ShapeFactory: Standard/Outlined/Filled の各実装</li>
-<li>UIFactory: プラットフォーム別 UI コンポーネント生成</li>
-<li>マルチメソッドによる製品生成のディスパッチ</li>
+<li>関数ファクトリー</li>
+<li>trait オブジェクトによる生成</li>
+<li>依存性注入</li>
 </ul>
 </li>
 <li>
 <p><a href="14-abstract-server-pattern/">Abstract Server パターン</a></p>
 <ul>
-<li>依存関係逆転の原則（DIP）の実現</li>
-<li>Switchable: Light/Fan/Motor の統一インターフェース</li>
-<li>Repository: データアクセスの抽象化</li>
-<li>プロトコルとレコードによる疎結合</li>
+<li>trait による抽象化</li>
+<li>実装の差し替え</li>
+<li>テスタブルな設計</li>
 </ul>
 </li>
 </ol>
-<h3 id="6">第6部: 実践的なケーススタディ<a class="headerlink" href="#6" title="Permanent link">&para;</a></h3>
+<h3 id="6">第6部: ケーススタディ<a class="headerlink" href="#6" title="Permanent link">&para;</a></h3>
 <ol>
 <li>
 <p><a href="15-gossiping-bus-drivers/">ゴシップ好きなバスの運転手</a></p>
 <ul>
-<li>バス運転手が停留所で噂を共有するシミュレーション</li>
-<li>無限シーケンス（cycle）による循環ルート表現</li>
-<li>集合演算による噂の伝播</li>
-<li>状態変換パイプラインの実装</li>
+<li>不変状態の管理</li>
+<li>シミュレーションの実装</li>
+<li>再帰的な処理</li>
 </ul>
 </li>
 <li>
 <p><a href="16-payroll-system/">給与計算システム</a></p>
 <ul>
 <li>ドメインモデリング</li>
-<li>支払いスケジュールと給与タイプ</li>
-<li>Clojure Spec によるデータ検証</li>
+<li>多態的な計算</li>
+<li>レポート生成</li>
 </ul>
 </li>
 <li>
 <p><a href="17-video-rental-system/">レンタルビデオシステム</a></p>
 <ul>
-<li>料金計算ロジックの設計</li>
-<li>ポリシーパターンの適用</li>
-<li>テキスト/HTML フォーマッターの実装</li>
+<li>状態遷移の管理</li>
+<li>イベントソーシング</li>
+<li>ビジネスルールの実装</li>
 </ul>
 </li>
 <li>
 <p><a href="18-concurrency-system/">並行処理システム</a></p>
 <ul>
-<li>Clojure エージェントによる非同期処理</li>
-<li>状態機械パターン</li>
-<li>イベント駆動アーキテクチャ</li>
+<li>Mutex と RwLock による状態管理</li>
+<li>チャネルによるメッセージパッシング</li>
+<li>async/await と Tokio</li>
 </ul>
 </li>
 <li>
 <p><a href="19-wator-simulation/">Wa-Tor シミュレーション</a></p>
 <ul>
-<li>捕食者-被食者モデルの実装</li>
-<li>セルオートマトンとマルチメソッド</li>
-<li>GUI との統合（Quil）</li>
-<li>進化と繁殖のルール実装</li>
+<li>セルオートマトン</li>
+<li>不変グリッドの更新</li>
+<li>シミュレーションループ</li>
 </ul>
 </li>
 </ol>
@@ -7686,68 +7694,78 @@
 <li>
 <p><a href="20-pattern-interactions/">パターン間の相互作用</a></p>
 <ul>
-<li>Composite と Decorator の組み合わせ</li>
-<li>Command と Observer の連携</li>
-<li>複合的なアーキテクチャ設計</li>
+<li>Composite + Decorator</li>
+<li>Command + Observer</li>
+<li>パターンの組み合わせ</li>
 </ul>
 </li>
 <li>
-<p><a href="21-best-practices/">関数型デザインのベストプラクティス</a></p>
+<p><a href="21-best-practices/">ベストプラクティス</a></p>
 <ul>
 <li>データ中心設計</li>
-<li>純粋関数と副作用の分離</li>
-<li>テスト可能な設計</li>
+<li>所有権と借用の活用</li>
+<li>関数デコレーター</li>
+<li>テスタブルな設計</li>
 </ul>
 </li>
 <li>
-<p><a href="22-oo-to-fp-migration/">オブジェクト指向から関数型への移行</a></p>
+<p><a href="22-oo-to-fp-migration/">OO から FP への移行</a></p>
 <ul>
-<li>既存コードのリファクタリング戦略</li>
-<li>段階的な移行アプローチ</li>
-<li>共存と統合</li>
+<li>移行戦略（Strangler Fig、アダプター）</li>
+<li>イベントソーシング</li>
+<li>段階的な関数抽出</li>
+<li>enum による多態性</li>
 </ul>
 </li>
 </ol>
 <hr />
-<h2 id="_3">付録<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h2>
-<ul>
-<li><a href="./appendix-glossary.md">用語集</a></li>
-<li><a href="./appendix-references.md">参考文献</a></li>
-<li><a href="./appendix-setup.md">Clojure 開発環境セットアップ</a></li>
-</ul>
-<hr />
-<h2 id="_4">本シリーズの特徴<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h2>
-<h3 id="_5">実践重視<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h3>
-<p>すべてのパターンは実際に動作するコード例を含みます。理論だけでなく、実装を通じて理解を深めることを重視しています。</p>
-<h3 id="_6">テスト駆動<a class="headerlink" href="#_6" title="Permanent link">&para;</a></h3>
-<p>各パターンの実装にはテストコードが付属しています。TDD のアプローチに従い、テストファーストでパターンを学びます。</p>
-<h3 id="_7">段階的な学習<a class="headerlink" href="#_7" title="Permanent link">&para;</a></h3>
+<h2 id="_3">本シリーズの特徴<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h2>
+<h3 id="rust_1">Rust の特性を活かした実装<a class="headerlink" href="#rust_1" title="Permanent link">&para;</a></h3>
+<p>Rust の所有権システム、パターンマッチング、enum（代数的データ型）を活用し、安全かつ効率的な関数型プログラミングを学びます。</p>
+<h3 id="_4">実践重視<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h3>
+<p>すべてのパターンは Rust 組み込みのテストフレームワークによる実際に動作するテストコードを含みます。理論だけでなく、実装を通じて理解を深めることを重視しています。</p>
+<h3 id="_5">段階的な学習<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h3>
 <p>基礎から応用へと段階的に内容が進行します。各章は独立して読むこともできますが、順番に読むことでより深い理解が得られます。</p>
-<h3 id="_8">日本語での解説<a class="headerlink" href="#_8" title="Permanent link">&para;</a></h3>
-<p>技術用語は英語を併記しつつ、解説は日本語で行います。日本語でのデザインパターン学習リソースとして活用できます。</p>
 <hr />
-<h2 id="_9">対象読者<a class="headerlink" href="#_9" title="Permanent link">&para;</a></h2>
+<h2 id="_6">対象読者<a class="headerlink" href="#_6" title="Permanent link">&para;</a></h2>
 <ul>
-<li>関数型プログラミングに興味がある開発者</li>
-<li>Clojure を学習中または活用している開発者</li>
+<li>関数型プログラミングに興味がある Rust 開発者</li>
+<li>Rust を学習中の開発者</li>
 <li>オブジェクト指向デザインパターンの知識があり、関数型での表現を学びたい開発者</li>
-<li>テスト駆動開発やクリーンコードに関心がある開発者</li>
+<li>Clojure 版や Scala 版と比較して学習したい開発者</li>
 </ul>
 <hr />
-<h2 id="_10">前提知識<a class="headerlink" href="#_10" title="Permanent link">&para;</a></h2>
+<h2 id="_7">前提知識<a class="headerlink" href="#_7" title="Permanent link">&para;</a></h2>
 <ul>
 <li>プログラミングの基礎知識</li>
-<li>Clojure の基本的な文法（リスト、マップ、関数定義など）</li>
+<li>Rust の基本的な文法（struct、enum、trait、パターンマッチングなど）</li>
 <li>デザインパターンの基本概念（推奨）</li>
 </ul>
 <hr />
-<h2 id="_11">参考書籍<a class="headerlink" href="#_11" title="Permanent link">&para;</a></h2>
+<h2 id="_8">開発環境<a class="headerlink" href="#_8" title="Permanent link">&para;</a></h2>
+<p>本シリーズのコードは以下の環境で動作確認しています：</p>
+<ul>
+<li>Rust 1.75.0+</li>
+<li>Cargo（Rust パッケージマネージャ）</li>
+<li>proptest 1.4（プロパティベーステスト）</li>
+<li>Nix による環境管理</li>
+</ul>
+<h3 id="_9">環境構築<a class="headerlink" href="#_9" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># Nix を使用した開発環境の起動</span>
+nix<span class="w"> </span>develop<span class="w"> </span>.#rust
+
+<span class="c1"># テストの実行</span>
+<span class="nb">cd</span><span class="w"> </span>app/rust/part1
+cargo<span class="w"> </span><span class="nb">test</span>
+</code></pre></div>
+<hr />
+<h2 id="_10">参考書籍<a class="headerlink" href="#_10" title="Permanent link">&para;</a></h2>
 <p>本シリーズは以下の書籍の内容を参考にしています：</p>
 <ul>
 <li>「Functional Design: Principles, Patterns, and Practices」Robert C. Martin</li>
-<li>「Clean Code」Robert C. Martin</li>
-<li>「Clojure Applied」Ben Vandgrift, Alex Miller</li>
-<li>「Programming Clojure」Alex Miller, Stuart Halloway, Aaron Bedra</li>
+<li>「Programming Rust」Jim Blandy, Jason Orendorff, Leonora F.S. Tindall</li>
+<li>「The Rust Programming Language」Steve Klabnik, Carol Nichols</li>
+<li>「Rust Design Patterns」</li>
 </ul>
 
 
