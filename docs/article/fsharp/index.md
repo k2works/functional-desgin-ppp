@@ -9,53 +9,53 @@
 ### 第1部: 関数型プログラミングの基礎原則
 
 1. [不変性とデータ変換](./01-immutability-and-data-transformation.md)
-   - レコードと不変データ構造
-   - パイプライン演算子（|>）
-   - 副作用の分離
+    - レコードと不変データ構造
+    - パイプライン演算子（|>）
+    - 副作用の分離
 
 2. [関数合成と高階関数](./02-function-composition.md)
-   - >> と << による関数合成
-   - カリー化と部分適用
-   - 高階関数の活用
+    - >> と << による関数合成
+    - カリー化と部分適用
+    - 高階関数の活用
 
 3. [多態性の実現方法](./03-polymorphism.md)
-   - 判別共用体（Discriminated Union）
-   - アクティブパターン
-   - 型拡張とインターフェース
+    - 判別共用体（Discriminated Union）
+    - アクティブパターン
+    - 型拡張とインターフェース
 
 ### 第2部: 仕様とテスト
 
 4. [データ検証](./04-data-validation.md)
-   - Result 型によるエラーハンドリング
-   - Computation Expression
-   - カスタムバリデータの作成
+    - Result 型によるエラーハンドリング
+    - Computation Expression
+    - カスタムバリデータの作成
 
 5. [プロパティベーステスト](./05-property-based-testing.md)
-   - FsCheck の基本
-   - ジェネレータの作成
-   - プロパティの定義と検証
+    - FsCheck の基本
+    - ジェネレータの作成
+    - プロパティの定義と検証
 
 6. [TDD と関数型プログラミング](./06-tdd-functional.md)
-   - xUnit / Expecto によるテスト
-   - Red-Green-Refactor サイクル
-   - テストファーストの関数設計
+    - xUnit / Expecto によるテスト
+    - Red-Green-Refactor サイクル
+    - テストファーストの関数設計
 
 ### 第3部: 構造パターン
 
 7. [Composite パターン](./07-composite-pattern.md)
-   - 再帰的な判別共用体
-   - ツリー構造の表現
-   - fold による走査
+    - 再帰的な判別共用体
+    - ツリー構造の表現
+    - fold による走査
 
 8. [Decorator パターン](./08-decorator-pattern.md)
-   - 関数合成によるデコレーション
-   - 高階関数でのラッピング
-   - 振る舞いの動的追加
+    - 関数合成によるデコレーション
+    - 高階関数でのラッピング
+    - 振る舞いの動的追加
 
 9. [Adapter パターン](./09-adapter-pattern.md)
-   - 関数アダプター
-   - プロトコル変換
-   - レガシーコードとの統合
+    - 関数アダプター
+    - プロトコル変換
+    - レガシーコードとの統合
 
 ### 第4部: 振る舞いパターン
 
