@@ -348,14 +348,14 @@ Elixir の章 7-10 が独立カリキュラム（Effects / Error Handling / I/O 
 | 04 | データ検証 | 2 | Medium | 完了 |
 | 05 | プロパティベーステスト | 2 | Medium | 完了 |
 | 06 | TDD と関数型 | 2 | Medium | 完了 |
-| 07 | Composite パターン | 3 | High | 未着手 |
-| 08 | Decorator パターン | 3 | High | 未着手 |
-| 09 | Adapter パターン | 3 | High | 未着手 |
-| 10 | Strategy パターン | 3 | High | 未着手 |
-| 11 | Command パターン | 3 | Medium | 未着手 |
-| 12 | Visitor パターン | 3 | Medium | 未着手 |
-| 13 | Abstract Factory パターン | 3 | High | 未着手 |
-| 14 | Abstract Server パターン | 3 | High | 未着手 |
+| 07 | Composite パターン | 3 | High | 完了 |
+| 08 | Decorator パターン | 3 | High | 完了 |
+| 09 | Adapter パターン | 3 | High | 完了 |
+| 10 | Strategy パターン | 3 | High | 完了 |
+| 11 | Command パターン | 3 | Medium | 完了 |
+| 12 | Visitor パターン | 3 | Medium | 完了 |
+| 13 | Abstract Factory パターン | 3 | High | 完了 |
+| 14 | Abstract Server パターン | 3 | High | 完了 |
 | 15 | Gossiping Bus Drivers | 2 | Low | 完了 |
 | 16 | 給与計算システム | 2 | Low | 完了 |
 | 17 | レンタルビデオシステム | 2 | Low | 完了 |
