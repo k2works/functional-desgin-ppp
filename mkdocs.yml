@@ -91,7 +91,7 @@ nav:
               - 16. 給与計算システム: article/all/16-payroll-system.md
               - 17. レンタルビデオシステム: article/all/17-video-rental-system.md
               - 18. 並行処理システム: article/all/18-concurrency-system.md
-              - 19. Wa-Tor シミュレーション: article/all/19-wator-simulation.md
+              - 19. Wa-Tor シミュレーション: article/all/19-wa-tor-simulation.md
           - 第 7 部 まとめと応用:
               - 20. パターン間の相互作用: article/all/20-pattern-interactions.md
               - 21. ベストプラクティス: article/all/21-best-practices.md
