@@ -15,6 +15,10 @@ Robert C. Martin の「Functional Design: Principles, Patterns, and Practices」
 | [Haskell](haskell/index.md) | 純粋関数型言語。型クラス、モナド、遅延評価 |
 | [Rust](rust/index.md) | システムプログラミング言語。所有権システム、トレイト、ゼロコスト抽象化 |
 
+## 多言語統合解説
+
+[多言語統合解説](all/index.md) では、6 言語の実装を横断的に比較し、関数型デザインパターンの本質と言語固有の表現を統合的に解説します。
+
 ## 章構成
 
 ### 第 1 部: 関数型プログラミングの基礎原則

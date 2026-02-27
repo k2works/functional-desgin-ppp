@@ -65,6 +65,37 @@ nav:
   - Home: index.md
   - 記事:
       - 概要: article/index.md
+      - 多言語統合解説:
+          - はじめに: article/all/index.md
+          - 第 1 部 基礎原則:
+              - 1. 不変性とデータ変換: article/all/01-immutability-and-data-transformation.md
+              - 2. 関数合成と高階関数: article/all/02-function-composition.md
+              - 3. 多態性の実現方法: article/all/03-polymorphism.md
+          - 第 2 部 仕様とテスト:
+              - 4. データ検証: article/all/04-data-validation.md
+              - 5. プロパティベーステスト: article/all/05-property-based-testing.md
+              - 6. TDD と関数型: article/all/06-tdd-and-functional.md
+          - 第 3 部 構造パターン:
+              - 7. Composite パターン: article/all/07-composite-pattern.md
+              - 8. Decorator パターン: article/all/08-decorator-pattern.md
+              - 9. Adapter パターン: article/all/09-adapter-pattern.md
+          - 第 4 部 振る舞いパターン:
+              - 10. Strategy パターン: article/all/10-strategy-pattern.md
+              - 11. Command パターン: article/all/11-command-pattern.md
+              - 12. Visitor パターン: article/all/12-visitor-pattern.md
+          - 第 5 部 生成パターン:
+              - 13. Abstract Factory パターン: article/all/13-abstract-factory-pattern.md
+              - 14. Abstract Server パターン: article/all/14-abstract-server-pattern.md
+          - 第 6 部 ケーススタディ:
+              - 15. Gossiping Bus Drivers: article/all/15-gossiping-bus-drivers.md
+              - 16. 給与計算システム: article/all/16-payroll-system.md
+              - 17. レンタルビデオシステム: article/all/17-video-rental-system.md
+              - 18. 並行処理システム: article/all/18-concurrency-system.md
+              - 19. Wa-Tor シミュレーション: article/all/19-wator-simulation.md
+          - 第 7 部 まとめと応用:
+              - 20. パターン間の相互作用: article/all/20-pattern-interactions.md
+              - 21. ベストプラクティス: article/all/21-best-practices.md
+              - 22. OO から FP への移行: article/all/22-oo-to-fp-migration.md
       - Clojure:
           - はじめに: article/clojure/index.md
           - 第 1 部 基礎原則:
