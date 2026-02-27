@@ -89,9 +89,13 @@ describe "FizzBuzz" $ do
 ```rust
 // Rust
 #[test]
-fn test_normal_number() {
-    assert_eq!(fizzbuzz(1), "1");
-    assert_eq!(fizzbuzz(2), "2");
+fn fizzbuzz_1_returns_1() {
+    assert_eq!("1", fizzbuzz(1));
+}
+
+#[test]
+fn fizzbuzz_2_returns_2() {
+    assert_eq!("2", fizzbuzz(2));
 }
 ```
 
@@ -131,9 +135,9 @@ fizzBuzz n
 
 ```rust
 // Rust
-pub fn is_fizz(n: i32) -> bool { n % 3 == 0 }
+fn is_fizz(n: u32) -> bool { n % 3 == 0 }
 
-pub fn fizzbuzz(n: i32) -> String {
+pub fn fizzbuzz(n: u32) -> String {
     if is_fizz(n) { "Fizz".to_string() }
     else { n.to_string() }
 }
@@ -198,8 +202,10 @@ fizzBuzz n
 
 ```rust
 // Rust
-pub fn fizzbuzz(n: i32) -> String {
-    if is_fizz(n) && is_buzz(n) { "FizzBuzz".to_string() }
+fn is_fizzbuzz(n: u32) -> bool { is_fizz(n) && is_buzz(n) }
+
+pub fn fizzbuzz(n: u32) -> String {
+    if is_fizzbuzz(n) { "FizzBuzz".to_string() }
     else if is_fizz(n) { "Fizz".to_string() }
     else if is_buzz(n) { "Buzz".to_string() }
     else { n.to_string() }
@@ -268,23 +274,20 @@ score = go 0 0
 ```
 
 ```rust
-// Rust: インデックスベース + match
-pub fn score(rolls: &[u32]) -> u32 {
-    let mut total = 0;
-    let mut idx = 0;
-    for _ in 0..10 {
-        if rolls[idx] == 10 {
-            total += 10 + rolls[idx + 1] + rolls[idx + 2];
-            idx += 1;
-        } else if rolls[idx] + rolls[idx + 1] == 10 {
-            total += 10 + rolls[idx + 2];
-            idx += 2;
-        } else {
-            total += rolls[idx] + rolls[idx + 1];
-            idx += 2;
-        }
+// Rust: スライス + ヘルパー関数による再帰
+fn is_strike(rolls: &[u32]) -> bool { !rolls.is_empty() && rolls[0] == 10 }
+fn is_spare(rolls: &[u32]) -> bool { rolls.len() >= 2 && rolls[0] + rolls[1] == 10 && rolls[0] != 10 }
+fn strike_bonus(r: &[u32]) -> u32 { r.iter().take(2).sum() }
+fn spare_bonus(r: &[u32]) -> u32 { r.first().copied().unwrap_or(0) }
+
+pub fn bowling_score(rolls: &[u32]) -> u32 {
+    fn go(r: &[u32], frame: u32, total: u32) -> u32 {
+        if frame > 10 || r.is_empty() { total }
+        else if is_strike(r) { go(&r[1..], frame + 1, total + 10 + strike_bonus(&r[1..])) }
+        else if is_spare(r) { go(&r[2..], frame + 1, total + 10 + spare_bonus(&r[2..])) }
+        else { go(&r[2..], frame + 1, total + r.iter().take(2).sum::<u32>()) }
     }
-    total
+    go(rolls, 1, 0)
 }
 ```
 
@@ -403,7 +406,7 @@ pub struct Stack<T: Clone> {
 }
 
 impl<T: Clone> Stack<T> {
-    pub fn new() -> Self { Stack { items: vec![] } }
+    pub fn empty() -> Self { Stack { items: Vec::new() } }
 
     pub fn push(&self, item: T) -> Self {
         let mut new_items = self.items.clone();
@@ -411,10 +414,14 @@ impl<T: Clone> Stack<T> {
         Stack { items: new_items }
     }
 
-    pub fn pop(&self) -> (T, Self) {
-        let mut new_items = self.items.clone();
-        let top = new_items.pop().unwrap();
-        (top, Stack { items: new_items })
+    pub fn pop(&self) -> Option<(T, Self)> {
+        if self.items.is_empty() {
+            None
+        } else {
+            let mut new_items = self.items.clone();
+            let top = new_items.pop().unwrap();
+            Some((top, Stack { items: new_items }))
+        }
     }
 }
 ```
@@ -450,14 +457,21 @@ Haskell    F#    Rust    Scala    Elixir    Clojure
 
 Haskell は型レベルで副作用を分離します（IO モナド）。Clojure は規約ベースで分離します。他の言語はその中間に位置します。
 
-### 4.3 F# の TDD 詳細
+### 4.3 F# / Rust の TDD 詳細
 
-F# は全言語中最もボリュームのある TDD ガイド（688 行）を提供しています。特筆すべきは：
+F# と Rust は共通の章構成（FizzBuzz、ローマ数字、ボウリング、素数、スタック/キュー、文字列電卓、リファクタリング、パスワードバリデーター）で TDD を体系的にカバーしています。
+
+**F# の特筆点：**
 
 - **計算式（Computation Expression）** による非同期テスト
 - **パイプライン演算子** を活用したテストデータの構築
 - **xUnit + FsCheck 統合** によるプロパティベーステストとの連携
-- **モジュール構造** によるテストの体系的な組織化
+
+**Rust の特筆点：**
+
+- **`#[should_panic]`** アトリビュートによる例外テスト
+- **所有権システム** がコンパイル時に不変性を保証
+- **proptest** によるプロパティベーステストとの連携
 
 ## 5. 実践的な選択指針
 
@@ -481,4 +495,4 @@ TDD と関数型プログラミングの組み合わせは、テスト可能な�
 
 ## 言語別個別記事
 
-- [Clojure](../clojure/06-tdd-and-functional.md) | [Scala](../scala/06-tdd-and-functional.md) | [Elixir](../elixir/06-tdd-and-functional.md) | [F#](../fsharp/06-tdd-and-functional.md) | [Haskell](../haskell/06-tdd-and-functional.md) | [Rust](../rust/06-tdd-and-functional.md)
+- [Clojure](../clojure/06-tdd-in-functional.md) | [Scala](../scala/06-tdd-functional.md) | [Elixir](../elixir/06-tdd-and-fp.md) | [F#](../fsharp/06-tdd-functional.md) | [Haskell](../haskell/06-tdd-functional.md) | [Rust](../rust/06-tdd-and-functional.md)

@@ -1,448 +1,477 @@
-//! 第6章: TDD と関数型
+//! 第6章: TDD と関数型プログラミング
 //!
 //! Rust における TDD と関数型プログラミングの実践を解説します。
-//! 純粋関数、テスト容易性、依存性注入などのパターンを扱います。
+//! FizzBuzz、ローマ数字、ボウリングなど典型的な TDD 例題を
+//! 純粋関数と不変データ構造で実装します。
 
 use std::collections::HashMap;
 
 // =============================================================================
-// 1. 純粋関数によるビジネスロジック
+// 1. FizzBuzz
 // =============================================================================
 
-/// 商品情報
+/// 3で割り切れるかどうか
+fn is_fizz(n: u32) -> bool {
+    n % 3 == 0
+}
+
+/// 5で割り切れるかどうか
+fn is_buzz(n: u32) -> bool {
+    n % 5 == 0
+}
+
+/// 15で割り切れるかどうか（FizzBuzz）
+fn is_fizzbuzz(n: u32) -> bool {
+    is_fizz(n) && is_buzz(n)
+}
+
+/// FizzBuzz変換
+pub fn fizzbuzz(n: u32) -> String {
+    if is_fizzbuzz(n) {
+        "FizzBuzz".to_string()
+    } else if is_fizz(n) {
+        "Fizz".to_string()
+    } else if is_buzz(n) {
+        "Buzz".to_string()
+    } else {
+        n.to_string()
+    }
+}
+
+/// 1からnまでのFizzBuzz列を生成
+pub fn fizzbuzz_sequence(n: u32) -> Vec<String> {
+    (1..=n).map(fizzbuzz).collect()
+}
+
+// =============================================================================
+// 2. ローマ数字変換
+// =============================================================================
+
+/// ローマ数字の対応表（大きい順）
+const ROMAN_NUMERALS: &[(u32, &str)] = &[
+    (1000, "M"), (900, "CM"), (500, "D"), (400, "CD"),
+    (100, "C"),  (90, "XC"),  (50, "L"),  (40, "XL"),
+    (10, "X"),   (9, "IX"),   (5, "V"),   (4, "IV"),
+    (1, "I"),
+];
+
+/// 整数をローマ数字に変換
+pub fn to_roman(n: u32) -> String {
+    assert!(n >= 1 && n <= 3999, "n must be between 1 and 3999");
+
+    let mut remaining = n;
+    let mut result = String::new();
+
+    for &(value, numeral) in ROMAN_NUMERALS {
+        while remaining >= value {
+            result.push_str(numeral);
+            remaining -= value;
+        }
+    }
+
+    result
+}
+
+/// ローマ数字から整数へ変換（逆変換）
+pub fn from_roman(roman: &str) -> u32 {
+    let roman_value = |c: char| -> i32 {
+        match c {
+            'I' => 1, 'V' => 5, 'X' => 10, 'L' => 50,
+            'C' => 100, 'D' => 500, 'M' => 1000,
+            _ => 0,
+        }
+    };
+
+    let values: Vec<i32> = roman.chars().map(roman_value).collect();
+
+    let total = values.windows(2).fold(0i32, |acc, w| {
+        if w[0] < w[1] { acc - w[0] } else { acc + w[0] }
+    }) + values.last().copied().unwrap_or(0);
+
+    total as u32
+}
+
+// =============================================================================
+// 3. ボウリングスコア計算
+// =============================================================================
+
+/// ストライクかどうか
+fn is_strike(rolls: &[u32]) -> bool {
+    !rolls.is_empty() && rolls[0] == 10
+}
+
+/// スペアかどうか
+fn is_spare(rolls: &[u32]) -> bool {
+    rolls.len() >= 2 && rolls[0] + rolls[1] == 10 && rolls[0] != 10
+}
+
+/// ストライクボーナス
+fn strike_bonus(remaining: &[u32]) -> u32 {
+    remaining.iter().take(2).sum()
+}
+
+/// スペアボーナス
+fn spare_bonus(remaining: &[u32]) -> u32 {
+    remaining.first().copied().unwrap_or(0)
+}
+
+/// ボウリングスコアを計算
+pub fn bowling_score(rolls: &[u32]) -> u32 {
+    fn go(remaining: &[u32], frame: u32, total: u32) -> u32 {
+        if frame > 10 || remaining.is_empty() {
+            total
+        } else if is_strike(remaining) {
+            go(&remaining[1..], frame + 1, total + 10 + strike_bonus(&remaining[1..]))
+        } else if is_spare(remaining) {
+            go(&remaining[2..], frame + 1, total + 10 + spare_bonus(&remaining[2..]))
+        } else {
+            let frame_score: u32 = remaining.iter().take(2).sum();
+            go(&remaining[2..], frame + 1, total + frame_score)
+        }
+    }
+
+    go(rolls, 1, 0)
+}
+
+// =============================================================================
+// 4. 素数
+// =============================================================================
+
+/// 素数判定
+pub fn is_prime(n: u64) -> bool {
+    if n < 2 {
+        return false;
+    }
+    if n == 2 {
+        return true;
+    }
+    if n % 2 == 0 {
+        return false;
+    }
+    let sqrt_n = (n as f64).sqrt() as u64;
+    !(3..=sqrt_n).step_by(2).any(|i| n % i == 0)
+}
+
+/// n以下の素数をすべて返す
+pub fn primes_up_to(n: u64) -> Vec<u64> {
+    (2..=n).filter(|&x| is_prime(x)).collect()
+}
+
+/// 素因数分解
+pub fn prime_factors(n: u64) -> Vec<u64> {
+    let mut remaining = n;
+    let mut factor = 2;
+    let mut factors = Vec::new();
+
+    while remaining > 1 {
+        while remaining % factor == 0 {
+            factors.push(factor);
+            remaining /= factor;
+        }
+        factor += 1;
+    }
+
+    factors
+}
+
+// =============================================================================
+// 5. 不変スタック
+// =============================================================================
+
 #[derive(Debug, Clone, PartialEq)]
-pub struct Product {
-    pub id: String,
-    pub name: String,
-    pub price: i64,
-    pub category: String,
+pub struct Stack<T: Clone> {
+    items: Vec<T>,
 }
 
-/// カート内アイテム
-#[derive(Debug, Clone, PartialEq)]
-pub struct CartItem {
-    pub product: Product,
-    pub quantity: u32,
-}
-
-impl CartItem {
-    pub fn new(product: Product, quantity: u32) -> CartItem {
-        CartItem { product, quantity }
+impl<T: Clone> Stack<T> {
+    pub fn empty() -> Self {
+        Stack { items: Vec::new() }
     }
 
-    /// アイテムの小計（純粋関数）
-    pub fn subtotal(&self) -> i64 {
-        self.product.price * self.quantity as i64
-    }
-}
-
-/// ショッピングカート
-#[derive(Debug, Clone, PartialEq)]
-pub struct Cart {
-    pub items: Vec<CartItem>,
-}
-
-impl Cart {
-    pub fn new() -> Cart {
-        Cart { items: Vec::new() }
+    pub fn is_empty(&self) -> bool {
+        self.items.is_empty()
     }
 
-    /// アイテムを追加（イミュータブル操作）
-    pub fn add_item(&self, item: CartItem) -> Cart {
-        let mut new_items = self.items.clone();
-        new_items.push(item);
-        Cart { items: new_items }
-    }
-
-    /// アイテムを削除
-    pub fn remove_item(&self, product_id: &str) -> Cart {
-        let new_items = self
-            .items
-            .iter()
-            .filter(|item| item.product.id != product_id)
-            .cloned()
-            .collect();
-        Cart { items: new_items }
-    }
-
-    /// 合計金額（純粋関数）
-    pub fn total(&self) -> i64 {
-        self.items.iter().map(|item| item.subtotal()).sum()
-    }
-
-    /// アイテム数
-    pub fn item_count(&self) -> usize {
+    pub fn size(&self) -> usize {
         self.items.len()
     }
 
-    /// 総数量
-    pub fn total_quantity(&self) -> u32 {
-        self.items.iter().map(|item| item.quantity).sum()
+    /// アイテムを追加（新しいスタックを返す）
+    pub fn push(&self, item: T) -> Self {
+        let mut new_items = self.items.clone();
+        new_items.push(item);
+        Stack { items: new_items }
     }
 
-    /// カテゴリごとの小計
-    pub fn subtotals_by_category(&self) -> HashMap<String, i64> {
-        let mut subtotals = HashMap::new();
-        for item in &self.items {
-            *subtotals.entry(item.product.category.clone()).or_insert(0) += item.subtotal();
-        }
-        subtotals
-    }
-}
-
-impl Default for Cart {
-    fn default() -> Self {
-        Self::new()
-    }
-}
-
-// =============================================================================
-// 2. 割引計算（純粋関数によるビジネスルール）
-// =============================================================================
-
-/// 割引タイプ
-#[derive(Debug, Clone, PartialEq)]
-pub enum DiscountType {
-    Percentage(f64),     // パーセント割引
-    FixedAmount(i64),    // 固定金額割引
-    BuyNGetM(u32, u32),  // N個買うとM個無料
-}
-
-/// 割引条件
-#[derive(Debug, Clone, PartialEq)]
-pub struct DiscountRule {
-    pub name: String,
-    pub discount_type: DiscountType,
-    pub min_amount: Option<i64>,
-    pub min_quantity: Option<u32>,
-    pub category: Option<String>,
-}
-
-impl DiscountRule {
-    /// 割引が適用可能かどうか（純粋関数）
-    pub fn is_applicable(&self, cart: &Cart) -> bool {
-        let amount_ok = self.min_amount.is_none_or(|min| cart.total() >= min);
-        let quantity_ok = self.min_quantity.is_none_or(|min| cart.total_quantity() >= min);
-        let category_ok = self.category.as_ref().is_none_or(|cat| {
-            cart.items.iter().any(|item| &item.product.category == cat)
-        });
-
-        amount_ok && quantity_ok && category_ok
-    }
-
-    /// 割引額を計算（純粋関数）
-    pub fn calculate_discount(&self, cart: &Cart) -> i64 {
-        if !self.is_applicable(cart) {
-            return 0;
-        }
-
-        match &self.discount_type {
-            DiscountType::Percentage(rate) => (cart.total() as f64 * rate) as i64,
-            DiscountType::FixedAmount(amount) => *amount,
-            DiscountType::BuyNGetM(n, m) => {
-                // 簡略化: 全アイテムに対して N+M 個ごとに M 個分の割引
-                let total_qty = cart.total_quantity();
-                let avg_price = if total_qty > 0 {
-                    cart.total() / total_qty as i64
-                } else {
-                    0
-                };
-                let free_items = total_qty / (n + m) * m;
-                avg_price * free_items as i64
-            }
-        }
-    }
-}
-
-/// 複数の割引ルールを適用
-pub fn apply_discounts(cart: &Cart, rules: &[DiscountRule]) -> i64 {
-    let total = cart.total();
-    let discount = rules
-        .iter()
-        .map(|rule| rule.calculate_discount(cart))
-        .max()
-        .unwrap_or(0);
-    total - discount
-}
-
-// =============================================================================
-// 3. 税金計算（純粋関数）
-// =============================================================================
-
-/// 税率タイプ
-#[derive(Debug, Clone, Copy, PartialEq)]
-pub enum TaxType {
-    Standard,     // 標準税率 (10%)
-    Reduced,      // 軽減税率 (8%)
-    TaxFree,      // 非課税
-}
-
-impl TaxType {
-    pub fn rate(&self) -> f64 {
-        match self {
-            TaxType::Standard => 0.10,
-            TaxType::Reduced => 0.08,
-            TaxType::TaxFree => 0.0,
-        }
-    }
-}
-
-/// 税金を計算
-pub fn calculate_tax(amount: i64, tax_type: TaxType) -> i64 {
-    (amount as f64 * tax_type.rate()).round() as i64
-}
-
-/// カテゴリから税タイプを決定
-pub fn tax_type_for_category(category: &str) -> TaxType {
-    match category {
-        "food" | "beverage" => TaxType::Reduced,
-        "book" | "newspaper" => TaxType::Reduced,
-        "medical" => TaxType::TaxFree,
-        _ => TaxType::Standard,
-    }
-}
-
-/// カートの税金を計算
-pub fn calculate_cart_tax(cart: &Cart) -> i64 {
-    cart.items
-        .iter()
-        .map(|item| {
-            let tax_type = tax_type_for_category(&item.product.category);
-            calculate_tax(item.subtotal(), tax_type)
-        })
-        .sum()
-}
-
-// =============================================================================
-// 4. 注文処理（依存性注入パターン）
-// =============================================================================
-
-/// 注文
-#[derive(Debug, Clone, PartialEq)]
-pub struct Order {
-    pub id: String,
-    pub cart: Cart,
-    pub subtotal: i64,
-    pub tax: i64,
-    pub discount: i64,
-    pub total: i64,
-}
-
-/// 注文サマリー
-#[derive(Debug, Clone, PartialEq)]
-pub struct OrderSummary {
-    pub item_count: usize,
-    pub subtotal: i64,
-    pub tax: i64,
-    pub discount: i64,
-    pub total: i64,
-}
-
-/// 注文サマリーを計算（純粋関数）
-pub fn calculate_order_summary(cart: &Cart, discount_rules: &[DiscountRule]) -> OrderSummary {
-    let subtotal = cart.total();
-    let tax = calculate_cart_tax(cart);
-    let discount = discount_rules
-        .iter()
-        .map(|rule| rule.calculate_discount(cart))
-        .max()
-        .unwrap_or(0);
-    let total = subtotal + tax - discount;
-
-    OrderSummary {
-        item_count: cart.item_count(),
-        subtotal,
-        tax,
-        discount,
-        total: total.max(0), // 負にならないように
-    }
-}
-
-/// ID 生成関数の型（依存性注入用）
-pub type IdGenerator = fn() -> String;
-
-/// 注文を作成（ID生成を外部から注入）
-pub fn create_order(cart: &Cart, discount_rules: &[DiscountRule], id_gen: IdGenerator) -> Order {
-    let summary = calculate_order_summary(cart, discount_rules);
-
-    Order {
-        id: id_gen(),
-        cart: cart.clone(),
-        subtotal: summary.subtotal,
-        tax: summary.tax,
-        discount: summary.discount,
-        total: summary.total,
-    }
-}
-
-// =============================================================================
-// 5. 在庫管理（イミュータブルデータ構造）
-// =============================================================================
-
-/// 在庫情報
-#[derive(Debug, Clone, PartialEq)]
-pub struct Inventory {
-    pub stocks: HashMap<String, u32>,
-}
-
-impl Inventory {
-    pub fn new() -> Inventory {
-        Inventory {
-            stocks: HashMap::new(),
+    /// 先頭を取り出す（新しいスタックを返す）
+    pub fn pop(&self) -> Option<(T, Self)> {
+        if self.items.is_empty() {
+            None
+        } else {
+            let mut new_items = self.items.clone();
+            let value = new_items.pop().unwrap();
+            Some((value, Stack { items: new_items }))
         }
     }
 
-    /// 在庫を追加
-    pub fn add_stock(&self, product_id: &str, quantity: u32) -> Inventory {
-        let mut new_stocks = self.stocks.clone();
-        *new_stocks.entry(product_id.to_string()).or_insert(0) += quantity;
-        Inventory { stocks: new_stocks }
+    /// 先頭を参照する
+    pub fn peek(&self) -> Option<&T> {
+        self.items.last()
+    }
+}
+
+// =============================================================================
+// 6. 不変キュー（2つの Vec で実装）
+// =============================================================================
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct Queue<T: Clone> {
+    front: Vec<T>,
+    back: Vec<T>,
+}
+
+impl<T: Clone> Queue<T> {
+    pub fn empty() -> Self {
+        Queue {
+            front: Vec::new(),
+            back: Vec::new(),
+        }
     }
 
-    /// 在庫を減らす
-    pub fn remove_stock(&self, product_id: &str, quantity: u32) -> Result<Inventory, String> {
-        let current = self.stocks.get(product_id).copied().unwrap_or(0);
-        if current < quantity {
-            Err(format!(
-                "在庫不足: {} (現在: {}, 要求: {})",
-                product_id, current, quantity
+    pub fn is_empty(&self) -> bool {
+        self.front.is_empty() && self.back.is_empty()
+    }
+
+    /// アイテムを追加（新しいキューを返す）
+    pub fn enqueue(&self, item: T) -> Self {
+        let mut new_back = self.back.clone();
+        new_back.push(item);
+        Queue {
+            front: self.front.clone(),
+            back: new_back,
+        }
+    }
+
+    /// 先頭を取り出す（新しいキューを返す）
+    pub fn dequeue(&self) -> Option<(T, Self)> {
+        if let Some((head, tail)) = self.front.split_first() {
+            Some((
+                head.clone(),
+                Queue {
+                    front: tail.to_vec(),
+                    back: self.back.clone(),
+                },
+            ))
+        } else if !self.back.is_empty() {
+            // Vec::push は末尾追加のため、back は oldest-first の順序
+            // そのまま front として使う（F# の List.rev に相当する操作は不要）
+            let (head, tail) = self.back.split_first().unwrap();
+            Some((
+                head.clone(),
+                Queue {
+                    front: tail.to_vec(),
+                    back: Vec::new(),
+                },
             ))
         } else {
-            let mut new_stocks = self.stocks.clone();
-            new_stocks.insert(product_id.to_string(), current - quantity);
-            Ok(Inventory { stocks: new_stocks })
+            None
         }
     }
+}
 
-    /// 在庫を確認
-    pub fn get_stock(&self, product_id: &str) -> u32 {
-        self.stocks.get(product_id).copied().unwrap_or(0)
-    }
+// =============================================================================
+// 7. 文字列電卓
+// =============================================================================
 
-    /// カートの在庫を確保できるか確認
-    pub fn can_fulfill(&self, cart: &Cart) -> bool {
-        cart.items.iter().all(|item| {
-            self.get_stock(&item.product.id) >= item.quantity
-        })
-    }
-
-    /// カートの在庫を確保
-    pub fn reserve_for_cart(&self, cart: &Cart) -> Result<Inventory, Vec<String>> {
-        let mut errors = Vec::new();
-        let mut inventory = self.clone();
-
-        for item in &cart.items {
-            match inventory.remove_stock(&item.product.id, item.quantity) {
-                Ok(new_inv) => inventory = new_inv,
-                Err(e) => errors.push(e),
-            }
-        }
-
-        if errors.is_empty() {
-            Ok(inventory)
+/// 区切り文字と数値文字列をパース
+fn parse_input(input: &str) -> (&str, &str) {
+    if let Some(rest) = input.strip_prefix("//") {
+        if let Some(newline_pos) = rest.find('\n') {
+            let delimiter = &rest[..newline_pos];
+            let numbers = &rest[newline_pos + 1..];
+            (delimiter, numbers)
         } else {
-            Err(errors)
+            (",", input)
         }
+    } else {
+        (",", input)
     }
 }
 
-impl Default for Inventory {
-    fn default() -> Self {
-        Self::new()
+/// 数値をパース
+fn parse_numbers(numbers: &str, delimiter: &str) -> Vec<i32> {
+    numbers
+        .replace('\n', delimiter)
+        .split(delimiter)
+        .filter(|s| !s.is_empty())
+        .map(|s| s.trim().parse::<i32>().unwrap_or(0))
+        .collect()
+}
+
+/// 負の数をバリデーション
+fn validate_numbers(nums: &[i32]) {
+    let negatives: Vec<i32> = nums.iter().filter(|&&n| n < 0).copied().collect();
+    if !negatives.is_empty() {
+        let neg_str: Vec<String> = negatives.iter().map(|n| n.to_string()).collect();
+        panic!("negatives not allowed: {}", neg_str.join(", "));
     }
 }
 
+/// 文字列電卓
+pub fn string_calculator_add(input: &str) -> i32 {
+    if input.is_empty() {
+        return 0;
+    }
+
+    let (delimiter, numbers) = parse_input(input);
+    let nums = parse_numbers(numbers, delimiter);
+    validate_numbers(&nums);
+    nums.iter().filter(|&&n| n <= 1000).sum()
+}
+
 // =============================================================================
-// 6. ポイント計算（ビジネスルールの分離）
+// 8. 税計算（純粋関数）
 // =============================================================================
 
-/// ポイント計算ルール
 #[derive(Debug, Clone)]
-pub struct PointRule {
+pub struct Item {
     pub name: String,
-    pub rate: f64,           // ポイント付与率
-    pub category: Option<String>,
-    pub multiplier: f64,     // キャンペーン倍率
+    pub price: f64,
 }
 
-impl PointRule {
-    pub fn new(name: &str, rate: f64) -> PointRule {
-        PointRule {
-            name: name.to_string(),
-            rate,
-            category: None,
-            multiplier: 1.0,
+#[derive(Debug, Clone, PartialEq)]
+pub struct TaxCalculation {
+    pub subtotal: f64,
+    pub tax: f64,
+    pub total: f64,
+}
+
+/// 税額を計算
+pub fn calculate_tax(amount: f64, rate: f64) -> f64 {
+    amount * rate
+}
+
+/// 税込み総額を計算
+pub fn calculate_total_with_tax(items: &[Item], tax_rate: f64) -> TaxCalculation {
+    let subtotal: f64 = items.iter().map(|i| i.price).sum();
+    let tax = calculate_tax(subtotal, tax_rate);
+    TaxCalculation {
+        subtotal,
+        tax,
+        total: subtotal + tax,
+    }
+}
+
+// =============================================================================
+// 9. 送料計算（データ駆動）
+// =============================================================================
+
+#[derive(Debug, Clone, Hash, Eq, PartialEq)]
+pub enum Region {
+    Local,
+    Domestic,
+    International,
+}
+
+#[derive(Debug, Clone)]
+pub struct ShippingOrder {
+    pub total: f64,
+    pub weight: f64,
+    pub region: Region,
+}
+
+pub fn is_free_shipping(total: f64) -> bool {
+    total >= 10000.0
+}
+
+fn shipping_rates() -> HashMap<(Region, bool), u32> {
+    HashMap::from([
+        ((Region::Local, true), 300),
+        ((Region::Local, false), 500),
+        ((Region::Domestic, true), 500),
+        ((Region::Domestic, false), 800),
+        ((Region::International, true), 2000),
+        ((Region::International, false), 3000),
+    ])
+}
+
+pub fn calculate_shipping(order: &ShippingOrder) -> u32 {
+    if is_free_shipping(order.total) {
+        return 0;
+    }
+
+    let is_light = order.weight < 5.0;
+    let rates = shipping_rates();
+    rates
+        .get(&(order.region.clone(), is_light))
+        .copied()
+        .unwrap_or(500)
+}
+
+// =============================================================================
+// 10. パスワードバリデーター
+// =============================================================================
+
+/// バリデーションルール: パスワードを受け取り、エラーメッセージを返す
+pub type Rule = fn(&str) -> Option<String>;
+
+pub fn min_length(_min: usize) -> Rule {
+    // Rust の fn ポインタ制約上、クロージャで min をキャプチャできないため 8 固定
+    fn check(password: &str) -> Option<String> {
+        if password.len() >= 8 {
+            None
+        } else {
+            Some("Password must be at least 8 characters".to_string())
         }
     }
-
-    pub fn with_category(mut self, category: &str) -> PointRule {
-        self.category = Some(category.to_string());
-        self
-    }
-
-    pub fn with_multiplier(mut self, multiplier: f64) -> PointRule {
-        self.multiplier = multiplier;
-        self
-    }
+    check
 }
 
-/// ポイントを計算（純粋関数）
-pub fn calculate_points(cart: &Cart, rules: &[PointRule]) -> i64 {
-    cart.items
-        .iter()
-        .map(|item| {
-            let applicable_rules: Vec<_> = rules
-                .iter()
-                .filter(|rule| {
-                    rule.category
-                        .as_ref()
-                        .is_none_or(|cat| cat == &item.product.category)
-                })
-                .collect();
-
-            let best_rule = applicable_rules
-                .iter()
-                .max_by(|a, b| {
-                    (a.rate * a.multiplier)
-                        .partial_cmp(&(b.rate * b.multiplier))
-                        .unwrap()
-                });
-
-            if let Some(rule) = best_rule {
-                (item.subtotal() as f64 * rule.rate * rule.multiplier).round() as i64
-            } else {
-                0
-            }
-        })
-        .sum()
-}
-
-// =============================================================================
-// 7. テスト用ヘルパー（テストダブル）
-// =============================================================================
-
-/// テスト用の固定IDジェネレータ
-pub fn test_id_generator() -> String {
-    "TEST-ORDER-001".to_string()
-}
-
-/// テスト用の商品を作成
-pub fn test_product(id: &str, name: &str, price: i64, category: &str) -> Product {
-    Product {
-        id: id.to_string(),
-        name: name.to_string(),
-        price,
-        category: category.to_string(),
+pub fn has_uppercase(password: &str) -> Option<String> {
+    if password.chars().any(|c| c.is_uppercase()) {
+        None
+    } else {
+        Some("Password must contain at least one uppercase letter".to_string())
     }
 }
 
-/// テスト用のカートを作成
-pub fn test_cart_with_items(items: Vec<(Product, u32)>) -> Cart {
-    let cart_items: Vec<CartItem> = items
-        .into_iter()
-        .map(|(product, quantity)| CartItem::new(product, quantity))
-        .collect();
-    Cart { items: cart_items }
+pub fn has_lowercase(password: &str) -> Option<String> {
+    if password.chars().any(|c| c.is_lowercase()) {
+        None
+    } else {
+        Some("Password must contain at least one lowercase letter".to_string())
+    }
+}
+
+pub fn has_digit(password: &str) -> Option<String> {
+    if password.chars().any(|c| c.is_ascii_digit()) {
+        None
+    } else {
+        Some("Password must contain at least one digit".to_string())
+    }
+}
+
+pub fn has_special_char(password: &str) -> Option<String> {
+    let special_chars = "!@#$%^&*()_+-=[]{}|;':\",./<>?";
+    if password.chars().any(|c| special_chars.contains(c)) {
+        None
+    } else {
+        Some("Password must contain at least one special character".to_string())
+    }
+}
+
+pub fn validate_password(password: &str, rules: &[Rule]) -> Result<String, Vec<String>> {
+    let errors: Vec<String> = rules.iter().filter_map(|rule| rule(password)).collect();
+    if errors.is_empty() {
+        Ok(password.to_string())
+    } else {
+        Err(errors)
+    }
+}
+
+pub fn validate_with_defaults(password: &str) -> Result<String, Vec<String>> {
+    let rules: Vec<Rule> = vec![min_length(8), has_uppercase, has_lowercase, has_digit];
+    validate_password(password, &rules)
 }
 
 // =============================================================================
@@ -454,361 +483,368 @@ mod tests {
     use super::*;
 
     // -------------------------------------------------------------------------
-    // Cart のテスト
+    // 1. FizzBuzz
     // -------------------------------------------------------------------------
 
     #[test]
-    fn test_cart_new_is_empty() {
-        let cart = Cart::new();
-        assert_eq!(cart.item_count(), 0);
-        assert_eq!(cart.total(), 0);
+    fn fizzbuzz_1_returns_1() {
+        assert_eq!("1", fizzbuzz(1));
     }
 
     #[test]
-    fn test_cart_add_item() {
-        let cart = Cart::new();
-        let product = test_product("P1", "商品1", 1000, "general");
-        let item = CartItem::new(product, 2);
-
-        let new_cart = cart.add_item(item);
-        assert_eq!(new_cart.item_count(), 1);
-        assert_eq!(new_cart.total(), 2000);
+    fn fizzbuzz_2_returns_2() {
+        assert_eq!("2", fizzbuzz(2));
     }
 
     #[test]
-    fn test_cart_add_multiple_items() {
-        let cart = Cart::new();
-        let p1 = test_product("P1", "商品1", 1000, "general");
-        let p2 = test_product("P2", "商品2", 500, "food");
-
-        let new_cart = cart
-            .add_item(CartItem::new(p1, 2))
-            .add_item(CartItem::new(p2, 3));
-
-        assert_eq!(new_cart.item_count(), 2);
-        assert_eq!(new_cart.total(), 3500);
+    fn fizzbuzz_3_returns_fizz() {
+        assert_eq!("Fizz", fizzbuzz(3));
     }
 
     #[test]
-    fn test_cart_remove_item() {
-        let cart = test_cart_with_items(vec![
-            (test_product("P1", "商品1", 1000, "general"), 2),
-            (test_product("P2", "商品2", 500, "food"), 3),
-        ]);
-
-        let new_cart = cart.remove_item("P1");
-        assert_eq!(new_cart.item_count(), 1);
-        assert_eq!(new_cart.total(), 1500);
+    fn fizzbuzz_5_returns_buzz() {
+        assert_eq!("Buzz", fizzbuzz(5));
     }
 
     #[test]
-    fn test_cart_subtotals_by_category() {
-        let cart = test_cart_with_items(vec![
-            (test_product("P1", "商品1", 1000, "general"), 2),
-            (test_product("P2", "商品2", 500, "food"), 3),
-            (test_product("P3", "商品3", 800, "general"), 1),
-        ]);
+    fn fizzbuzz_15_returns_fizzbuzz() {
+        assert_eq!("FizzBuzz", fizzbuzz(15));
+    }
 
-        let subtotals = cart.subtotals_by_category();
-        assert_eq!(subtotals.get("general"), Some(&2800));
-        assert_eq!(subtotals.get("food"), Some(&1500));
+    #[test]
+    fn fizzbuzz_sequence_1_to_5() {
+        let expected = vec!["1", "2", "Fizz", "4", "Buzz"];
+        assert_eq!(expected, fizzbuzz_sequence(5));
     }
 
     // -------------------------------------------------------------------------
-    // 割引計算のテスト
+    // 2. ローマ数字
     // -------------------------------------------------------------------------
 
     #[test]
-    fn test_percentage_discount() {
-        let cart = test_cart_with_items(vec![
-            (test_product("P1", "商品1", 1000, "general"), 10),
-        ]);
-
-        let rule = DiscountRule {
-            name: "10%オフ".to_string(),
-            discount_type: DiscountType::Percentage(0.1),
-            min_amount: None,
-            min_quantity: None,
-            category: None,
-        };
-
-        assert_eq!(rule.calculate_discount(&cart), 1000);
+    fn to_roman_1_returns_i() {
+        assert_eq!("I", to_roman(1));
     }
 
     #[test]
-    fn test_fixed_amount_discount() {
-        let cart = test_cart_with_items(vec![
-            (test_product("P1", "商品1", 1000, "general"), 5),
-        ]);
-
-        let rule = DiscountRule {
-            name: "500円引き".to_string(),
-            discount_type: DiscountType::FixedAmount(500),
-            min_amount: Some(3000),
-            min_quantity: None,
-            category: None,
-        };
-
-        assert!(rule.is_applicable(&cart));
-        assert_eq!(rule.calculate_discount(&cart), 500);
+    fn to_roman_4_returns_iv() {
+        assert_eq!("IV", to_roman(4));
     }
 
     #[test]
-    fn test_discount_not_applicable() {
-        let cart = test_cart_with_items(vec![
-            (test_product("P1", "商品1", 100, "general"), 1),
-        ]);
-
-        let rule = DiscountRule {
-            name: "500円引き".to_string(),
-            discount_type: DiscountType::FixedAmount(500),
-            min_amount: Some(3000),
-            min_quantity: None,
-            category: None,
-        };
-
-        assert!(!rule.is_applicable(&cart));
-        assert_eq!(rule.calculate_discount(&cart), 0);
+    fn to_roman_9_returns_ix() {
+        assert_eq!("IX", to_roman(9));
     }
 
     #[test]
-    fn test_apply_best_discount() {
-        let cart = test_cart_with_items(vec![
-            (test_product("P1", "商品1", 1000, "general"), 10),
-        ]);
+    fn to_roman_1994_returns_mcmxciv() {
+        assert_eq!("MCMXCIV", to_roman(1994));
+    }
 
-        let rules = vec![
-            DiscountRule {
-                name: "5%オフ".to_string(),
-                discount_type: DiscountType::Percentage(0.05),
-                min_amount: None,
-                min_quantity: None,
-                category: None,
-            },
-            DiscountRule {
-                name: "1000円引き".to_string(),
-                discount_type: DiscountType::FixedAmount(1000),
-                min_amount: Some(5000),
-                min_quantity: None,
-                category: None,
-            },
+    #[test]
+    fn to_roman_and_from_roman_are_inverse() {
+        for n in 1..=100 {
+            assert_eq!(n, from_roman(&to_roman(n)));
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // 3. ボウリングスコア
+    // -------------------------------------------------------------------------
+
+    #[test]
+    fn gutter_game_scores_0() {
+        assert_eq!(0, bowling_score(&vec![0; 20]));
+    }
+
+    #[test]
+    fn all_ones_scores_20() {
+        assert_eq!(20, bowling_score(&vec![1; 20]));
+    }
+
+    #[test]
+    fn spare_adds_next_roll_as_bonus() {
+        let mut rolls = vec![5, 5, 3, 0];
+        rolls.extend(vec![0; 16]);
+        assert_eq!(16, bowling_score(&rolls));
+    }
+
+    #[test]
+    fn strike_adds_next_two_rolls_as_bonus() {
+        let mut rolls = vec![10, 3, 4];
+        rolls.extend(vec![0; 16]);
+        assert_eq!(24, bowling_score(&rolls));
+    }
+
+    #[test]
+    fn perfect_game_scores_300() {
+        assert_eq!(300, bowling_score(&vec![10; 12]));
+    }
+
+    // -------------------------------------------------------------------------
+    // 4. 素数
+    // -------------------------------------------------------------------------
+
+    #[test]
+    fn zero_is_not_prime() {
+        assert!(!is_prime(0));
+    }
+
+    #[test]
+    fn one_is_not_prime() {
+        assert!(!is_prime(1));
+    }
+
+    #[test]
+    fn two_is_prime() {
+        assert!(is_prime(2));
+    }
+
+    #[test]
+    fn primes_up_to_20_returns_correct_list() {
+        let expected = vec![2, 3, 5, 7, 11, 13, 17, 19];
+        assert_eq!(expected, primes_up_to(20));
+    }
+
+    #[test]
+    fn prime_factors_24_returns_2_2_2_3() {
+        let expected = vec![2, 2, 2, 3];
+        assert_eq!(expected, prime_factors(24));
+    }
+
+    #[test]
+    fn prime_factors_product_equals_original() {
+        for n in 2..=100u64 {
+            let factors = prime_factors(n);
+            let product: u64 = factors.iter().product();
+            assert_eq!(n, product);
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // 5. 不変スタック
+    // -------------------------------------------------------------------------
+
+    #[test]
+    fn stack_empty_is_empty() {
+        let stack: Stack<i32> = Stack::empty();
+        assert!(stack.is_empty());
+        assert_eq!(0, stack.size());
+    }
+
+    #[test]
+    fn stack_push_increases_size() {
+        let stack = Stack::empty().push(1).push(2).push(3);
+        assert_eq!(3, stack.size());
+    }
+
+    #[test]
+    fn stack_works_in_lifo_order() {
+        let stack = Stack::empty().push("a").push("b").push("c");
+
+        let (v1, s1) = stack.pop().unwrap();
+        assert_eq!("c", v1);
+
+        let (v2, s2) = s1.pop().unwrap();
+        assert_eq!("b", v2);
+
+        let (v3, s3) = s2.pop().unwrap();
+        assert_eq!("a", v3);
+
+        assert!(s3.is_empty());
+    }
+
+    #[test]
+    fn stack_pop_empty_returns_none() {
+        let stack: Stack<i32> = Stack::empty();
+        assert!(stack.pop().is_none());
+    }
+
+    #[test]
+    fn stack_peek_returns_top_without_removing() {
+        let stack = Stack::empty().push(1).push(2);
+        assert_eq!(Some(&2), stack.peek());
+        assert_eq!(2, stack.size());
+    }
+
+    #[test]
+    fn stack_is_immutable() {
+        let s1 = Stack::empty();
+        let s2 = s1.push(1);
+        let s3 = s2.push(2);
+
+        assert!(s1.is_empty());
+        assert_eq!(1, s2.size());
+        assert_eq!(2, s3.size());
+    }
+
+    // -------------------------------------------------------------------------
+    // 6. 不変キュー
+    // -------------------------------------------------------------------------
+
+    #[test]
+    fn queue_empty_is_empty() {
+        let queue: Queue<i32> = Queue::empty();
+        assert!(queue.is_empty());
+    }
+
+    #[test]
+    fn queue_works_in_fifo_order() {
+        let queue = Queue::empty().enqueue("a").enqueue("b").enqueue("c");
+
+        let (v1, q1) = queue.dequeue().unwrap();
+        assert_eq!("a", v1);
+
+        let (v2, q2) = q1.dequeue().unwrap();
+        assert_eq!("b", v2);
+
+        let (v3, q3) = q2.dequeue().unwrap();
+        assert_eq!("c", v3);
+
+        assert!(q3.is_empty());
+    }
+
+    #[test]
+    fn queue_dequeue_empty_returns_none() {
+        let queue: Queue<i32> = Queue::empty();
+        assert!(queue.dequeue().is_none());
+    }
+
+    // -------------------------------------------------------------------------
+    // 7. 文字列電卓
+    // -------------------------------------------------------------------------
+
+    #[test]
+    fn string_calc_empty_string_returns_0() {
+        assert_eq!(0, string_calculator_add(""));
+    }
+
+    #[test]
+    fn string_calc_single_number_returns_its_value() {
+        assert_eq!(5, string_calculator_add("5"));
+    }
+
+    #[test]
+    fn string_calc_comma_separated_numbers_are_summed() {
+        assert_eq!(6, string_calculator_add("1,2,3"));
+    }
+
+    #[test]
+    fn string_calc_newline_separator_is_handled() {
+        assert_eq!(6, string_calculator_add("1\n2,3"));
+    }
+
+    #[test]
+    fn string_calc_custom_delimiter_can_be_used() {
+        assert_eq!(3, string_calculator_add("//;\n1;2"));
+    }
+
+    #[test]
+    #[should_panic(expected = "-2")]
+    fn string_calc_negative_numbers_cause_panic() {
+        string_calculator_add("1,-2,3");
+    }
+
+    #[test]
+    fn string_calc_numbers_greater_than_1000_are_ignored() {
+        assert_eq!(2, string_calculator_add("2,1001"));
+    }
+
+    // -------------------------------------------------------------------------
+    // 8. 税計算
+    // -------------------------------------------------------------------------
+
+    #[test]
+    fn calculate_tax_10_percent() {
+        assert_eq!(300.0, calculate_tax(3000.0, 0.1));
+    }
+
+    #[test]
+    fn calculate_total_with_tax_computes_correctly() {
+        let items = vec![
+            Item { name: "商品A".to_string(), price: 1000.0 },
+            Item { name: "商品B".to_string(), price: 2000.0 },
         ];
+        let result = calculate_total_with_tax(&items, 0.1);
 
-        // 10000円のカート、5%=500円、1000円引きが最大
-        assert_eq!(apply_discounts(&cart, &rules), 9000);
+        assert_eq!(3000.0, result.subtotal);
+        assert_eq!(300.0, result.tax);
+        assert_eq!(3300.0, result.total);
     }
 
     // -------------------------------------------------------------------------
-    // 税金計算のテスト
+    // 9. 送料計算
     // -------------------------------------------------------------------------
 
     #[test]
-    fn test_calculate_standard_tax() {
-        assert_eq!(calculate_tax(1000, TaxType::Standard), 100);
+    fn free_shipping_for_orders_over_10000() {
+        let order = ShippingOrder {
+            total: 15000.0,
+            weight: 10.0,
+            region: Region::International,
+        };
+        assert_eq!(0, calculate_shipping(&order));
     }
 
     #[test]
-    fn test_calculate_reduced_tax() {
-        assert_eq!(calculate_tax(1000, TaxType::Reduced), 80);
+    fn local_light_shipping_is_300() {
+        let order = ShippingOrder {
+            total: 1000.0,
+            weight: 3.0,
+            region: Region::Local,
+        };
+        assert_eq!(300, calculate_shipping(&order));
     }
 
     #[test]
-    fn test_calculate_tax_free() {
-        assert_eq!(calculate_tax(1000, TaxType::TaxFree), 0);
-    }
-
-    #[test]
-    fn test_tax_type_for_category() {
-        assert_eq!(tax_type_for_category("food"), TaxType::Reduced);
-        assert_eq!(tax_type_for_category("electronics"), TaxType::Standard);
-        assert_eq!(tax_type_for_category("medical"), TaxType::TaxFree);
-    }
-
-    #[test]
-    fn test_calculate_cart_tax() {
-        let cart = test_cart_with_items(vec![
-            (test_product("P1", "食品", 1000, "food"), 1),       // 軽減税率 8% = 80
-            (test_product("P2", "家電", 2000, "electronics"), 1), // 標準税率 10% = 200
-        ]);
-
-        assert_eq!(calculate_cart_tax(&cart), 280);
-    }
-
-    // -------------------------------------------------------------------------
-    // 注文処理のテスト
-    // -------------------------------------------------------------------------
-
-    #[test]
-    fn test_calculate_order_summary() {
-        let cart = test_cart_with_items(vec![
-            (test_product("P1", "商品1", 1000, "general"), 2),
-        ]);
-        let rules = vec![];
-
-        let summary = calculate_order_summary(&cart, &rules);
-
-        assert_eq!(summary.item_count, 1);
-        assert_eq!(summary.subtotal, 2000);
-        assert_eq!(summary.tax, 200);
-        assert_eq!(summary.discount, 0);
-        assert_eq!(summary.total, 2200);
-    }
-
-    #[test]
-    fn test_create_order_with_injected_id() {
-        let cart = test_cart_with_items(vec![
-            (test_product("P1", "商品1", 1000, "general"), 1),
-        ]);
-        let rules = vec![];
-
-        let order = create_order(&cart, &rules, test_id_generator);
-
-        assert_eq!(order.id, "TEST-ORDER-001");
-        assert_eq!(order.total, 1100);
+    fn international_heavy_shipping_is_3000() {
+        let order = ShippingOrder {
+            total: 1000.0,
+            weight: 10.0,
+            region: Region::International,
+        };
+        assert_eq!(3000, calculate_shipping(&order));
     }
 
     // -------------------------------------------------------------------------
-    // 在庫管理のテスト
+    // 10. パスワードバリデーター
     // -------------------------------------------------------------------------
 
     #[test]
-    fn test_inventory_add_stock() {
-        let inventory = Inventory::new();
-        let new_inventory = inventory.add_stock("P1", 10);
-
-        assert_eq!(new_inventory.get_stock("P1"), 10);
-        assert_eq!(inventory.get_stock("P1"), 0); // 元は変わらない
-    }
-
-    #[test]
-    fn test_inventory_remove_stock() {
-        let inventory = Inventory::new().add_stock("P1", 10);
-        let result = inventory.remove_stock("P1", 3);
-
+    fn valid_password_passes_all_rules() {
+        let result = validate_with_defaults("Passw0rd");
         assert!(result.is_ok());
-        assert_eq!(result.unwrap().get_stock("P1"), 7);
     }
 
     #[test]
-    fn test_inventory_remove_stock_insufficient() {
-        let inventory = Inventory::new().add_stock("P1", 5);
-        let result = inventory.remove_stock("P1", 10);
-
+    fn short_password_fails() {
+        let result = validate_with_defaults("Ab1");
         assert!(result.is_err());
+        let errors = result.unwrap_err();
+        assert!(errors.iter().any(|e| e.contains("8 characters")));
     }
 
     #[test]
-    fn test_inventory_can_fulfill() {
-        let inventory = Inventory::new()
-            .add_stock("P1", 10)
-            .add_stock("P2", 5);
-
-        let cart = test_cart_with_items(vec![
-            (test_product("P1", "商品1", 1000, "general"), 5),
-            (test_product("P2", "商品2", 500, "food"), 3),
-        ]);
-
-        assert!(inventory.can_fulfill(&cart));
+    fn password_without_uppercase_fails() {
+        let result = validate_with_defaults("password1");
+        assert!(result.is_err());
+        let errors = result.unwrap_err();
+        assert!(errors.iter().any(|e| e.contains("uppercase")));
     }
 
     #[test]
-    fn test_inventory_cannot_fulfill() {
-        let inventory = Inventory::new()
-            .add_stock("P1", 2);
-
-        let cart = test_cart_with_items(vec![
-            (test_product("P1", "商品1", 1000, "general"), 5),
-        ]);
-
-        assert!(!inventory.can_fulfill(&cart));
+    fn password_without_digit_fails() {
+        let result = validate_with_defaults("Password");
+        assert!(result.is_err());
+        let errors = result.unwrap_err();
+        assert!(errors.iter().any(|e| e.contains("digit")));
     }
 
     #[test]
-    fn test_inventory_reserve_for_cart() {
-        let inventory = Inventory::new()
-            .add_stock("P1", 10)
-            .add_stock("P2", 5);
-
-        let cart = test_cart_with_items(vec![
-            (test_product("P1", "商品1", 1000, "general"), 3),
-            (test_product("P2", "商品2", 500, "food"), 2),
-        ]);
-
-        let result = inventory.reserve_for_cart(&cart);
-        assert!(result.is_ok());
-        let new_inventory = result.unwrap();
-        assert_eq!(new_inventory.get_stock("P1"), 7);
-        assert_eq!(new_inventory.get_stock("P2"), 3);
-    }
-
-    // -------------------------------------------------------------------------
-    // ポイント計算のテスト
-    // -------------------------------------------------------------------------
-
-    #[test]
-    fn test_calculate_points_basic() {
-        let cart = test_cart_with_items(vec![
-            (test_product("P1", "商品1", 1000, "general"), 1),
-        ]);
-
-        let rules = vec![PointRule::new("基本", 0.01)];
-
-        assert_eq!(calculate_points(&cart, &rules), 10);
-    }
-
-    #[test]
-    fn test_calculate_points_with_multiplier() {
-        let cart = test_cart_with_items(vec![
-            (test_product("P1", "商品1", 1000, "general"), 1),
-        ]);
-
-        let rules = vec![PointRule::new("キャンペーン", 0.01).with_multiplier(3.0)];
-
-        assert_eq!(calculate_points(&cart, &rules), 30);
-    }
-
-    #[test]
-    fn test_calculate_points_category_specific() {
-        let cart = test_cart_with_items(vec![
-            (test_product("P1", "食品", 1000, "food"), 1),
-            (test_product("P2", "家電", 2000, "electronics"), 1),
-        ]);
-
-        let rules = vec![
-            PointRule::new("基本", 0.01),
-            PointRule::new("食品ポイント", 0.05).with_category("food"),
-        ];
-
-        // food: 1000 * 0.05 = 50
-        // electronics: 2000 * 0.01 = 20
-        assert_eq!(calculate_points(&cart, &rules), 70);
-    }
-
-    // -------------------------------------------------------------------------
-    // イミュータビリティのテスト
-    // -------------------------------------------------------------------------
-
-    #[test]
-    fn test_cart_immutability() {
-        let cart1 = Cart::new();
-        let product = test_product("P1", "商品1", 1000, "general");
-
-        let cart2 = cart1.add_item(CartItem::new(product, 1));
-
-        // cart1 は変更されていない
-        assert_eq!(cart1.item_count(), 0);
-        assert_eq!(cart2.item_count(), 1);
-    }
-
-    #[test]
-    fn test_inventory_immutability() {
-        let inv1 = Inventory::new();
-        let inv2 = inv1.add_stock("P1", 10);
-        let inv3 = inv2.remove_stock("P1", 3).unwrap();
-
-        // 各バージョンは独立
-        assert_eq!(inv1.get_stock("P1"), 0);
-        assert_eq!(inv2.get_stock("P1"), 10);
-        assert_eq!(inv3.get_stock("P1"), 7);
+    fn multiple_validation_errors_are_accumulated() {
+        let result = validate_with_defaults("abc");
+        assert!(result.is_err());
+        let errors = result.unwrap_err();
+        assert!(errors.len() >= 2);
     }
 }
