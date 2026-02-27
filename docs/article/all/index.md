@@ -345,9 +345,9 @@ Elixir の章 7-10 が独立カリキュラム（Effects / Error Handling / I/O 
 | 01 | 不変性とデータ変換 | 1 | Low | 完了 |
 | 02 | 関数合成と高階関数 | 1 | Low | 完了 |
 | 03 | 多態性の実現方法 | 1 | Low | 完了 |
-| 04 | データ検証 | 2 | Medium | 未着手 |
-| 05 | プロパティベーステスト | 2 | Medium | 未着手 |
-| 06 | TDD と関数型 | 2 | Medium | 未着手 |
+| 04 | データ検証 | 2 | Medium | 完了 |
+| 05 | プロパティベーステスト | 2 | Medium | 完了 |
+| 06 | TDD と関数型 | 2 | Medium | 完了 |
 | 07 | Composite パターン | 3 | High | 未着手 |
 | 08 | Decorator パターン | 3 | High | 未着手 |
 | 09 | Adapter パターン | 3 | High | 未着手 |
@@ -356,9 +356,9 @@ Elixir の章 7-10 が独立カリキュラム（Effects / Error Handling / I/O 
 | 12 | Visitor パターン | 3 | Medium | 未着手 |
 | 13 | Abstract Factory パターン | 3 | High | 未着手 |
 | 14 | Abstract Server パターン | 3 | High | 未着手 |
-| 15 | Gossiping Bus Drivers | 2 | Low | 未着手 |
-| 16 | 給与計算システム | 2 | Low | 未着手 |
-| 17 | レンタルビデオシステム | 2 | Low | 未着手 |
+| 15 | Gossiping Bus Drivers | 2 | Low | 完了 |
+| 16 | 給与計算システム | 2 | Low | 完了 |
+| 17 | レンタルビデオシステム | 2 | Low | 完了 |
 | 18 | 並行処理システム | 4 | High | 未着手 |
 | 19 | Wa-Tor シミュレーション | 4 | High | 未着手 |
 | 20 | パターン間の相互作用 | 4 | Medium | 未着手 |
