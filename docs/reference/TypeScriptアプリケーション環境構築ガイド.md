@@ -44,6 +44,7 @@ echo ".DS_Store" >> .gitignore
 ```
 
 **タイプの種類：**
+
 - `feat`: 新機能の追加
 - `fix`: バグ修正
 - `docs`: ドキュメント変更のみ
