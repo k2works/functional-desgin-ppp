@@ -172,7 +172,7 @@
 (def prop-discount-bounds
   "割引後の価格は0以上、元の価格以下"
   (prop/for-all [price (gen/fmap #(+ 1 (Math/abs %)) gen/small-integer)
-                 rate (gen/double* {:min 0.0 :max 0.99})]
+                 rate (gen/double* {:min 0.0 :max 0.99 :NaN? false :infinite? false})]
     (let [discounted (calculate-discount price rate)]
       (and (>= discounted 0)
            (<= discounted price)))))
