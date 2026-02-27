@@ -620,5 +620,5 @@ val result = Simulation.tick(world, new Random(42))
 
 本章のコード例は以下のファイルで確認できます：
 
-- ソースコード: `app/scala/part6/src/main/scala/WatorSimulation.scala`
-- テストコード: `app/scala/part6/src/test/scala/WatorSimulationSpec.scala`
+- ソースコード: `apps/scala/part6/src/main/scala/WatorSimulation.scala`
+- テストコード: `apps/scala/part6/src/test/scala/WatorSimulationSpec.scala`

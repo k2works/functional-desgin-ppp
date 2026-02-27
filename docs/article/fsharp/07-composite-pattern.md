@@ -434,8 +434,8 @@ Composite パターンは、ツリー構造のデータを扱う際に非常に�
 
 本章のコード例は以下のファイルで確認できます：
 
-- ソースコード: `app/fsharp/part3/src/Library.fs`
-- テストコード: `app/fsharp/part3/tests/Tests.fs`
+- ソースコード: `apps/fsharp/part3/src/Library.fs`
+- テストコード: `apps/fsharp/part3/tests/Tests.fs`
 
 ## 次章予告
 

@@ -366,8 +366,8 @@ valid_age.(200)  # => false
 
 本章のコード例は以下のファイルで確認できます：
 
-- ソースコード: `app/elixir/part1/lib/chapter02.ex`
-- テストコード: `app/elixir/part1/test/chapter02_test.exs`
+- ソースコード: `apps/elixir/part1/lib/chapter02.ex`
+- テストコード: `apps/elixir/part1/test/chapter02_test.exs`
 
 ## 次章予告
 

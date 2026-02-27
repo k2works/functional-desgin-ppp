@@ -354,7 +354,7 @@ Rust のトレイトとトレイトオブジェクトを使うことで、柔軟
 
 本章のコード例は以下のファイルで確認できます：
 
-- ソースコード: `app/rust/part5/src/chapter13.rs`
+- ソースコード: `apps/rust/part5/src/chapter13.rs`
 
 ## 次章予告
 

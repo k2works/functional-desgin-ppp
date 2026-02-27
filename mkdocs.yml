@@ -1,9 +1,8 @@
 site_name: 関数型デザイン - 原則、パターン、実践
-site_description: 関数型プログラミングにおける設計原則とデザインパターンを実践的に学ぶガイド
+site_description: 6つの関数型言語で学ぶデザインパターンの実践ガイド
 site_author: Project Team
 repo_url: https://github.com/k2works/functional-desgin-ppp
 repo_name: functional-desgin-ppp
-docs_dir: docs/article
 
 theme:
   name: material
@@ -41,6 +40,9 @@ markdown_extensions:
         - PLANTUML_SERVER_URL
         - http://www.plantuml.com/plantuml
       format: svg
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - attr_list
 
 extra_javascript:
   - https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js
@@ -50,198 +52,204 @@ extra:
   plantuml_url: http://www.plantuml.com/plantuml
   social:
     - icon: fontawesome/brands/github
-      link: https://github.com/k2works
-      name: GitHub Repository/claude-code-booster
+      link: https://github.com/k2works/functional-desgin-ppp
+      name: GitHub Repository
 
 plugins:
   - search
 
+exclude_docs: |
+  wiki
+
 nav:
   - Home: index.md
-  - Clojure:
-      - 概要: clojure/index.md
-      - 第1部 - 基礎原則:
-          - 1. 不変性とデータ変換: clojure/01-immutability-and-data-transformation.md
-          - 2. 関数合成と高階関数: clojure/02-function-composition.md
-          - 3. 多態性の実現方法: clojure/03-polymorphism.md
-      - 第2部 - 仕様とテスト:
-          - 4. Clojure Spec: clojure/04-clojure-spec.md
-          - 5. プロパティベーステスト: clojure/05-property-based-testing.md
-          - 6. TDD と関数型: clojure/06-tdd-in-functional.md
-      - 第3部 - 構造パターン:
-          - 7. Composite: clojure/07-composite-pattern.md
-          - 8. Decorator: clojure/08-decorator-pattern.md
-          - 9. Adapter: clojure/09-adapter-pattern.md
-      - 第4部 - 振る舞いパターン:
-          - 10. Strategy: clojure/10-strategy-pattern.md
-          - 11. Command: clojure/11-command-pattern.md
-          - 12. Visitor: clojure/12-visitor-pattern.md
-      - 第5部 - 生成パターン:
-          - 13. Abstract Factory: clojure/13-abstract-factory-pattern.md
-          - 14. Abstract Server: clojure/14-abstract-server-pattern.md
-      - 第6部 - ケーススタディ:
-          - 15. ゴシップバス運転手: clojure/15-gossiping-bus-drivers.md
-          - 16. 給与計算システム: clojure/16-payroll-system.md
-          - 17. レンタルビデオ: clojure/17-video-rental-system.md
-          - 18. 並行処理: clojure/18-concurrency-system.md
-          - 19. Wa-Tor シミュレーション: clojure/19-wator-simulation.md
-      - 第7部 - まとめと応用:
-          - 20. パターン間の相互作用: clojure/20-pattern-interactions.md
-          - 21. ベストプラクティス: clojure/21-best-practices.md
-          - 22. OO から FP への移行: clojure/22-oo-to-fp-migration.md
-  - Scala:
-      - 概要: scala/index.md
-      - 第1部 - 基礎原則:
-          - 1. 不変性とデータ変換: scala/01-immutability-and-data-transformation.md
-          - 2. 関数合成と高階関数: scala/02-function-composition.md
-          - 3. 多態性の実現方法: scala/03-polymorphism.md
-      - 第2部 - 仕様とテスト:
-          - 4. データ検証: scala/04-data-validation.md
-          - 5. プロパティベーステスト: scala/05-property-based-testing.md
-          - 6. TDD と関数型プログラミング: scala/06-tdd-functional.md
-      - 第3部 - 構造パターン:
-          - 7. Composite パターン: scala/07-composite-pattern.md
-          - 8. Decorator パターン: scala/08-decorator-pattern.md
-          - 9. Adapter パターン: scala/09-adapter-pattern.md
-      - 第4部 - 振る舞いパターン:
-          - 10. Strategy パターン: scala/10-strategy-pattern.md
-          - 11. Command パターン: scala/11-command-pattern.md
-          - 12. Visitor パターン: scala/12-visitor-pattern.md
-      - 第5部 - 生成パターン:
-          - 13. Abstract Factory パターン: scala/13-abstract-factory-pattern.md
-          - 14. Abstract Server パターン: scala/14-abstract-server-pattern.md
-      - 第6部 - ケーススタディ:
-          - 15. ゴシップ好きなバスの運転手: scala/15-gossiping-bus-drivers.md
-          - 16. 給与計算システム: scala/16-payroll-system.md
-          - 17. レンタルビデオシステム: scala/17-video-rental-system.md
-          - 18. 並行処理システム: scala/18-concurrency-system.md
-          - 19. Wa-Tor シミュレーション: scala/19-wator-simulation.md
-      - 第7部 - まとめと応用:
-          - 20. パターン間の相互作用: scala/20-pattern-interactions.md
-          - 21. ベストプラクティス: scala/21-best-practices.md
-          - 22. OO から FP への移行: scala/22-oo-to-fp-migration.md
-  - F#:
-      - 概要: fsharp/index.md
-      - Part 1 - 基礎編:
-          - 01. 不変性とデータ変換: fsharp/01-immutability-and-data-transformation.md
-          - 02. 関数合成と高階関数: fsharp/02-function-composition.md
-          - 03. 多態性とディスパッチ: fsharp/03-polymorphism.md
-      - Part 2 - 仕様とテスト:
-          - 04. データバリデーション: fsharp/04-data-validation.md
-          - 05. プロパティベーステスト: fsharp/05-property-based-testing.md
-          - 06. TDD in FP: fsharp/06-tdd-functional.md
-      - Part 3 - デザインパターン（構造）:
-          - 07. Composite パターン: fsharp/07-composite-pattern.md
-          - 08. Decorator パターン: fsharp/08-decorator-pattern.md
-          - 09. Adapter パターン: fsharp/09-adapter-pattern.md
-      - Part 4 - デザインパターン（振る舞い）:
-          - 10. Strategy パターン: fsharp/10-strategy-pattern.md
-          - 11. Command パターン: fsharp/11-command-pattern.md
-          - 12. Visitor パターン: fsharp/12-visitor-pattern.md
-          - 13. Abstract Factory パターン: fsharp/13-abstract-factory-pattern.md
-          - 14. Abstract Server パターン: fsharp/14-abstract-server-pattern.md
-      - Part 5 - 実践アプリケーション:
-          - 15. ゴシップ好きなバスの運転手: fsharp/15-gossiping-bus-drivers.md
-          - 16. 給与計算システム: fsharp/16-payroll-system.md
-          - 17. ビデオレンタルシステム: fsharp/17-video-rental-system.md
-      - Part 6 - 並行処理:
-          - 18. 並行処理システム: fsharp/18-concurrency-system.md
-          - 19. Wa-Tor シミュレーション: fsharp/19-wator-simulation.md
-      - Part 7 - ベストプラクティス:
-          - 20. パターン間の相互作用: fsharp/20-pattern-interactions.md
-          - 21. ベストプラクティス: fsharp/21-best-practices.md
-          - 22. OO から FP への移行: fsharp/22-oo-to-fp-migration.md
-  - Haskell:
-      - 概要: haskell/index.md
-      - Part 1 - 基礎原則:
-          - 01. 不変性とデータ変換: haskell/01-immutability-and-data-transformation.md
-          - 02. 関数合成と高階関数: haskell/02-function-composition.md
-          - 03. 多態性とディスパッチ: haskell/03-polymorphism.md
-      - Part 2 - 仕様とテスト:
-          - 04. データバリデーション: haskell/04-data-validation.md
-          - 05. プロパティベーステスト: haskell/05-property-based-testing.md
-          - 06. TDD と関数型: haskell/06-tdd-functional.md
-      - Part 3 - 構造パターン:
-          - 07. Composite パターン: haskell/07-composite-pattern.md
-          - 08. Decorator パターン: haskell/08-decorator-pattern.md
-          - 09. Adapter パターン: haskell/09-adapter-pattern.md
-      - Part 4 - 振る舞いパターン:
-          - 10. Strategy パターン: haskell/10-strategy-pattern.md
-          - 11. Command パターン: haskell/11-command-pattern.md
-          - 12. Visitor パターン: haskell/12-visitor-pattern.md
-      - Part 5 - 生成パターン:
-          - 13. Abstract Factory パターン: haskell/13-abstract-factory-pattern.md
-          - 14. Abstract Server パターン: haskell/14-abstract-server-pattern.md
-      - Part 6 - ケーススタディ:
-          - 15. ゴシップ好きなバスの運転手: haskell/15-gossiping-bus-drivers.md
-          - 16. 給与計算システム: haskell/16-payroll-system.md
-          - 17. レンタルビデオシステム: haskell/17-video-rental-system.md
-      - Part 7 - 並行処理とシミュレーション:
-          - 18. 並行処理システム: haskell/18-concurrency-system.md
-          - 19. Wa-Tor シミュレーション: haskell/19-wator-simulation.md
-      - Part 8 - 応用と移行:
-          - 20. パターンの相互作用: haskell/20-pattern-interactions.md
-          - 21. ベストプラクティス: haskell/21-best-practices.md
-          - 22. OO から FP への移行: haskell/22-oo-to-fp-migration.md
-  - Rust:
-      - 概要: rust/index.md
-      - 第1部 - 基礎原則:
-          - 1. 不変性とデータ変換: rust/01-immutability-and-data-transformation.md
-          - 2. 関数合成と高階関数: rust/02-function-composition.md
-          - 3. 多態性の実現方法: rust/03-polymorphism.md
-      - 第2部 - 仕様とテスト:
-          - 4. データ検証: rust/04-data-validation.md
-          - 5. プロパティベーステスト: rust/05-property-based-testing.md
-          - 6. TDD と関数型プログラミング: rust/06-tdd-functional.md
-      - 第3部 - 構造パターン:
-          - 7. Composite パターン: rust/07-composite-pattern.md
-          - 8. Decorator パターン: rust/08-decorator-pattern.md
-          - 9. Adapter パターン: rust/09-adapter-pattern.md
-      - 第4部 - 振る舞いパターン:
-          - 10. Strategy パターン: rust/10-strategy-pattern.md
-          - 11. Command パターン: rust/11-command-pattern.md
-          - 12. Visitor パターン: rust/12-visitor-pattern.md
-      - 第5部 - 生成パターン:
-          - 13. Abstract Factory パターン: rust/13-abstract-factory-pattern.md
-          - 14. Abstract Server パターン: rust/14-abstract-server-pattern.md
-      - 第6部 - ケーススタディ:
-          - 15. ゴシップ好きなバスの運転手: rust/15-gossiping-bus-drivers.md
-          - 16. 給与計算システム: rust/16-payroll-system.md
-          - 17. レンタルビデオシステム: rust/17-video-rental-system.md
-          - 18. 並行処理システム: rust/18-concurrency-system.md
-          - 19. Wa-Tor シミュレーション: rust/19-wator-simulation.md
-      - 第7部 - まとめと応用:
-          - 20. パターン間の相互作用: rust/20-pattern-interactions.md
-          - 21. ベストプラクティス: rust/21-best-practices.md
-          - 22. OO から FP への移行: rust/22-oo-to-fp-migration.md
-  - Elixir:
-      - 概要: elixir/index.md
-      - 第1部 - 基礎原則:
-          - 1. 不変性とデータ変換: elixir/01-immutability-and-data-transformation.md
-          - 2. 関数合成と高階関数: elixir/02-function-composition.md
-          - 3. 多態性の実現方法: elixir/03-polymorphism.md
-      - 第2部 - 仕様とテスト:
-          - 4. データ検証: elixir/04-data-validation.md
-          - 5. プロパティベーステスト: elixir/05-property-based-testing.md
-          - 6. TDD と関数型プログラミング: elixir/06-tdd-functional.md
-      - 第3部 - 構造パターン:
-          - 7. Composite パターン: elixir/07-composite-pattern.md
-          - 8. Decorator パターン: elixir/08-decorator-pattern.md
-          - 9. Adapter パターン: elixir/09-adapter-pattern.md
-      - 第4部 - 振る舞いパターン:
-          - 10. Strategy パターン: elixir/10-strategy-pattern.md
-          - 11. Command パターン: elixir/11-command-pattern.md
-          - 12. Visitor パターン: elixir/12-visitor-pattern.md
-      - 第5部 - 生成パターン:
-          - 13. Abstract Factory パターン: elixir/13-abstract-factory-pattern.md
-          - 14. Abstract Server パターン: elixir/14-abstract-server-pattern.md
-      - 第6部 - ケーススタディ:
-          - 15. ゴシップ好きなバスの運転手: elixir/15-gossiping-bus-drivers.md
-          - 16. 給与計算システム: elixir/16-payroll-system.md
-          - 17. レンタルビデオシステム: elixir/17-video-rental-system.md
-          - 18. 並行処理システム: elixir/18-concurrency-system.md
-          - 19. Wa-Tor シミュレーション: elixir/19-wator-simulation.md
-      - 第7部 - まとめと応用:
-          - 20. パターン間の相互作用: elixir/20-pattern-interactions.md
-          - 21. ベストプラクティス: elixir/21-best-practices.md
-          - 22. OO から FP への移行: elixir/22-oo-to-fp-migration.md
+  - 記事:
+      - 概要: article/index.md
+      - Clojure:
+          - はじめに: article/clojure/index.md
+          - 第 1 部 基礎原則:
+              - 1. 不変性とデータ変換: article/clojure/01-immutability-and-data-transformation.md
+              - 2. 関数合成と高階関数: article/clojure/02-function-composition.md
+              - 3. 多態性の実現方法: article/clojure/03-polymorphism.md
+          - 第 2 部 仕様とテスト:
+              - 4. Clojure Spec: article/clojure/04-clojure-spec.md
+              - 5. プロパティベーステスト: article/clojure/05-property-based-testing.md
+              - 6. TDD と関数型: article/clojure/06-tdd-in-functional.md
+          - 第 3 部 構造パターン:
+              - 7. Composite パターン: article/clojure/07-composite-pattern.md
+              - 8. Decorator パターン: article/clojure/08-decorator-pattern.md
+              - 9. Adapter パターン: article/clojure/09-adapter-pattern.md
+          - 第 4 部 振る舞いパターン:
+              - 10. Strategy パターン: article/clojure/10-strategy-pattern.md
+              - 11. Command パターン: article/clojure/11-command-pattern.md
+              - 12. Visitor パターン: article/clojure/12-visitor-pattern.md
+          - 第 5 部 生成パターン:
+              - 13. Abstract Factory パターン: article/clojure/13-abstract-factory-pattern.md
+              - 14. Abstract Server パターン: article/clojure/14-abstract-server-pattern.md
+          - 第 6 部 ケーススタディ:
+              - 15. Gossiping Bus Drivers: article/clojure/15-gossiping-bus-drivers.md
+              - 16. 給与計算システム: article/clojure/16-payroll-system.md
+              - 17. レンタルビデオシステム: article/clojure/17-video-rental-system.md
+              - 18. 並行処理システム: article/clojure/18-concurrency-system.md
+              - 19. Wa-Tor シミュレーション: article/clojure/19-wator-simulation.md
+          - 第 7 部 まとめと応用:
+              - 20. パターン間の相互作用: article/clojure/20-pattern-interactions.md
+              - 21. ベストプラクティス: article/clojure/21-best-practices.md
+              - 22. OO から FP への移行: article/clojure/22-oo-to-fp-migration.md
+      - Scala:
+          - はじめに: article/scala/index.md
+          - 第 1 部 基礎原則:
+              - 1. 不変性とデータ変換: article/scala/01-immutability-and-data-transformation.md
+              - 2. 関数合成と高階関数: article/scala/02-function-composition.md
+              - 3. 多態性の実現方法: article/scala/03-polymorphism.md
+          - 第 2 部 仕様とテスト:
+              - 4. データ検証: article/scala/04-data-validation.md
+              - 5. プロパティベーステスト: article/scala/05-property-based-testing.md
+              - 6. TDD と関数型: article/scala/06-tdd-functional.md
+          - 第 3 部 構造パターン:
+              - 7. Composite パターン: article/scala/07-composite-pattern.md
+              - 8. Decorator パターン: article/scala/08-decorator-pattern.md
+              - 9. Adapter パターン: article/scala/09-adapter-pattern.md
+          - 第 4 部 振る舞いパターン:
+              - 10. Strategy パターン: article/scala/10-strategy-pattern.md
+              - 11. Command パターン: article/scala/11-command-pattern.md
+              - 12. Visitor パターン: article/scala/12-visitor-pattern.md
+          - 第 5 部 生成パターン:
+              - 13. Abstract Factory パターン: article/scala/13-abstract-factory-pattern.md
+              - 14. Abstract Server パターン: article/scala/14-abstract-server-pattern.md
+          - 第 6 部 ケーススタディ:
+              - 15. Gossiping Bus Drivers: article/scala/15-gossiping-bus-drivers.md
+              - 16. 給与計算システム: article/scala/16-payroll-system.md
+              - 17. レンタルビデオシステム: article/scala/17-video-rental-system.md
+              - 18. 並行処理システム: article/scala/18-concurrency-system.md
+              - 19. Wa-Tor シミュレーション: article/scala/19-wator-simulation.md
+          - 第 7 部 まとめと応用:
+              - 20. パターン間の相互作用: article/scala/20-pattern-interactions.md
+              - 21. ベストプラクティス: article/scala/21-best-practices.md
+              - 22. OO から FP への移行: article/scala/22-oo-to-fp-migration.md
+      - Elixir:
+          - はじめに: article/elixir/index.md
+          - 第 1 部 基礎原則:
+              - 1. 不変性とデータ変換: article/elixir/01-immutability-and-data-transformation.md
+              - 2. 関数合成と高階関数: article/elixir/02-function-composition.md
+              - 3. 多態性の実現方法: article/elixir/03-polymorphism.md
+          - 第 2 部 仕様とテスト:
+              - 4. データ検証: article/elixir/04-data-validation.md
+              - 5. プロパティベーステスト: article/elixir/05-property-based-testing.md
+              - 6. TDD と関数型: article/elixir/06-tdd-and-fp.md
+          - 第 3 部 副作用と外部連携:
+              - 7. 副作用と純粋関数: article/elixir/07-effects-and-pure-functions.md
+              - 8. エラーハンドリング戦略: article/elixir/08-error-handling-strategies.md
+              - 9. I/O と外部システム: article/elixir/09-io-and-external-systems.md
+              - 10. 並行パターン: article/elixir/10-concurrency-patterns.md
+          - 第 4 部 振る舞いパターン:
+              - 11. Command パターン: article/elixir/11-command-pattern.md
+              - 12. Visitor パターン: article/elixir/12-visitor-pattern.md
+          - 第 5 部 生成パターン:
+              - 13. Abstract Factory パターン: article/elixir/13-abstract-factory-pattern.md
+              - 14. Abstract Server パターン: article/elixir/14-abstract-server-pattern.md
+          - 第 6 部 ケーススタディ:
+              - 15. Gossiping Bus Drivers: article/elixir/15-gossiping-bus-drivers.md
+              - 16. 給与計算システム: article/elixir/16-payroll-system.md
+              - 17. レンタルビデオシステム: article/elixir/17-video-rental-system.md
+              - 18. 並行処理システム: article/elixir/18-concurrency-system.md
+              - 19. Wa-Tor シミュレーション: article/elixir/19-wator-simulation.md
+          - 第 7 部 まとめと応用:
+              - 20. パターン間の相互作用: article/elixir/20-pattern-interactions.md
+              - 21. ベストプラクティス: article/elixir/21-best-practices.md
+              - 22. OO から FP への移行: article/elixir/22-oo-to-fp-migration.md
+      - F#:
+          - はじめに: article/fsharp/index.md
+          - 第 1 部 基礎原則:
+              - 1. 不変性とデータ変換: article/fsharp/01-immutability-and-data-transformation.md
+              - 2. 関数合成と高階関数: article/fsharp/02-function-composition.md
+              - 3. 多態性の実現方法: article/fsharp/03-polymorphism.md
+          - 第 2 部 仕様とテスト:
+              - 4. データ検証: article/fsharp/04-data-validation.md
+              - 5. プロパティベーステスト: article/fsharp/05-property-based-testing.md
+              - 6. TDD と関数型: article/fsharp/06-tdd-functional.md
+          - 第 3 部 構造パターン:
+              - 7. Composite パターン: article/fsharp/07-composite-pattern.md
+              - 8. Decorator パターン: article/fsharp/08-decorator-pattern.md
+              - 9. Adapter パターン: article/fsharp/09-adapter-pattern.md
+          - 第 4 部 振る舞いパターン:
+              - 10. Strategy パターン: article/fsharp/10-strategy-pattern.md
+              - 11. Command パターン: article/fsharp/11-command-pattern.md
+              - 12. Visitor パターン: article/fsharp/12-visitor-pattern.md
+          - 第 5 部 生成パターン:
+              - 13. Abstract Factory パターン: article/fsharp/13-abstract-factory-pattern.md
+              - 14. Abstract Server パターン: article/fsharp/14-abstract-server-pattern.md
+          - 第 6 部 ケーススタディ:
+              - 15. Gossiping Bus Drivers: article/fsharp/15-gossiping-bus-drivers.md
+              - 16. 給与計算システム: article/fsharp/16-payroll-system.md
+              - 17. レンタルビデオシステム: article/fsharp/17-video-rental-system.md
+              - 18. 並行処理システム: article/fsharp/18-concurrency-system.md
+              - 19. Wa-Tor シミュレーション: article/fsharp/19-wator-simulation.md
+          - 第 7 部 まとめと応用:
+              - 20. パターン間の相互作用: article/fsharp/20-pattern-interactions.md
+              - 21. ベストプラクティス: article/fsharp/21-best-practices.md
+              - 22. OO から FP への移行: article/fsharp/22-oo-to-fp-migration.md
+      - Haskell:
+          - はじめに: article/haskell/index.md
+          - 第 1 部 基礎原則:
+              - 1. 不変性とデータ変換: article/haskell/01-immutability-and-data-transformation.md
+              - 2. 関数合成と高階関数: article/haskell/02-function-composition.md
+              - 3. 多態性の実現方法: article/haskell/03-polymorphism.md
+          - 第 2 部 仕様とテスト:
+              - 4. データ検証: article/haskell/04-data-validation.md
+              - 5. プロパティベーステスト: article/haskell/05-property-based-testing.md
+              - 6. TDD と関数型: article/haskell/06-tdd-functional.md
+          - 第 3 部 構造パターン:
+              - 7. Composite パターン: article/haskell/07-composite-pattern.md
+              - 8. Decorator パターン: article/haskell/08-decorator-pattern.md
+              - 9. Adapter パターン: article/haskell/09-adapter-pattern.md
+          - 第 4 部 振る舞いパターン:
+              - 10. Strategy パターン: article/haskell/10-strategy-pattern.md
+              - 11. Command パターン: article/haskell/11-command-pattern.md
+              - 12. Visitor パターン: article/haskell/12-visitor-pattern.md
+          - 第 5 部 生成パターン:
+              - 13. Abstract Factory パターン: article/haskell/13-abstract-factory-pattern.md
+              - 14. Abstract Server パターン: article/haskell/14-abstract-server-pattern.md
+          - 第 6 部 ケーススタディ:
+              - 15. Gossiping Bus Drivers: article/haskell/15-gossiping-bus-drivers.md
+              - 16. 給与計算システム: article/haskell/16-payroll-system.md
+              - 17. レンタルビデオシステム: article/haskell/17-video-rental-system.md
+              - 18. 並行処理システム: article/haskell/18-concurrency-system.md
+              - 19. Wa-Tor シミュレーション: article/haskell/19-wator-simulation.md
+          - 第 7 部 まとめと応用:
+              - 20. パターン間の相互作用: article/haskell/20-pattern-interactions.md
+              - 21. ベストプラクティス: article/haskell/21-best-practices.md
+              - 22. OO から FP への移行: article/haskell/22-oo-to-fp-migration.md
+      - Rust:
+          - はじめに: article/rust/index.md
+          - 第 1 部 基礎原則:
+              - 1. 不変性とデータ変換: article/rust/01-immutability-and-data-transformation.md
+              - 2. 関数合成と高階関数: article/rust/02-function-composition.md
+              - 3. 多態性の実現方法: article/rust/03-polymorphism.md
+          - 第 2 部 仕様とテスト:
+              - 4. データ検証: article/rust/04-data-validation.md
+              - 5. プロパティベーステスト: article/rust/05-property-based-testing.md
+              - 6. TDD と関数型: article/rust/06-tdd-and-functional.md
+          - 第 3 部 構造パターン:
+              - 7. Composite パターン: article/rust/07-composite-pattern.md
+              - 8. Decorator パターン: article/rust/08-decorator-pattern.md
+              - 9. Adapter パターン: article/rust/09-adapter-pattern.md
+          - 第 4 部 振る舞いパターン:
+              - 10. Strategy パターン: article/rust/10-strategy-pattern.md
+              - 11. Command パターン: article/rust/11-command-pattern.md
+              - 12. Visitor パターン: article/rust/12-visitor-pattern.md
+          - 第 5 部 生成パターン:
+              - 13. Abstract Factory パターン: article/rust/13-abstract-factory-pattern.md
+              - 14. Abstract Server パターン: article/rust/14-abstract-server-pattern.md
+          - 第 6 部 ケーススタディ:
+              - 15. Gossiping Bus Drivers: article/rust/15-gossiping-bus-drivers.md
+              - 16. 給与計算システム: article/rust/16-payroll-system.md
+              - 17. レンタルビデオシステム: article/rust/17-video-rental-system.md
+              - 18. 並行処理システム: article/rust/18-concurrency-system.md
+              - 19. Wa-Tor シミュレーション: article/rust/19-wator-simulation.md
+          - 第 7 部 まとめと応用:
+              - 20. パターン間の相互作用: article/rust/20-pattern-interactions.md
+              - 21. ベストプラクティス: article/rust/21-best-practices.md
+              - 22. OO から FP への移行: article/rust/22-oo-to-fp-migration.md
+  - ガイド:
+      - 多言語実装ガイド: instruction.md

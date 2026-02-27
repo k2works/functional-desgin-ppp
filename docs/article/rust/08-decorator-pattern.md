@@ -376,7 +376,7 @@ Rust では、ジェネリクス、トレイト境界、クロージャを組み
 
 本章のコード例は以下のファイルで確認できます：
 
-- ソースコード: `app/rust/part3/src/chapter08.rs`
+- ソースコード: `apps/rust/part3/src/chapter08.rs`
 
 ## 次章予告
 

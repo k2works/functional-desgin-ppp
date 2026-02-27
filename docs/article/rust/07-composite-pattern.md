@@ -377,7 +377,7 @@ Composite パターンは、ツリー構造のデータを扱う際に非常に�
 
 本章のコード例は以下のファイルで確認できます：
 
-- ソースコード: `app/rust/part3/src/chapter07.rs`
+- ソースコード: `apps/rust/part3/src/chapter07.rs`
 
 ## 次章予告
 

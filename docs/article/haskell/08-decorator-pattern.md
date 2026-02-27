@@ -311,8 +311,8 @@ Decorator パターンは、既存のコードを変更せずに機能を拡張�
 
 本章のコード例は以下のファイルで確認できます：
 
-- ソースコード: `app/haskell/part3/src/DecoratorPattern.hs`
-- テストコード: `app/haskell/part3/test/DecoratorPatternSpec.hs`
+- ソースコード: `apps/haskell/part3/src/DecoratorPattern.hs`
+- テストコード: `apps/haskell/part3/test/DecoratorPatternSpec.hs`
 
 ## 次章予告
 

@@ -508,5 +508,5 @@ val decorated = circle(0, 0, 10)
 
 本章のコード例は以下のファイルで確認できます：
 
-- ソースコード: `app/scala/part7/src/main/scala/PatternInteractions.scala`
-- テストコード: `app/scala/part7/src/test/scala/PatternInteractionsSpec.scala`
+- ソースコード: `apps/scala/part7/src/main/scala/PatternInteractions.scala`
+- テストコード: `apps/scala/part7/src/test/scala/PatternInteractionsSpec.scala`

@@ -487,8 +487,8 @@ simplify (Mul(Num 1, Num 5))  // => Num 5
 
 本章のコード例は以下のファイルで確認できます：
 
-- ソースコード: `app/fsharp/part1/src/Library.fs`（Polymorphism モジュール）
-- テストコード: `app/fsharp/part1/tests/Tests.fs`
+- ソースコード: `apps/fsharp/part1/src/Library.fs`（Polymorphism モジュール）
+- テストコード: `apps/fsharp/part1/tests/Tests.fs`
 
 ## 次章予告
 

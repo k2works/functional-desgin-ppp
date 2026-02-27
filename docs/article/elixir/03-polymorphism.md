@@ -367,8 +367,8 @@ describe_value("hello") # => "文字列: hello"
 
 本章のコード例は以下のファイルで確認できます：
 
-- ソースコード: `app/elixir/part1/lib/chapter03.ex`
-- テストコード: `app/elixir/part1/test/chapter03_test.exs`
+- ソースコード: `apps/elixir/part1/lib/chapter03.ex`
+- テストコード: `apps/elixir/part1/test/chapter03_test.exs`
 
 ## 次章予告
 

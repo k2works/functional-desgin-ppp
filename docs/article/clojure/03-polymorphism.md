@@ -376,8 +376,8 @@ Clojure では型の階層を定義して、継承的なディスパッチを実
 
 本章のコード例は以下のファイルで確認できます：
 
-- ソースコード: `app/clojure/part1/src/polymorphism.clj`
-- テストコード: `app/clojure/part1/spec/polymorphism_spec.clj`
+- ソースコード: `apps/clojure/part1/src/polymorphism.clj`
+- テストコード: `apps/clojure/part1/spec/polymorphism_spec.clj`
 
 ## 次章予告
 

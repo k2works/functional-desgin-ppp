@@ -477,8 +477,8 @@ Strategy パターンは、アルゴリズムを柔軟に交換する必要が�
 
 本章のコード例は以下のファイルで確認できます：
 
-- ソースコード: `app/clojure/part4/src/strategy_pattern/`
-- テストコード: `app/clojure/part4/spec/strategy_pattern/`
+- ソースコード: `apps/clojure/part4/src/strategy_pattern/`
+- テストコード: `apps/clojure/part4/spec/strategy_pattern/`
 
 ## 次章予告
 

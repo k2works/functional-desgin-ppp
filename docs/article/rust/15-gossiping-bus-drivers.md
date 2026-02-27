@@ -293,7 +293,7 @@ mod tests {
 
 ## 参考コード
 
-- ソースコード: `app/rust/part6/src/chapter15.rs`
+- ソースコード: `apps/rust/part6/src/chapter15.rs`
 
 ## 次章予告
 

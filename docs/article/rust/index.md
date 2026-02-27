@@ -183,7 +183,7 @@ Rust の所有権システム、パターンマッチング、enum（代数的�
 nix develop .#rust
 
 # テストの実行
-cd app/rust/part1
+cd apps/rust/part1
 cargo test
 ```
 

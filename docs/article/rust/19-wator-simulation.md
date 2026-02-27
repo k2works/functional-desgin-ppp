@@ -304,7 +304,7 @@ impl World {
 
 ## 参考コード
 
-- ソースコード: `app/rust/part6/src/chapter19.rs`
+- ソースコード: `apps/rust/part6/src/chapter19.rs`
 
 ## 次章予告
 

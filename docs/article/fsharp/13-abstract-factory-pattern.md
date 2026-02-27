@@ -301,8 +301,8 @@ F# では、判別共用体とパターンマッチングにより、Abstract Fa
 
 本章のコード例は以下のファイルで確認できます：
 
-- ソースコード: `app/fsharp/part4/src/Library.fs`
-- テストコード: `app/fsharp/part4/tests/Tests.fs`
+- ソースコード: `apps/fsharp/part4/src/Library.fs`
+- テストコード: `apps/fsharp/part4/tests/Tests.fs`
 
 ## 次章予告
 

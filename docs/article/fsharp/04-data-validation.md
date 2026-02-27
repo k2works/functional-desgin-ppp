@@ -408,8 +408,8 @@ F# の型システムを活用することで、コンパイル時に多くの�
 
 本章のコード例は以下のファイルで確認できます：
 
-- ソースコード: `app/fsharp/part2/src/Library.fs`
-- テストコード: `app/fsharp/part2/tests/Tests.fs`
+- ソースコード: `apps/fsharp/part2/src/Library.fs`
+- テストコード: `apps/fsharp/part2/tests/Tests.fs`
 
 ## 次章予告
 

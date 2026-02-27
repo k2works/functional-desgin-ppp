@@ -471,5 +471,5 @@ sm --> bob : state = :idle
 
 本章のコード例は以下のファイルで確認できます：
 
-- ソースコード: `app/clojure/part6/src/concurrency/`
-- テストコード: `app/clojure/part6/spec/concurrency/`
+- ソースコード: `apps/clojure/part6/src/concurrency/`
+- テストコード: `apps/clojure/part6/spec/concurrency/`

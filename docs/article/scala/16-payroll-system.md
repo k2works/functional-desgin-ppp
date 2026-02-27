@@ -338,5 +338,5 @@ val emp = employee("E001")("田中太郎")
 
 本章のコード例は以下のファイルで確認できます：
 
-- ソースコード: `app/scala/part6/src/main/scala/PayrollSystem.scala`
-- テストコード: `app/scala/part6/src/test/scala/PayrollSystemSpec.scala`
+- ソースコード: `apps/scala/part6/src/main/scala/PayrollSystem.scala`
+- テストコード: `apps/scala/part6/src/test/scala/PayrollSystemSpec.scala`

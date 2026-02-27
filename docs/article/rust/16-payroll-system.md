@@ -290,7 +290,7 @@ pub fn run_payroll(context: &PayrollContext, date: NaiveDate) -> Vec<Payslip> {
 
 ## 参考コード
 
-- ソースコード: `app/rust/part6/src/chapter16.rs`
+- ソースコード: `apps/rust/part6/src/chapter16.rs`
 
 ## 次章予告
 

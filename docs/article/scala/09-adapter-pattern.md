@@ -509,8 +509,8 @@ Adapter パターンは、異なるシステム間の「翻訳層」として機
 
 本章のコード例は以下のファイルで確認できます：
 
-- ソースコード: `app/scala/part3/src/main/scala/AdapterPattern.scala`
-- テストコード: `app/scala/part3/src/test/scala/AdapterPatternSpec.scala`
+- ソースコード: `apps/scala/part3/src/main/scala/AdapterPattern.scala`
+- テストコード: `apps/scala/part3/src/test/scala/AdapterPatternSpec.scala`
 
 ## 次章予告
 

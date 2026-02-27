@@ -191,7 +191,7 @@ F# は関数型プログラミングのために設計された言語であり�
 nix develop .#fsharp
 
 # プロジェクトの作成（Part 1 の例）
-cd app/fsharp/part1
+cd apps/fsharp/part1
 dotnet new sln -n FunctionalDesignPart1
 dotnet new classlib -lang F# -n FunctionalDesign -o src
 dotnet new xunit -lang F# -n FunctionalDesign.Tests -o tests

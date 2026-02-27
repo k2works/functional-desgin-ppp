@@ -4,14 +4,12 @@ let
 in
 packages.mkShell {
   inherit (baseShell) pure;
-  
   buildInputs = baseShell.buildInputs ++ (with packages; [
-    nodejs_22
-    nodePackages.pnpm
+    dotnet-sdk
   ]);
-  
   shellHook = ''
     ${baseShell.shellHook}
-    echo "Node.js $(node --version) and pnpm $(pnpm --version) activated"
+    echo ".NET development environment activated"
+    echo "  - .NET SDK: $(dotnet --version)"
   '';
 }

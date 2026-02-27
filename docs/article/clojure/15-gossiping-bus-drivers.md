@@ -319,5 +319,5 @@ deactivate world
 
 本章のコード例は以下のファイルで確認できます：
 
-- ソースコード: `app/clojure/part6/src/gossiping_bus_drivers/`
-- テストコード: `app/clojure/part6/spec/gossiping_bus_drivers/`
+- ソースコード: `apps/clojure/part6/src/gossiping_bus_drivers/`
+- テストコード: `apps/clojure/part6/spec/gossiping_bus_drivers/`

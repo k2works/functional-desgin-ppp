@@ -4,18 +4,17 @@ let
 in
 packages.mkShell {
   inherit (baseShell) pure;
-  
   buildInputs = baseShell.buildInputs ++ (with packages; [
-    elixir
-    erlang
-    elixir-ls
-  ] ++ packages.lib.optionals packages.stdenv.isLinux [
-    inotify-tools
+    (python3.withPackages (ps: with ps; [
+      uv
+      mkdocs
+      mkdocs-material
+      pymdown-extensions
+      # plantuml-markdown and others might need to be checked if available
+    ]))
   ]);
-  
   shellHook = ''
     ${baseShell.shellHook}
-    echo "Elixir $(elixir --version | head -1) activated"
-    echo "Erlang/OTP available"
+    echo "Python/MkDocs development environment activated"
   '';
 }

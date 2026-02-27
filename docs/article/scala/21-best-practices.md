@@ -423,5 +423,5 @@ object Result:
 
 本章のコード例は以下のファイルで確認できます：
 
-- ソースコード: `app/scala/part7/src/main/scala/BestPractices.scala`
-- テストコード: `app/scala/part7/src/test/scala/BestPracticesSpec.scala`
+- ソースコード: `apps/scala/part7/src/main/scala/BestPractices.scala`
+- テストコード: `apps/scala/part7/src/test/scala/BestPracticesSpec.scala`

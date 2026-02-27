@@ -297,7 +297,7 @@ pub fn statement_with_formatter(customer: &Customer, formatter: &dyn StatementFo
 
 ## 参考コード
 
-- ソースコード: `app/rust/part6/src/chapter17.rs`
+- ソースコード: `apps/rust/part6/src/chapter17.rs`
 
 ## 次章予告
 

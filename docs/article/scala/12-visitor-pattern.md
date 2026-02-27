@@ -365,8 +365,8 @@ Visitor パターンは、データ構造が安定していて、操作を頻繁
 
 本章のコード例は以下のファイルで確認できます：
 
-- ソースコード: `app/scala/part3/src/main/scala/VisitorPattern.scala`
-- テストコード: `app/scala/part3/src/test/scala/VisitorPatternSpec.scala`
+- ソースコード: `apps/scala/part3/src/main/scala/VisitorPattern.scala`
+- テストコード: `apps/scala/part3/src/test/scala/VisitorPatternSpec.scala`
 
 ## 第4部のまとめ
 

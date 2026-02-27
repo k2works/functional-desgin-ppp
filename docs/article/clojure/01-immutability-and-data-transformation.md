@@ -263,8 +263,8 @@ new-team: {:name (共有), :members [田中, 鈴木, 佐藤, 山田]}
 
 本章のコード例は以下のファイルで確認できます：
 
-- ソースコード: `app/clojure/part1/src/immutability.clj`
-- テストコード: `app/clojure/part1/spec/immutability_spec.clj`
+- ソースコード: `apps/clojure/part1/src/immutability.clj`
+- テストコード: `apps/clojure/part1/spec/immutability_spec.clj`
 
 ## 次章予告
 

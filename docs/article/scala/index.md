@@ -183,7 +183,7 @@ Scala 3 の新機能（enum、given/using、拡張メソッドなど）を活用
 nix develop .#scala
 
 # テストの実行
-cd app/scala/part1
+cd apps/scala/part1
 sbt test
 ```
 

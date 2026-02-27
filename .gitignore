@@ -153,11 +153,14 @@ pom.xml.asc
 .result
 .direnv/
 
-/app/scala/*/target/
-/app/scala/*/project/target/
-app/haskell/**/dist-newstyle/
+/apps/scala/*/target/
+/apps/scala/*/project/target/
+apps/haskell/**/dist-newstyle/
 
 # Rust
-/app/rust/*/target/
-/app/rust/*/Cargo.lock
+/apps/rust/*/target/
+/apps/rust/*/Cargo.lock
 *.dump
+*.iml
+.codex
+.gemini

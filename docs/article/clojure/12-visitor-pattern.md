@@ -553,8 +553,8 @@ Visitor パターンは、データ構造が安定していて、操作を頻繁
 
 本章のコード例は以下のファイルで確認できます：
 
-- ソースコード: `app/clojure/part4/src/visitor_pattern/`
-- テストコード: `app/clojure/part4/spec/visitor_pattern/`
+- ソースコード: `apps/clojure/part4/src/visitor_pattern/`
+- テストコード: `apps/clojure/part4/spec/visitor_pattern/`
 
 ## 第4部のまとめ
 

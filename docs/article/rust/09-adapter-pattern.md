@@ -332,7 +332,7 @@ Rust の From/Into トレイトと強い型システムを活用することで�
 
 本章のコード例は以下のファイルで確認できます：
 
-- ソースコード: `app/rust/part3/src/chapter09.rs`
+- ソースコード: `apps/rust/part3/src/chapter09.rs`
 
 ## 次章予告
 

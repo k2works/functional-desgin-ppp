@@ -374,8 +374,8 @@ Adapter パターンは、既存のコードを変更せずに異なるシステ
 
 本章のコード例は以下のファイルで確認できます：
 
-- ソースコード: `app/haskell/part3/src/AdapterPattern.hs`
-- テストコード: `app/haskell/part3/test/AdapterPatternSpec.hs`
+- ソースコード: `apps/haskell/part3/src/AdapterPattern.hs`
+- テストコード: `apps/haskell/part3/test/AdapterPatternSpec.hs`
 
 ## 次章予告
 

@@ -387,8 +387,8 @@ Decorator パターンは、既存のコードを変更せずに機能を拡張�
 
 本章のコード例は以下のファイルで確認できます：
 
-- ソースコード: `app/clojure/part3/src/decorator_pattern/`
-- テストコード: `app/clojure/part3/spec/decorator_pattern/`
+- ソースコード: `apps/clojure/part3/src/decorator_pattern/`
+- テストコード: `apps/clojure/part3/spec/decorator_pattern/`
 
 ## 次章予告
 

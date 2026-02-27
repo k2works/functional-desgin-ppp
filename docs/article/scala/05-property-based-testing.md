@@ -507,8 +507,8 @@ test("生成された有効な電話番号はバリデーションを通過す�
 
 本章のコード例は以下のファイルで確認できます：
 
-- ソースコード: `app/scala/part2/src/main/scala/PropertyBasedTesting.scala`
-- テストコード: `app/scala/part2/src/test/scala/PropertyBasedTestingSpec.scala`
+- ソースコード: `apps/scala/part2/src/main/scala/PropertyBasedTesting.scala`
+- テストコード: `apps/scala/part2/src/test/scala/PropertyBasedTestingSpec.scala`
 
 ## 次章予告
 

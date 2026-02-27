@@ -356,8 +356,8 @@ Scala の型システムを活用することで、コンパイル時に多く�
 
 本章のコード例は以下のファイルで確認できます：
 
-- ソースコード: `app/scala/part2/src/main/scala/DataValidation.scala`
-- テストコード: `app/scala/part2/src/test/scala/DataValidationSpec.scala`
+- ソースコード: `apps/scala/part2/src/main/scala/DataValidation.scala`
+- テストコード: `apps/scala/part2/src/test/scala/DataValidationSpec.scala`
 
 ## 次章予告
 

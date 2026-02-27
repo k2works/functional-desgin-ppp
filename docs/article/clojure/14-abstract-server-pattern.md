@@ -449,8 +449,8 @@ Abstract Server パターンは、モジュール間の疎結合を実現し、�
 
 本章のコード例は以下のファイルで確認できます：
 
-- ソースコード: `app/clojure/part5/src/abstract_server/`
-- テストコード: `app/clojure/part5/spec/abstract_server/`
+- ソースコード: `apps/clojure/part5/src/abstract_server/`
+- テストコード: `apps/clojure/part5/spec/abstract_server/`
 
 ## 第5部のまとめ
 

@@ -472,5 +472,5 @@ Abstract Server パターンは、モジュール間の疎結合を実現し、�
 
 本章のコード例は以下のファイルで確認できます：
 
-- ソースコード: `app/scala/part3/src/main/scala/AbstractServerPattern.scala`
-- テストコード: `app/scala/part3/src/test/scala/AbstractServerPatternSpec.scala`
+- ソースコード: `apps/scala/part3/src/main/scala/AbstractServerPattern.scala`
+- テストコード: `apps/scala/part3/src/test/scala/AbstractServerPatternSpec.scala`

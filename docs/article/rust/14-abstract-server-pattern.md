@@ -385,7 +385,7 @@ Rust のトレイトシステムを活用することで、テスト可能で保
 
 本章のコード例は以下のファイルで確認できます：
 
-- ソースコード: `app/rust/part5/src/chapter14.rs`
+- ソースコード: `apps/rust/part5/src/chapter14.rs`
 
 ## 次章予告
 

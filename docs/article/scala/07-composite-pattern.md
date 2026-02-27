@@ -355,8 +355,8 @@ Composite パターンは、ツリー構造のデータを扱う際に非常に�
 
 本章のコード例は以下のファイルで確認できます：
 
-- ソースコード: `app/scala/part3/src/main/scala/CompositePattern.scala`
-- テストコード: `app/scala/part3/src/test/scala/CompositePatternSpec.scala`
+- ソースコード: `apps/scala/part3/src/main/scala/CompositePattern.scala`
+- テストコード: `apps/scala/part3/src/test/scala/CompositePatternSpec.scala`
 
 ## 次章予告
 

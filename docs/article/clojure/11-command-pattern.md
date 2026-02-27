@@ -558,8 +558,8 @@ Command パターンは、操作の履歴管理や取り消し機能が必要な
 
 本章のコード例は以下のファイルで確認できます：
 
-- ソースコード: `app/clojure/part4/src/command_pattern/`
-- テストコード: `app/clojure/part4/spec/command_pattern/`
+- ソースコード: `apps/clojure/part4/src/command_pattern/`
+- テストコード: `apps/clojure/part4/spec/command_pattern/`
 
 ## 次章予告
 

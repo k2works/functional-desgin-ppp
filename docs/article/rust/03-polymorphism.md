@@ -418,7 +418,7 @@ email.send_notification("重要なお知らせ")
 
 本章のコード例は以下のファイルで確認できます：
 
-- ソースコード: `app/rust/part1/src/chapter03.rs`
+- ソースコード: `apps/rust/part1/src/chapter03.rs`
 
 ## 次章予告
 

@@ -4,19 +4,17 @@ let
 in
 packages.mkShell {
   inherit (baseShell) pure;
-  
   buildInputs = baseShell.buildInputs ++ (with packages; [
-    ghc
-    cabal-install
-    haskell-language-server
-    zlib
-    pkg-config
+    rustc
+    cargo
+    rustfmt
+    clippy
+    rust-analyzer
   ]);
-  
   shellHook = ''
     ${baseShell.shellHook}
-    echo "Haskell (GHC $(ghc --version | cut -d' ' -f8)) activated"
-    echo "ghci available for REPL"
-    echo "Run 'cabal update' first if package index is missing"
+    echo "Rust development environment activated"
+    echo "  - rustc: $(rustc --version)"
+    echo "  - cargo: $(cargo --version)"
   '';
 }

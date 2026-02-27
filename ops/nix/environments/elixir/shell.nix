@@ -4,15 +4,15 @@ let
 in
 packages.mkShell {
   inherit (baseShell) pure;
-  
   buildInputs = baseShell.buildInputs ++ (with packages; [
-    dotnet-sdk_8
-    fantomas
+    elixir
+    erlang
+    elixir-ls
   ]);
-  
   shellHook = ''
     ${baseShell.shellHook}
-    echo "F# (.NET $(dotnet --version)) activated"
-    echo "dotnet fsi available for REPL"
+    echo "Elixir development environment activated"
+    echo "  - Elixir: $(elixir --version | grep Elixir)"
+    echo "  - Erlang: $(erl -noshell -eval 'io:fwrite("~s~n", [erlang:system_info(otp_release)]), halt().')"
   '';
 }

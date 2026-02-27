@@ -373,8 +373,8 @@ data  # => %{user: %{profile: %{name: "田中", age: 30}}}
 
 本章のコード例は以下のファイルで確認できます：
 
-- ソースコード: `app/elixir/part1/lib/chapter01.ex`
-- テストコード: `app/elixir/part1/test/chapter01_test.exs`
+- ソースコード: `apps/elixir/part1/lib/chapter01.ex`
+- テストコード: `apps/elixir/part1/test/chapter01_test.exs`
 
 ## 次章予告
 

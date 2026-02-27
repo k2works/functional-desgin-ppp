@@ -137,7 +137,7 @@ nix develop .#haskell
 ### プロジェクト構造
 
 ```
-app/haskell/
+apps/haskell/
 ├── part1/                    # 第1部：基礎原則
 │   ├── functional-design-part1.cabal
 │   ├── src/
@@ -160,7 +160,7 @@ app/haskell/
 ### ビルドとテスト
 
 ```bash
-cd app/haskell/part1
+cd apps/haskell/part1
 cabal build
 cabal test --test-show-details=streaming
 ```

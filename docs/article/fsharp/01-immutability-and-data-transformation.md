@@ -374,8 +374,8 @@ let ``Undo で前の状態に戻る`` () =
 
 本章のコード例は以下のファイルで確認できます：
 
-- ソースコード: `app/fsharp/part1/src/Library.fs`
-- テストコード: `app/fsharp/part1/tests/Tests.fs`
+- ソースコード: `apps/fsharp/part1/src/Library.fs`
+- テストコード: `apps/fsharp/part1/tests/Tests.fs`
 
 ## 次章予告
 

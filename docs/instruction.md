@@ -22,7 +22,7 @@ docs/article/
     ├── index.md
     └── ...
 
-app/
+apps/
 ├── clojure/           # Clojure 実装
 ├── scala/             # Scala 実装
 │   ├── part1/         # 第1部: 基礎原則
@@ -73,7 +73,7 @@ app/
 mkdir -p docs/article/{language}
 
 # コード実装ディレクトリ
-mkdir -p app/{language}/part{1..7}
+mkdir -p apps/{language}/part{1..7}
 ```
 
 ### 1.2 プロジェクト設定
@@ -140,7 +140,7 @@ cat docs/article/clojure/{chapter}.md
 
 ```bash
 # Part ディレクトリで作業
-cd app/{language}/part{n}
+cd apps/{language}/part{n}
 
 # ソースファイル作成
 # 例: src/{ChapterName}.{ext}
@@ -179,7 +179,7 @@ nav:
 #### Step 6: コミット
 
 ```bash
-git add app/{language}/part{n}/ docs/article/{language}/{chapter}.md mkdocs.yml
+git add apps/{language}/part{n}/ docs/article/{language}/{chapter}.md mkdocs.yml
 git commit -m "Add Chapter {N}: {Title} in {Language}
 
 - Implement {MainComponent}.{ext}
@@ -371,7 +371,7 @@ Add Chapter {N}: {Title} in {Language}
 ### TypeScript
 
 ```
-app/typescript/part1/
+apps/typescript/part1/
 ├── package.json
 ├── tsconfig.json
 ├── src/
@@ -398,7 +398,7 @@ app/typescript/part1/
 ### Rust
 
 ```
-app/rust/part1/
+apps/rust/part1/
 ├── Cargo.toml
 └── src/
     ├── lib.rs
@@ -419,7 +419,7 @@ edition = "2021"
 ### Go
 
 ```
-app/go/part1/
+apps/go/part1/
 ├── go.mod
 ├── chapter01.go
 └── chapter01_test.go

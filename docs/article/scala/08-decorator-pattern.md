@@ -319,8 +319,8 @@ Decorator パターンは、既存のコードを変更せずに機能を拡張�
 
 本章のコード例は以下のファイルで確認できます：
 
-- ソースコード: `app/scala/part3/src/main/scala/DecoratorPattern.scala`
-- テストコード: `app/scala/part3/src/test/scala/DecoratorPatternSpec.scala`
+- ソースコード: `apps/scala/part3/src/main/scala/DecoratorPattern.scala`
+- テストコード: `apps/scala/part3/src/test/scala/DecoratorPatternSpec.scala`
 
 ## 次章予告
 

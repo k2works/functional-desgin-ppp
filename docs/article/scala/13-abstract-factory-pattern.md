@@ -390,8 +390,8 @@ Abstract Factory パターンは、関連するオブジェクトのファミリ
 
 本章のコード例は以下のファイルで確認できます：
 
-- ソースコード: `app/scala/part3/src/main/scala/AbstractFactoryPattern.scala`
-- テストコード: `app/scala/part3/src/test/scala/AbstractFactoryPatternSpec.scala`
+- ソースコード: `apps/scala/part3/src/main/scala/AbstractFactoryPattern.scala`
+- テストコード: `apps/scala/part3/src/test/scala/AbstractFactoryPatternSpec.scala`
 
 ## 次章予告
 

@@ -349,8 +349,8 @@ email.sendNotification("重要なお知らせ")
 
 本章のコード例は以下のファイルで確認できます：
 
-- ソースコード: `app/scala/part1/src/main/scala/Polymorphism.scala`
-- テストコード: `app/scala/part1/src/test/scala/PolymorphismSpec.scala`
+- ソースコード: `apps/scala/part1/src/main/scala/Polymorphism.scala`
+- テストコード: `apps/scala/part1/src/test/scala/PolymorphismSpec.scala`
 
 ## 次章予告
 

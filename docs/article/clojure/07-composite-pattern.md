@@ -521,8 +521,8 @@ Composite パターンは、ツリー構造のデータを扱う際に非常に�
 
 本章のコード例は以下のファイルで確認できます：
 
-- ソースコード: `app/clojure/part3/src/composite_pattern/`
-- テストコード: `app/clojure/part3/spec/composite_pattern/`
+- ソースコード: `apps/clojure/part3/src/composite_pattern/`
+- テストコード: `apps/clojure/part3/spec/composite_pattern/`
 
 ## 次章予告
 

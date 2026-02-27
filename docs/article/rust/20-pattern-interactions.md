@@ -297,7 +297,7 @@ let scene = composite(vec![
 
 ## 参考コード
 
-- ソースコード: `app/rust/part7/src/chapter20.rs`
+- ソースコード: `apps/rust/part7/src/chapter20.rs`
 
 ## 次章予告
 

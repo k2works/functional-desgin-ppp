@@ -308,7 +308,7 @@ pub trait ActionHandler: Send + Sync {
 
 ## 参考コード
 
-- ソースコード: `app/rust/part6/src/chapter18.rs`
+- ソースコード: `apps/rust/part6/src/chapter18.rs`
 
 ## 次章予告
 

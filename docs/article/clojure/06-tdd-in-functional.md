@@ -375,8 +375,8 @@
 
 本章のコード例は以下のファイルで確認できます：
 
-- ソースコード: `app/clojure/part2/src/tdd_in_functional.clj`
-- テストコード: `app/clojure/part2/spec/tdd_in_functional_spec.clj`
+- ソースコード: `apps/clojure/part2/src/tdd_in_functional.clj`
+- テストコード: `apps/clojure/part2/spec/tdd_in_functional_spec.clj`
 
 ## 次章予告
 

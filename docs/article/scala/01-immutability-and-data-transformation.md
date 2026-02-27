@@ -318,8 +318,8 @@ val lazyNumbers = LazyList.from(1)
 
 本章のコード例は以下のファイルで確認できます：
 
-- ソースコード: `app/scala/part1/src/main/scala/Immutability.scala`
-- テストコード: `app/scala/part1/src/test/scala/ImmutabilitySpec.scala`
+- ソースコード: `apps/scala/part1/src/main/scala/Immutability.scala`
+- テストコード: `apps/scala/part1/src/test/scala/ImmutabilitySpec.scala`
 
 ## 次章予告
 

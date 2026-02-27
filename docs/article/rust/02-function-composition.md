@@ -456,7 +456,7 @@ premium_customer(&CustomerInfo::new("bronze", 10, 1000))     // => false
 
 本章のコード例は以下のファイルで確認できます：
 
-- ソースコード: `app/rust/part1/src/chapter02.rs`
+- ソースコード: `apps/rust/part1/src/chapter02.rs`
 
 ## 次章予告
 

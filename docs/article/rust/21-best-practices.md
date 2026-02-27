@@ -329,7 +329,7 @@ impl<E, A> Result2<E, A> {
 
 ## 参考コード
 
-- ソースコード: `app/rust/part7/src/chapter21.rs`
+- ソースコード: `apps/rust/part7/src/chapter21.rs`
 
 ## 次章予告
 

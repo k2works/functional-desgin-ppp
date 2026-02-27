@@ -444,8 +444,8 @@ premiumCustomer { Membership = "bronze"; PurchaseCount = 10; TotalSpent = 1000 }
 
 本章のコード例は以下のファイルで確認できます：
 
-- ソースコード: `app/fsharp/part1/src/Library.fs`（Composition モジュール）
-- テストコード: `app/fsharp/part1/tests/Tests.fs`
+- ソースコード: `apps/fsharp/part1/src/Library.fs`（Composition モジュール）
+- テストコード: `apps/fsharp/part1/tests/Tests.fs`
 
 ## 次章予告
 

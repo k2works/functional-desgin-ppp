@@ -342,8 +342,8 @@ Spec を活用することで、動的型付け言語の柔軟性を保ちなが
 
 本章のコード例は以下のファイルで確認できます：
 
-- ソースコード: `app/clojure/part2/src/clojure_spec.clj`
-- テストコード: `app/clojure/part2/spec/clojure_spec_spec.clj`
+- ソースコード: `apps/clojure/part2/src/clojure_spec.clj`
+- テストコード: `apps/clojure/part2/spec/clojure_spec_spec.clj`
 
 ## 次章予告
 

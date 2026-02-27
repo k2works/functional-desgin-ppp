@@ -723,8 +723,8 @@ Quil の `fun-mode` は関数型プログラミングの原則に従います：
 
 本章のコード例は以下のファイルで確認できます：
 
-- ソースコード: `app/clojure/part6/src/wator/`
-- テストコード: `app/clojure/part6/spec/wator/`
+- ソースコード: `apps/clojure/part6/src/wator/`
+- テストコード: `apps/clojure/part6/spec/wator/`
 
 ## 第6部のまとめ
 

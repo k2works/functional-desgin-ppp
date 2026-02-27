@@ -397,5 +397,5 @@ stop
 
 本章のコード例は以下のファイルで確認できます：
 
-- ソースコード: `app/clojure/part6/src/payroll/`
-- テストコード: `app/clojure/part6/spec/payroll/`
+- ソースコード: `apps/clojure/part6/src/payroll/`
+- テストコード: `apps/clojure/part6/spec/payroll/`

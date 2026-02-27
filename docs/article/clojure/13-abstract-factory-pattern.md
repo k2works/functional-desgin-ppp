@@ -467,8 +467,8 @@ Abstract Factory パターンは、関連するオブジェクトのファミリ
 
 本章のコード例は以下のファイルで確認できます：
 
-- ソースコード: `app/clojure/part5/src/abstract_factory/`
-- テストコード: `app/clojure/part5/spec/abstract_factory/`
+- ソースコード: `apps/clojure/part5/src/abstract_factory/`
+- テストコード: `apps/clojure/part5/spec/abstract_factory/`
 
 ## 次章予告
 

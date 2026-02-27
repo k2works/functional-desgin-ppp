@@ -549,8 +549,8 @@ test("範囲外の値は例外をスローする")
 
 本章のコード例は以下のファイルで確認できます：
 
-- ソースコード: `app/scala/part2/src/main/scala/TddFunctional.scala`
-- テストコード: `app/scala/part2/src/test/scala/TddFunctionalSpec.scala`
+- ソースコード: `apps/scala/part2/src/main/scala/TddFunctional.scala`
+- テストコード: `apps/scala/part2/src/test/scala/TddFunctionalSpec.scala`
 
 ## 次章予告
 

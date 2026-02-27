@@ -391,8 +391,8 @@ Adapter パターンは、既存のコードを変更せずに異なるシステ
 
 本章のコード例は以下のファイルで確認できます：
 
-- ソースコード: `app/clojure/part3/src/adapter_pattern/`
-- テストコード: `app/clojure/part3/spec/adapter_pattern/`
+- ソースコード: `apps/clojure/part3/src/adapter_pattern/`
+- テストコード: `apps/clojure/part3/spec/adapter_pattern/`
 
 ## 次章予告
 

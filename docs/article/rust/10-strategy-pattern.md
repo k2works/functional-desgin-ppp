@@ -324,7 +324,7 @@ Rust では、トレイトとクロージャを組み合わせることで、型
 
 本章のコード例は以下のファイルで確認できます：
 
-- ソースコード: `app/rust/part4/src/chapter10.rs`
+- ソースコード: `apps/rust/part4/src/chapter10.rs`
 
 ## 次章予告
 

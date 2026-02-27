@@ -340,8 +340,8 @@ premiumCustomer(CustomerInfo("bronze", 10, 1000))     // => false
 
 本章のコード例は以下のファイルで確認できます：
 
-- ソースコード: `app/scala/part1/src/main/scala/Composition.scala`
-- テストコード: `app/scala/part1/src/test/scala/CompositionSpec.scala`
+- ソースコード: `apps/scala/part1/src/main/scala/Composition.scala`
+- テストコード: `apps/scala/part1/src/test/scala/CompositionSpec.scala`
 
 ## 次章予告
 

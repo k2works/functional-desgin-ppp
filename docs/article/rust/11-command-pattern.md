@@ -349,7 +349,7 @@ Rust では、トレイトオブジェクトと所有権システムを活用し
 
 本章のコード例は以下のファイルで確認できます：
 
-- ソースコード: `app/rust/part4/src/chapter11.rs`
+- ソースコード: `apps/rust/part4/src/chapter11.rs`
 
 ## 次章予告
 

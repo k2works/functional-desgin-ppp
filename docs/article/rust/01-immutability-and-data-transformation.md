@@ -441,7 +441,7 @@ let numbers: Vec<i32> = (1..)           // 無限イテレータ
 
 本章のコード例は以下のファイルで確認できます：
 
-- ソースコード: `app/rust/part1/src/chapter01.rs`
+- ソースコード: `apps/rust/part1/src/chapter01.rs`
 
 ## 次章予告
 

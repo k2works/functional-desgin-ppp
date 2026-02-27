@@ -316,5 +316,5 @@ let ``有効なメールアドレスを検証できる`` () =
 
 本章のコード例は以下のファイルで確認できます：
 
-- ソースコード: `app/fsharp/part7/src/Library.fs`
-- テストコード: `app/fsharp/part7/tests/Tests.fs`
+- ソースコード: `apps/fsharp/part7/src/Library.fs`
+- テストコード: `apps/fsharp/part7/tests/Tests.fs`

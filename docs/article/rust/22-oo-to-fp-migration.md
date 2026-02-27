@@ -342,7 +342,7 @@ Rust は不変性がデフォルトなので、FP スタイルへの移行は自
 
 ## 参考コード
 
-- ソースコード: `app/rust/part7/src/chapter22.rs`
+- ソースコード: `apps/rust/part7/src/chapter22.rs`
 
 ---
 

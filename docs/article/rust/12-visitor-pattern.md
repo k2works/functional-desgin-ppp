@@ -372,7 +372,7 @@ Rust の enum とパターンマッチングを使うことで、Visitor パタ�
 
 本章のコード例は以下のファイルで確認できます：
 
-- ソースコード: `app/rust/part4/src/chapter12.rs`
+- ソースコード: `apps/rust/part4/src/chapter12.rs`
 
 ## 次章予告
 

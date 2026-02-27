@@ -188,7 +188,7 @@ Elixir は Erlang VM 上で動作するため、並行処理が言語の中核�
 nix develop .#elixir
 
 # テストの実行
-cd app/elixir/part1
+cd apps/elixir/part1
 mix test
 ```
 

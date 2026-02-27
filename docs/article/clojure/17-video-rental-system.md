@@ -446,5 +446,5 @@ end note
 
 本章のコード例は以下のファイルで確認できます：
 
-- ソースコード: `app/clojure/part6/src/video_rental/`
-- テストコード: `app/clojure/part6/spec/video_rental/`
+- ソースコード: `apps/clojure/part6/src/video_rental/`
+- テストコード: `apps/clojure/part6/spec/video_rental/`

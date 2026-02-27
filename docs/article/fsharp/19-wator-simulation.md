@@ -397,5 +397,5 @@ end note
 
 本章のコード例は以下のファイルで確認できます：
 
-- ソースコード: `app/fsharp/part6/src/Library.fs`
-- テストコード: `app/fsharp/part6/tests/Tests.fs`
+- ソースコード: `apps/fsharp/part6/src/Library.fs`
+- テストコード: `apps/fsharp/part6/tests/Tests.fs`

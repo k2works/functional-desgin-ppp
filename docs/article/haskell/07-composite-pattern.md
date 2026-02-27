@@ -387,8 +387,8 @@ Composite パターンは、ツリー構造のデータを扱う際に非常に�
 
 本章のコード例は以下のファイルで確認できます：
 
-- ソースコード: `app/haskell/part3/src/CompositePattern.hs`
-- テストコード: `app/haskell/part3/test/CompositePatternSpec.hs`
+- ソースコード: `apps/haskell/part3/src/CompositePattern.hs`
+- テストコード: `apps/haskell/part3/test/CompositePatternSpec.hs`
 
 ## 次章予告
 

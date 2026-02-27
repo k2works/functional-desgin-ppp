@@ -433,8 +433,8 @@ Strategy パターンは、アルゴリズムを柔軟に交換する必要が�
 
 本章のコード例は以下のファイルで確認できます：
 
-- ソースコード: `app/scala/part3/src/main/scala/StrategyPattern.scala`
-- テストコード: `app/scala/part3/src/test/scala/StrategyPatternSpec.scala`
+- ソースコード: `apps/scala/part3/src/main/scala/StrategyPattern.scala`
+- テストコード: `apps/scala/part3/src/test/scala/StrategyPatternSpec.scala`
 
 ## 次章予告
 

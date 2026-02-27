@@ -726,5 +726,5 @@ Scala では Clojure の Agent と異なり、`AtomicReference` と CAS 操作�
 
 本章のコード例は以下のファイルで確認できます：
 
-- ソースコード: `app/scala/part6/src/main/scala/ConcurrencySystem.scala`
-- テストコード: `app/scala/part6/src/test/scala/ConcurrencySystemSpec.scala`
+- ソースコード: `apps/scala/part6/src/main/scala/ConcurrencySystem.scala`
+- テストコード: `apps/scala/part6/src/test/scala/ConcurrencySystemSpec.scala`

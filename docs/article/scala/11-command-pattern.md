@@ -399,8 +399,8 @@ Command パターンは、操作の履歴管理や取り消し機能が必要な
 
 本章のコード例は以下のファイルで確認できます：
 
-- ソースコード: `app/scala/part3/src/main/scala/CommandPattern.scala`
-- テストコード: `app/scala/part3/src/test/scala/CommandPatternSpec.scala`
+- ソースコード: `apps/scala/part3/src/main/scala/CommandPattern.scala`
+- テストコード: `apps/scala/part3/src/test/scala/CommandPatternSpec.scala`
 
 ## 次章予告
 

@@ -344,8 +344,8 @@ gen/keyword        ;; キーワード
 
 本章のコード例は以下のファイルで確認できます：
 
-- ソースコード: `app/clojure/part2/src/property_based_testing.clj`
-- テストコード: `app/clojure/part2/spec/property_based_testing_spec.clj`
+- ソースコード: `apps/clojure/part2/src/property_based_testing.clj`
+- テストコード: `apps/clojure/part2/spec/property_based_testing_spec.clj`
 
 ## 次章予告
 
