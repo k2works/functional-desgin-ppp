@@ -351,7 +351,7 @@ nmap <silent> gr <Plug>(coc-references)
 nnoremap <silent> K :call ShowDocumentation()<CR>
 
 function! ShowDocumentation()
-  if CocAction('hasProvider', 'hover')
+  if exists('*CocAction') && CocAction('hasProvider', 'hover')
     call CocActionAsync('doHover')
   else
     call feedkeys('K', 'in')
@@ -359,7 +359,7 @@ function! ShowDocumentation()
 endfunction
 
 " Highlight the symbol and its references when holding the cursor
-autocmd CursorHold * silent call CocActionAsync('highlight')
+autocmd CursorHold * if exists('*CocActionAsync') | silent call CocActionAsync('highlight') | endif
 
 " Symbol renaming
 nmap <leader>rn <Plug>(coc-rename)
